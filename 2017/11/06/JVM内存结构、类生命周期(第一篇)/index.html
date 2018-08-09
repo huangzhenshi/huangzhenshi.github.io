@@ -1,0 +1,484 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>JVM内存结构、类生命周期(第一篇) | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="参考大神的blog：http://www.cnblogs.com/ityouknow/p/5610232.html  java的内存结构（一）大佬都讲的巨详细了，深度干货啊，没啥要补充的了http://www.cnblogs.com/ityouknow/p/5610232.html 重点注意： 名词的区别：新生代、老年代、永久代 （都是代表不同的内存空间） 命名也可以叫：堆区、栈区、方法区构成JA">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM内存结构、类生命周期(第一篇)">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/11/06/JVM内存结构、类生命周期(第一篇)/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="参考大神的blog：http://www.cnblogs.com/ityouknow/p/5610232.html  java的内存结构（一）大佬都讲的巨详细了，深度干货啊，没啥要补充的了http://www.cnblogs.com/ityouknow/p/5610232.html 重点注意： 名词的区别：新生代、老年代、永久代 （都是代表不同的内存空间） 命名也可以叫：堆区、栈区、方法区构成JA">
+<meta property="og:image" content="https://github.com/img/jvm/jvm1.png">
+<meta property="og:image" content="https://github.com/img/jvm/jvmSizeConfig.png">
+<meta property="og:image" content="https://github.com/img/jvm/lifeCircle.png">
+<meta property="og:image" content="https://github.com/img/jvm/calssloader.png">
+<meta property="og:updated_time" content="2017-11-08T04:10:16.263Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JVM内存结构、类生命周期(第一篇)">
+<meta name="twitter:description" content="参考大神的blog：http://www.cnblogs.com/ityouknow/p/5610232.html  java的内存结构（一）大佬都讲的巨详细了，深度干货啊，没啥要补充的了http://www.cnblogs.com/ityouknow/p/5610232.html 重点注意： 名词的区别：新生代、老年代、永久代 （都是代表不同的内存空间） 命名也可以叫：堆区、栈区、方法区构成JA">
+<meta name="twitter:image" content="https://github.com/img/jvm/jvm1.png">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/11/06/JVM内存结构、类生命周期(第一篇)/" title="JVM内存结构、类生命周期(第一篇)" itemprop="url">JVM内存结构、类生命周期(第一篇)</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2017-11-06T09:11:18.655Z" itemprop="datePublished"> Published 2017-11-06</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#java的内存结构（一）"><span class="toc-number">1.</span> <span class="toc-text">java的内存结构（一）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#重点注意："><span class="toc-number">1.1.</span> <span class="toc-text">重点注意：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#栈区"><span class="toc-number">1.2.</span> <span class="toc-text">栈区</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方法区（非堆区、永久代"><span class="toc-number">1.3.</span> <span class="toc-text">方法区（非堆区、永久代)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#类的生命周期（二）"><span class="toc-number">2.</span> <span class="toc-text">类的生命周期（二）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#概要"><span class="toc-number">2.1.</span> <span class="toc-text">概要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#额外补充相关的知识"><span class="toc-number">2.2.</span> <span class="toc-text">额外补充相关的知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#static的特点"><span class="toc-number">2.2.1.</span> <span class="toc-text">static的特点</span></a></li></ol></li></ol></li></ol>
+		
+		</div>
+		
+		<p>参考大神的blog：<br><a href="http://www.cnblogs.com/ityouknow/p/5610232.html" target="_blank" rel="external">http://www.cnblogs.com/ityouknow/p/5610232.html</a> </p>
+<h1 id="java的内存结构（一）"><a href="#java的内存结构（一）" class="headerlink" title="java的内存结构（一）"></a>java的内存结构（一）</h1><p>大佬都讲的巨详细了，深度干货啊，没啥要补充的了<br><a href="http://www.cnblogs.com/ityouknow/p/5610232.html" target="_blank" rel="external">http://www.cnblogs.com/ityouknow/p/5610232.html</a><br><img src="/img/jvm/jvm1.png" alt="java内存分解图"><br><img src="/img/jvm/jvmSizeConfig.png" alt="java参数设置图"></p>
+<h2 id="重点注意："><a href="#重点注意：" class="headerlink" title="重点注意："></a>重点注意：</h2><ul>
+<li>名词的区别：新生代、老年代、永久代 （都是代表不同的内存空间）</li>
+<li>命名也可以叫：堆区、栈区、方法区构成JAVA内存空间</li>
+<li>栈区由多个线程构成（不共享的），每个线程栈：java栈、本地方法栈和程序员计数器</li>
+<li>本地方法区就是 java中的 native方法，有可能是底层用c实现的，比如数组的一些操作</li>
+<li>老年代空间大小=堆空间大小-年轻代大空间大小</li>
+</ul>
+<h2 id="栈区"><a href="#栈区" class="headerlink" title="栈区"></a>栈区</h2><ul>
+<li>由多个线程栈组成，不共享。</li>
+<li>每个线程：JVM栈（普通java方法）、计数器、本地栈构成（比如native开头的方法）</li>
+<li>程序计数器：CPU 多线程切换的时候，用计数器记录该方法执行到第几行了，只记录java方法，不记录native方法</li>
+<li>JVM栈 执行的普通方法，包括 方法的局部变量、操作栈、动态链接、方法出口等等信息，方法调用超过1000，会Stack OverflowError</li>
+</ul>
+<h2 id="方法区（非堆区、永久代"><a href="#方法区（非堆区、永久代" class="headerlink" title="方法区（非堆区、永久代)"></a>方法区（非堆区、永久代)</h2><ul>
+<li>存储类信息、常量、静态变量（静态方法和静态成员变量)、即时编译器编译后的代码等</li>
+<li>多线程共享</li>
+<li>也需要GC回收，主要是常量池的维护和类型的卸载</li>
+<li>JDK1.8把方法区移到本地内存了，同时支持metaspace做设置大小，不设置就自动策略增长</li>
+</ul>
+<h1 id="类的生命周期（二）"><a href="#类的生命周期（二）" class="headerlink" title="类的生命周期（二）"></a>类的生命周期（二）</h1><p>主要参考大佬的博客了<br><a href="http://www.cnblogs.com/ITtangtang/p/3978102.html" target="_blank" rel="external">http://www.cnblogs.com/ITtangtang/p/3978102.html</a></p>
+<p>一定要参考这个大神的一起看才看的懂，这个帖子里面有例子，适合菜鸟理解<br><a href="http://www.cnblogs.com/chy2055/p/5124520.html" target="_blank" rel="external">http://www.cnblogs.com/chy2055/p/5124520.html</a></p>
+<h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p><img src="/img/jvm/lifeCircle.png" alt="经典的类生命周期"><br>　1. 加载：查找并加载类的二进制数据 </p>
+<p>　2. 连接 </p>
+<pre><code>　　　　–验证：确保被加载的类的正确性 
+
+　　　　–准备：为类的静态变量分配内存，并将其初始化为默认值 
+
+　　　　–解析：把类中的符号引用转换为直接引用 
+</code></pre><p>　3. 初始化：为类的静态变量赋予正确的初始值</p>
+<p>A. 类的加载、静态变量和函数的加载和赋值、常量的加载和赋值、实例化对象和普通变量的加载 的区别</p>
+<ul>
+<li>类的结构加载发生在加载期</li>
+<li>静态变量赋值默认值和静态函数的加载发送在准备期</li>
+<li>常量的加载和赋值真实值发生在准备期</li>
+<li>初始化期间执行 静态成员的真实赋值，以及执行静态代码块</li>
+<li>实例化对象（比如new）的时候，才去堆中生成非静态变量和方法</li>
+</ul>
+<p>B. 可控的时期是类加载时期，可以通过new ，或者子类调用等等很多方式主动的去加载特定的类，而且类的加载时一次加载，缓存策略，如果未被GC回收（永久代）就一直存在。</p>
+<p>C. JVM类加载机制：全盘负责，父类委托，缓存机制<br><img src="/img/jvm/calssloader.png" alt="类加载器"></p>
+<p>D. 只有主动调用的时候才会触发初始化过程</p>
+<h2 id="额外补充相关的知识"><a href="#额外补充相关的知识" class="headerlink" title="额外补充相关的知识"></a>额外补充相关的知识</h2><h3 id="static的特点"><a href="#static的特点" class="headerlink" title="static的特点"></a>static的特点</h3><ol>
+<li>和类的信息加载而一起加载，不依赖于对象的存在，也优先于对象实例化（构造函数）加载</li>
+<li>保存在方法区，线程共享。</li>
+<li>线程共享所以节省内存开销，比如一些常量对象，另外常量方法不需要实例化对象再调用他，可以直接类名.方法调用，这样不仅简约代码，而且避免实例化对象的内存开销</li>
+<li>线程共享所以可以统一维护多个相同类型的对象属性值。</li>
+<li>常用形式: 静态方法，静态成员变量，静态代码块 </li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/11/06/JVM内存结构、类生命周期(第一篇)/" data-title="JVM内存结构、类生命周期(第一篇) | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2017/11/06/JVM垃圾回收（第二篇）/" title="JVM垃圾回收（第二篇）">
+  <strong>上一篇：</strong><br/>
+  <span>
+  JVM垃圾回收（第二篇）</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/11/02/JVM总篇/"  title="JVM总篇">
+ <strong>下一篇：</strong><br/> 
+ <span>JVM总篇
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/11/06/JVM内存结构、类生命周期(第一篇)/" data-title="JVM内存结构、类生命周期(第一篇)" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/11/06/JVM内存结构、类生命周期(第一篇)/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#java的内存结构（一）"><span class="toc-number">1.</span> <span class="toc-text">java的内存结构（一）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#重点注意："><span class="toc-number">1.1.</span> <span class="toc-text">重点注意：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#栈区"><span class="toc-number">1.2.</span> <span class="toc-text">栈区</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方法区（非堆区、永久代"><span class="toc-number">1.3.</span> <span class="toc-text">方法区（非堆区、永久代)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#类的生命周期（二）"><span class="toc-number">2.</span> <span class="toc-text">类的生命周期（二）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#概要"><span class="toc-number">2.1.</span> <span class="toc-text">概要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#额外补充相关的知识"><span class="toc-number">2.2.</span> <span class="toc-text">额外补充相关的知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#static的特点"><span class="toc-number">2.2.1.</span> <span class="toc-text">static的特点</span></a></li></ol></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

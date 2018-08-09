@@ -1,0 +1,490 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Shell实战 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="常用小技能获取tomcat pid第一个查tomcat， 第二个管道 -v是排除 grep的结果，第三个就是按照空格切割，取第二个内容 （pid） ps -ef | grep tomcat | grep -v grep | awk &amp;apos;&amp;#123;print $2&amp;#125;&amp;apos; 判断某文件夹 或者某文件是否存在https://www.cnblogs.com/emanlee/p/3">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Shell实战">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/11/23/Shell实战/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="常用小技能获取tomcat pid第一个查tomcat， 第二个管道 -v是排除 grep的结果，第三个就是按照空格切割，取第二个内容 （pid） ps -ef | grep tomcat | grep -v grep | awk &amp;apos;&amp;#123;print $2&amp;#125;&amp;apos; 判断某文件夹 或者某文件是否存在https://www.cnblogs.com/emanlee/p/3">
+<meta property="og:updated_time" content="2018-01-31T08:27:57.747Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Shell实战">
+<meta name="twitter:description" content="常用小技能获取tomcat pid第一个查tomcat， 第二个管道 -v是排除 grep的结果，第三个就是按照空格切割，取第二个内容 （pid） ps -ef | grep tomcat | grep -v grep | awk &amp;apos;&amp;#123;print $2&amp;#125;&amp;apos; 判断某文件夹 或者某文件是否存在https://www.cnblogs.com/emanlee/p/3">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/11/23/Shell实战/" title="Shell实战" itemprop="url">Shell实战</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2017-11-23T09:30:13.850Z" itemprop="datePublished"> 发表于 2017-11-23</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#常用小技能"><span class="toc-number">1.</span> <span class="toc-text">常用小技能</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#获取tomcat-pid"><span class="toc-number">1.1.</span> <span class="toc-text">获取tomcat pid</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#判断某文件夹-或者某文件是否存在"><span class="toc-number">1.2.</span> <span class="toc-text">判断某文件夹 或者某文件是否存在</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#数据邮件发出"><span class="toc-number">2.</span> <span class="toc-text">数据邮件发出</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#生成特定命名的excel文件"><span class="toc-number">2.1.</span> <span class="toc-text">生成特定命名的excel文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#发送邮件"><span class="toc-number">2.2.</span> <span class="toc-text">发送邮件</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#定时任务的坑"><span class="toc-number">3.</span> <span class="toc-text">定时任务的坑</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#数据库定时任务备份实战"><span class="toc-number">4.</span> <span class="toc-text">数据库定时任务备份实战</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#定时监控CPU、内存性能输出到按照日期戳的日志文本中"><span class="toc-number">5.</span> <span class="toc-text">定时监控CPU、内存性能输出到按照日期戳的日志文本中</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#磁盘分区和分析"><span class="toc-number">6.</span> <span class="toc-text">磁盘分区和分析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#df-h-查看各个分区的使用情况。"><span class="toc-number">6.1.</span> <span class="toc-text">df -h  查看各个分区的使用情况。</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#fdisk-l"><span class="toc-number">6.2.</span> <span class="toc-text">fdisk -l</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mailx-定期发送网站运营数据"><span class="toc-number">7.</span> <span class="toc-text">mailx 定期发送网站运营数据</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#rmtxt-sh（清空之前的查询结果）"><span class="toc-number">7.1.</span> <span class="toc-text">rmtxt.sh（清空之前的查询结果）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#statistics-sh"><span class="toc-number">7.2.</span> <span class="toc-text">statistics.sh</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="常用小技能"><a href="#常用小技能" class="headerlink" title="常用小技能"></a>常用小技能</h1><h2 id="获取tomcat-pid"><a href="#获取tomcat-pid" class="headerlink" title="获取tomcat pid"></a>获取tomcat pid</h2><p>第一个查tomcat， 第二个管道 -v是排除 grep的结果，第三个就是按照空格切割，取第二个内容 （pid）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">ps -ef | grep tomcat | grep -v grep | awk &apos;&#123;print $2&#125;&apos;</div></pre></td></tr></table></figure>
+<h2 id="判断某文件夹-或者某文件是否存在"><a href="#判断某文件夹-或者某文件是否存在" class="headerlink" title="判断某文件夹 或者某文件是否存在"></a>判断某文件夹 或者某文件是否存在</h2><p><a href="https://www.cnblogs.com/emanlee/p/3583769.html" target="_blank" rel="external">https://www.cnblogs.com/emanlee/p/3583769.html</a><br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">target_dir=&quot;/home/huang/test1840/test_child&quot;</div><div class="line">if [ ! -d $target_dir ];then</div><div class="line">   mkdir -p $target_dir</div><div class="line">fi</div><div class="line"></div><div class="line">file_name=/home/huang/test1234.txt</div><div class="line">if [ ! -f $file_name ];then</div><div class="line">  touch $file_name</div><div class="line">fi</div></pre></td></tr></table></figure></p>
+<h1 id="数据邮件发出"><a href="#数据邮件发出" class="headerlink" title="数据邮件发出"></a>数据邮件发出</h1><p>功能描述:<br>1）定期查询数据特定文件，执行特定sql<br>2）生成excel文件，文件名后缀跟时间戳<br>3）邮件发送出来</p>
+<p>功能点：</p>
+<ul>
+<li>定时任务</li>
+<li>邮件功能</li>
+<li>按日期生产excel文件</li>
+<li>数据库查询结果导出</li>
+</ul>
+<h2 id="生成特定命名的excel文件"><a href="#生成特定命名的excel文件" class="headerlink" title="生成特定命名的excel文件"></a>生成特定命名的excel文件</h2><p>user<em>`date “+%Y-%m-%d</em>%H%M”<code>.xls
+生成的xls文件保存在对应路径下面
+/usr/huang/export_files/user_</code>date “+%Y-%m-%d_%H%M”`.xls</p>
+<p>mysql -uroot -p123456 -P3306 –default-character-set=gbk eedu -e”select u.mobile,u.name,h.name hospital,d.name department,h.ucmid,u.create_date from user u left join hospital h on u.hospital_id = h.id left join department d on u.department_id = d.id;” &gt; /usr/huang/export<em>files/user</em><code>date &quot;+%Y-%m-%d_%H%M&quot;</code>.xls</p>
+<h2 id="发送邮件"><a href="#发送邮件" class="headerlink" title="发送邮件"></a>发送邮件</h2><p>mail -s test_info -A /usr/huang/export_files/${file_name}  570247284@qq.com</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">#/bin/bash</div><div class="line"></div><div class="line"># send user information by mail</div><div class="line"></div><div class="line">file_name=user_`date &quot;+%Y-%m-%d_%H%M&quot;`.xls</div><div class="line"></div><div class="line">mysql -uroot -p123456 -P3306 --default-character-set=gbk eedu -e&quot;select u.mobile,u.name,h.name hospital,d.name department,h.ucmid,u.create_date from user u left join hospital h on u.hospital_id = h.id left join department d on u.department_id = d.id;&quot; &gt; /usr/huang/export_files/$file_name</div><div class="line"></div><div class="line">mail -s test_info -A /usr/huang/export_files/$&#123;file_name&#125;  570247284@qq.com &lt;/usr/huang/export_files/mail.txt</div><div class="line"></div><div class="line">echo &quot;it&apos;s done&quot;</div></pre></td></tr></table></figure>
+<p>哈哈哈，试验成功了，每2分钟发送一份user表中的内容到我的QQ邮箱当中<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@huang-virtual-machine:/usr/huang/export_files# crontab -l</div><div class="line">*/2 * * * * /usr/huang/export_files/sendMail.sh</div></pre></td></tr></table></figure></p>
+<h1 id="定时任务的坑"><a href="#定时任务的坑" class="headerlink" title="定时任务的坑"></a>定时任务的坑</h1><p>1）    crontab 里面的路径一定要用 绝对路径，比如 /usr/bin/mysql 而不是mysql<br>2）    crontab 里面引用的变量一定要 export<br>3）    输出文件比如日志文件 一定要有相应的读写权限啊  777<br>4） 定时任务执行的脚本也要有777权限啊，除非是用root用户创建的定时任务脚本<br>5） 定时任务要执行sql，且sql里面有中文的话一定要设置字符集 否则会乱码报错的，但是直接执行则不会</p>
+<p>字符集bug演示,如果不设置字符集，sql中有中文就报错<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">#!/bin/bash</div><div class="line">export LANG=en_US.UTF-8</div><div class="line">/usr/bin/mysql -uroot -pdh@ge eedu &lt;/root/eedu-shell/insert.sql &gt;&gt;/root/eedu-shell/sql.log 2&gt;&amp;1</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">#!/bin/bash</div><div class="line">time=mytime_`date +%Y-%m-%d_%H%M`</div><div class="line"></div><div class="line"># test.txt 必须是777权限，而且这个是绝对路径啊</div><div class="line">echo $time &gt;&gt; /home/huang/test/test.txt</div></pre></td></tr></table></figure>
+<h1 id="数据库定时任务备份实战"><a href="#数据库定时任务备份实战" class="headerlink" title="数据库定时任务备份实战"></a>数据库定时任务备份实战</h1><p>功能描述： </p>
+<ul>
+<li>定时任务 每小时定时备份一份数据库脚本文件 </li>
+<li>并且压缩成tar文件</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">#!/bin/bash</div><div class="line"></div><div class="line">#backup eedu database test</div><div class="line"></div><div class="line">file_name=eedubackup_`date &quot;+%Y-%m-%d_%H%M&quot;`.sql</div><div class="line">base_dir=/home/huang/eedubackup</div><div class="line"></div><div class="line">if [ ! -d $base_dir ];then</div><div class="line">   mkdir -p $base_dir</div><div class="line">fi</div><div class="line">mysqldump -u root -p123456 eedu &gt; $&#123;base_dir&#125;/$file_name</div><div class="line"></div><div class="line">cd $base_dir</div><div class="line">tar -zcvpf $file_name.tar.gz $file_name</div><div class="line">rm -f $file_name</div></pre></td></tr></table></figure>
+<h1 id="定时监控CPU、内存性能输出到按照日期戳的日志文本中"><a href="#定时监控CPU、内存性能输出到按照日期戳的日志文本中" class="headerlink" title="定时监控CPU、内存性能输出到按照日期戳的日志文本中"></a>定时监控CPU、内存性能输出到按照日期戳的日志文本中</h1><p>Centos 6.2 上 利用 sar 命令，利用定时任务，每分钟刷一次，每次取10秒内的平均 cpu 和内存多大使用情况，并追加输入到 按日期标注的日志文本当中。<br>相比top 命令，这个对系统消耗的资源更低，每次top输出的cpu use都75%，不知道什么原因。</p>
+<p><em>/1 </em> <em> </em> *  /usr/developer/back/static.sh<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">#!/bin/bash</div><div class="line"># 每监控一次,每次监控10秒内的cpu的使用情况，并且按照日期的格式追加到文本log日志当中。</div><div class="line">sar -u 10 1 | sed -n &apos;4p&apos; &gt;&gt;/usr/developer/backup_huang/cpu_log_`date +&quot;%Y-%m-%d&quot;`.txt</div><div class="line"></div><div class="line">sar -r 10 1 | sed -n &apos;4p&apos; &gt;&gt;/usr/developer/backup_huang/memory_log_`date +&quot;%Y-%m-%d&quot;`.txt</div></pre></td></tr></table></figure></p>
+<p>输出结果<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">cpu</div><div class="line">16:06:01        CPU     %user     %nice   %system   %iowait    %steal     %idle</div><div class="line">16:07:11        all      1.10      0.00      0.75      0.02      0.00     98.13</div><div class="line"></div><div class="line">memory</div><div class="line">16:06:11    kbmemfree kbmemused  %memused kbbuffers  kbcached  kbcommit   %commit</div><div class="line">16:06:21       335500  15999188     97.95    538060   8058984   8581844     41.94</div><div class="line">Average:       335500  15999188     97.95    538060   8058984   8581844     41.94</div><div class="line">16:07:21       337064  15997624     97.94    538064   8059824   8581036     41.93</div><div class="line">16:08:21       335028  15999660     97.95    538064   8061680   8580932     41.93</div><div class="line">16:09:21       334424  16000264     97.95    538064   8062700   8580036     41.93</div></pre></td></tr></table></figure></p>
+<h1 id="磁盘分区和分析"><a href="#磁盘分区和分析" class="headerlink" title="磁盘分区和分析"></a>磁盘分区和分析</h1><p> 1.文件路径只有挂在到了对应的磁盘下面，并且有空间才能使用空间。<br> 比如500G硬盘的服务器，只分配了100G 到sda 硬盘上，而根目录挂在在 sda 硬盘上，则最多支持100G的存储。<br> 扩展存储就需要额外分区，类似windows安装的分区，C区100G， D区100G，E区300G，则D区只能最多存放100G的文件</p>
+<p> 但是linux的磁盘结构可以选择 LVM，逻辑分区，就可以解决这个问题， 300G的空间为LVM，则可以分组存放东西，而且 LVM_root  和LVM_home调整大小的时候不需要格式化，非常容易扩展。</p>
+<h2 id="df-h-查看各个分区的使用情况。"><a href="#df-h-查看各个分区的使用情况。" class="headerlink" title="df -h  查看各个分区的使用情况。"></a>df -h  查看各个分区的使用情况。</h2><p>下面看到根目录下使用率32%，其他分区使用率更低，算是安全健康的<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@localhost /]# df -h</div><div class="line">Filesystem				Size  Used Avail Use% Mounted on</div><div class="line">/dev/mapper/VolGroup-lv_root		 247G   74G  161G  32% /</div><div class="line">tmpfs					 7.8G   88K  7.8G   1% /dev/shm</div><div class="line">/dev/sda1				 485M   33M  428M   8% /boot</div><div class="line">/dev/mapper/VolGroup-lv_home		 45G  1.3G   42G   3% /home</div></pre></td></tr></table></figure></p>
+<h2 id="fdisk-l"><a href="#fdisk-l" class="headerlink" title="fdisk -l"></a>fdisk -l</h2><p>查看磁盘分配情况： 下面可以看出来 ，一共有2个硬盘， sda硬盘（107.4G） 和 sdb硬盘（429.5G）<br>其中sda硬盘分为2个区，sda1区，为 boot区，分配512M来负责程序启动，sda2区104G，用作LVM，供逻辑分区使用。 sda磁盘一共13054个磁柱，已经全部被使用完了。所以sda磁盘不可再分配了。<br>sdb磁盘 429.5g，其中分配了209G出来，作为LVM，磁盘 还剩下52216-26108=26108个磁柱，也就是209G的空余空间待分配。</p>
+<p>所以LVM的总量为 104G+209G=313G的逻辑空间，然后基于这个空间划分为3个lv组： VolGroup-lv_root: 268.4 GB,VolGroup-lv_swap: 4227 MB,VolGroup-lv_home: 48.9 GB,<br>root 挂在根节点，home挂在 home路径，swap挂在交换区。<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@localhost /]# fdisk -l</div><div class="line"></div><div class="line">Disk /dev/sda: 107.4 GB, 107374182400 bytes</div><div class="line">255 heads, 63 sectors/track, 13054 cylinders</div><div class="line">Units = cylinders of 16065 * 512 = 8225280 bytes</div><div class="line">Sector size (logical/physical): 512 bytes / 512 bytes</div><div class="line">I/O size (minimum/optimal): 512 bytes / 512 bytes</div><div class="line">Disk identifier: 0x00013367</div><div class="line"></div><div class="line">   Device Boot      Start         End      Blocks   Id  System</div><div class="line">/dev/sda1   *           1          64      512000   83  Linux</div><div class="line">Partition 1 does not end on cylinder boundary.</div><div class="line">/dev/sda2              64       13055   104344576   8e  Linux LVM</div><div class="line"></div><div class="line">Disk /dev/sdb: 429.5 GB, 429496729600 bytes</div><div class="line">255 heads, 63 sectors/track, 52216 cylinders</div><div class="line">Units = cylinders of 16065 * 512 = 8225280 bytes</div><div class="line">Sector size (logical/physical): 512 bytes / 512 bytes</div><div class="line">I/O size (minimum/optimal): 512 bytes / 512 bytes</div><div class="line">Disk identifier: 0x0bfa5bdc</div><div class="line"></div><div class="line">   Device Boot      Start         End      Blocks   Id  System</div><div class="line">/dev/sdb1               1       26109   209720511   8e  Linux LVM</div><div class="line"></div><div class="line">Disk /dev/mapper/VolGroup-lv_root: 268.4 GB, 268439650304 bytes</div><div class="line">255 heads, 63 sectors/track, 32635 cylinders</div><div class="line">Units = cylinders of 16065 * 512 = 8225280 bytes</div><div class="line">Sector size (logical/physical): 512 bytes / 512 bytes</div><div class="line">I/O size (minimum/optimal): 512 bytes / 512 bytes</div><div class="line">Disk identifier: 0x00000000</div><div class="line"></div><div class="line">Disk /dev/mapper/VolGroup-lv_root doesn&apos;t contain a valid partition table</div><div class="line"></div><div class="line">Disk /dev/mapper/VolGroup-lv_swap: 4227 MB, 4227858432 bytes</div><div class="line">255 heads, 63 sectors/track, 514 cylinders</div><div class="line">Units = cylinders of 16065 * 512 = 8225280 bytes</div><div class="line">Sector size (logical/physical): 512 bytes / 512 bytes</div><div class="line">I/O size (minimum/optimal): 512 bytes / 512 bytes</div><div class="line">Disk identifier: 0x00000000</div><div class="line"></div><div class="line">Disk /dev/mapper/VolGroup-lv_swap doesn&apos;t contain a valid partition table</div><div class="line"></div><div class="line">Disk /dev/mapper/VolGroup-lv_home: 48.9 GB, 48930750464 bytes</div><div class="line">255 heads, 63 sectors/track, 5948 cylinders</div><div class="line">Units = cylinders of 16065 * 512 = 8225280 bytes</div><div class="line">Sector size (logical/physical): 512 bytes / 512 bytes</div><div class="line">I/O size (minimum/optimal): 512 bytes / 512 bytes</div><div class="line">Disk identifier: 0x00000000</div><div class="line"></div><div class="line">Disk /dev/mapper/VolGroup-lv_home doesn&apos;t contain a valid partition table</div></pre></td></tr></table></figure></p>
+<h1 id="mailx-定期发送网站运营数据"><a href="#mailx-定期发送网站运营数据" class="headerlink" title="mailx 定期发送网站运营数据"></a>mailx 定期发送网站运营数据</h1><p>需求：每天、每周一、每月1号发送相关的网站运营数据。</p>
+<p>59 2 <em> </em> <em> /root/eedu-shell/rmtxt.sh<br>0 3 </em> <em> </em> /root/eedu-shell/statistics.sh /root/eedu-shell/query.sql /root/eedu-shell/insert.sql<br>1 3 <em> </em> 1 /root/eedu-shell/statistics.sh /root/eedu-shell/query-week.sql<br>2 3 1 <em> </em> /root/eedu-shell/statistics.sh /root/eedu-shell/query-month.sql<br>3 3 <em> </em> * /root/eedu-shell/sendmail.sh</p>
+<p>第一个（清空之前的查询结果）：每天2:59 执行<br>第二个（每天统计）：每天3点执行<br>第三个（每周统计）：每周一的晚上3:01分执行<br>第四个（每月统计）：每个月的1号 晚上3:02分执行<br>第五个（每天邮件发送查询结果）：每天3：03分执行</p>
+<h2 id="rmtxt-sh（清空之前的查询结果）"><a href="#rmtxt-sh（清空之前的查询结果）" class="headerlink" title="rmtxt.sh（清空之前的查询结果）"></a>rmtxt.sh（清空之前的查询结果）</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">#!/bin/bash</div><div class="line">txtDir=/root/eedu-shell/txt</div><div class="line">rm -f $txtDir/*.txt</div></pre></td></tr></table></figure>
+<h2 id="statistics-sh"><a href="#statistics-sh" class="headerlink" title="statistics.sh"></a>statistics.sh</h2><p>/root/eedu-shell/statistics.sh /root/eedu-shell/query.sql /root/eedu-shell/insert.sql</p>
+<ul>
+<li>该脚本接收多个sql脚本参数，for循环遍历sql文件路径参数，命名为变量 sqlFile、、</li>
+<li>sqlFile作为路径输入到 while循环当中，赋值为变量sql，里面由很多行sql，然后挨个执行</li>
+<li>输出执行结果追加到sqlResultPath 路径当中</li>
+</ul>
+<pre><code>#!/bin/bash
+export LANG=en_US.UTF-8
+username=root
+password=dh@ge
+sqlResultPath=/root/eedu-shell/txt/queryResult.txt
+
+# $* 表示所有的参数 ，遍历参数
+for sqlFile in $*
+do
+#while read 一次性获取 参数当中的所有sql 赋值到sql当中，然后遍历每一行的sql语句，引入的参数就是  $sqlFile
+    while read sql
+    do
+        /usr/bin/mysql -u$username -p$password -e &quot;$sql&quot; eedu &gt;&gt; $sqlResultPath
+    done &lt; $sqlFile
+done
+</code></pre>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/11/23/Shell实战/" data-title="Shell实战 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2017/12/02/缓存、消息队列总篇/" title="缓存、分布式总篇">
+  <strong>上一篇：</strong><br/>
+  <span>
+  缓存、分布式总篇</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/11/22/Shell基础/"  title="Shell基础">
+ <strong>下一篇：</strong><br/> 
+ <span>Shell基础
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/11/23/Shell实战/" data-title="Shell实战" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/11/23/Shell实战/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#常用小技能"><span class="toc-number">1.</span> <span class="toc-text">常用小技能</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#获取tomcat-pid"><span class="toc-number">1.1.</span> <span class="toc-text">获取tomcat pid</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#判断某文件夹-或者某文件是否存在"><span class="toc-number">1.2.</span> <span class="toc-text">判断某文件夹 或者某文件是否存在</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#数据邮件发出"><span class="toc-number">2.</span> <span class="toc-text">数据邮件发出</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#生成特定命名的excel文件"><span class="toc-number">2.1.</span> <span class="toc-text">生成特定命名的excel文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#发送邮件"><span class="toc-number">2.2.</span> <span class="toc-text">发送邮件</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#定时任务的坑"><span class="toc-number">3.</span> <span class="toc-text">定时任务的坑</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#数据库定时任务备份实战"><span class="toc-number">4.</span> <span class="toc-text">数据库定时任务备份实战</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#定时监控CPU、内存性能输出到按照日期戳的日志文本中"><span class="toc-number">5.</span> <span class="toc-text">定时监控CPU、内存性能输出到按照日期戳的日志文本中</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#磁盘分区和分析"><span class="toc-number">6.</span> <span class="toc-text">磁盘分区和分析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#df-h-查看各个分区的使用情况。"><span class="toc-number">6.1.</span> <span class="toc-text">df -h  查看各个分区的使用情况。</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#fdisk-l"><span class="toc-number">6.2.</span> <span class="toc-text">fdisk -l</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mailx-定期发送网站运营数据"><span class="toc-number">7.</span> <span class="toc-text">mailx 定期发送网站运营数据</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#rmtxt-sh（清空之前的查询结果）"><span class="toc-number">7.1.</span> <span class="toc-text">rmtxt.sh（清空之前的查询结果）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#statistics-sh"><span class="toc-number">7.2.</span> <span class="toc-text">statistics.sh</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

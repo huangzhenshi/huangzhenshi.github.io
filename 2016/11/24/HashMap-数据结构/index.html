@@ -1,0 +1,482 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>HashMap 数据结构 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="解决的问题实现常数级别的查找和插入依赖：  好的散列算法使元素分布均匀 loadfactor不是特别大使结构更像一个数组 对于计算机来说友好的（开销小）的散列运算方法（因为所有的查找都要先进行散列运算)结构特点 结合了数组结构（查询快）和链表结构（插入和删除快1）的特点。 基于拉链法的结构（相对于线性探测法来说，更高效的支持删除元素，以及更好的利用内存空间，因为拉链法可以使用非连续的内存空间，同时">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HashMap 数据结构">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2016/11/24/HashMap-数据结构/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="解决的问题实现常数级别的查找和插入依赖：  好的散列算法使元素分布均匀 loadfactor不是特别大使结构更像一个数组 对于计算机来说友好的（开销小）的散列运算方法（因为所有的查找都要先进行散列运算)结构特点 结合了数组结构（查询快）和链表结构（插入和删除快1）的特点。 基于拉链法的结构（相对于线性探测法来说，更高效的支持删除元素，以及更好的利用内存空间，因为拉链法可以使用非连续的内存空间，同时">
+<meta property="og:image" content="https://github.com/img/1.png">
+<meta property="og:image" content="https://github.com/img/2.png">
+<meta property="og:image" content="https://github.com/img/3.png">
+<meta property="og:updated_time" content="2017-11-01T09:28:14.510Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HashMap 数据结构">
+<meta name="twitter:description" content="解决的问题实现常数级别的查找和插入依赖：  好的散列算法使元素分布均匀 loadfactor不是特别大使结构更像一个数组 对于计算机来说友好的（开销小）的散列运算方法（因为所有的查找都要先进行散列运算)结构特点 结合了数组结构（查询快）和链表结构（插入和删除快1）的特点。 基于拉链法的结构（相对于线性探测法来说，更高效的支持删除元素，以及更好的利用内存空间，因为拉链法可以使用非连续的内存空间，同时">
+<meta name="twitter:image" content="https://github.com/img/1.png">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/11/24/HashMap-数据结构/" title="HashMap 数据结构" itemprop="url">HashMap 数据结构</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2016-11-24T10:14:43.000Z" itemprop="datePublished"> Published 2016-11-24</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#解决的问题"><span class="toc-number">1.</span> <span class="toc-text">解决的问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#结构特点"><span class="toc-number">2.</span> <span class="toc-text">结构特点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#使用的注意事项"><span class="toc-number">3.</span> <span class="toc-text">使用的注意事项</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#数组的长度"><span class="toc-number">4.</span> <span class="toc-text">数组的长度</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#amp-运算"><span class="toc-number">5.</span> <span class="toc-text">&运算</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#resize的时机"><span class="toc-number">6.</span> <span class="toc-text">resize的时机</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#loadFactor的设置"><span class="toc-number">7.</span> <span class="toc-text">loadFactor的设置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#初始化hashmap-length的设置"><span class="toc-number">8.</span> <span class="toc-text">初始化hashmap length的设置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#数据的put（插入一个元素）"><span class="toc-number">9.</span> <span class="toc-text">数据的put（插入一个元素）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#hashmap的重构-resize"><span class="toc-number">10.</span> <span class="toc-text">hashmap的重构 resize()</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#遍历"><span class="toc-number">11.</span> <span class="toc-text">遍历</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="解决的问题"><a href="#解决的问题" class="headerlink" title="解决的问题"></a>解决的问题</h1><p>实现常数级别的查找和插入<br>依赖：</p>
+<ul>
+<li>好的散列算法使元素分布均匀</li>
+<li>loadfactor不是特别大使结构更像一个数组</li>
+<li>对于计算机来说友好的（开销小）的散列运算方法（因为所有的查找都要先进行散列运算)<h1 id="结构特点"><a href="#结构特点" class="headerlink" title="结构特点"></a>结构特点</h1><img src="/img/1.png" alt="hashmap数据结构"></li>
+<li>结合了数组结构（查询快）和链表结构（插入和删除快1）的特点。</li>
+<li>基于拉链法的结构（相对于线性探测法来说，更高效的支持删除元素，以及更好的利用内存空间，因为拉链法可以使用非连续的内存空间，同时查找和插入的性能差不多，都是常数级别的查找和插入）</li>
+<li>具有动态的扩展性，插入的元素到增多的时候可以resize()，节省内存空间的同时又能随着元素数量做到动态调整</li>
+<li>线性不安全，需要线性安全的话需要用 Hashtable</li>
+</ul>
+<p>第一层是数组  Entry(K,V) 的一个数组  table，根据key的hashcode值，对当前数组长度-1进行 &amp;运算，得出该键值对 在数组中的存储位置。然后再判断 数组的该位置是否有值，如果该数组位置没有值（null），那么这个键值对的位置就是入住。如果该数组位置有值，那么老主人 就作为新主人的一部分，新进来的键值对占据该位置，  Entry  current.next= oldEntry. 也就形成了链表的结构，上线找下线，下线下面可能还有下线也有可能没有</p>
+<h1 id="使用的注意事项"><a href="#使用的注意事项" class="headerlink" title="使用的注意事项"></a>使用的注意事项</h1><p>1）合理的设置loadfactor的大小，设置的越小，占用的连续内存越多，如果初始化size设置的不对的话，会频繁的resize，从而影响插入的性能，<br>但是大幅提升查询和不resize（）插入的效率，因为冲突的概率更低</p>
+<p>2）合理设置initSize的大小，initSize=实际Size/LoadFactor，这样可以避免resize的发生。</p>
+<h1 id="数组的长度"><a href="#数组的长度" class="headerlink" title="数组的长度"></a>数组的长度</h1><p>初始化的时候是16（ 2的4次方），每次扩容都是 2的N次方</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">void addEntry(int <span class="built_in">hash</span>, K key, V value, int bucketIndex) &#123;</div><div class="line">        <span class="keyword">if</span> ((size &gt;= threshold) &amp;&amp; (null != table[bucketIndex])) &#123;</div><div class="line">            resize(2 * table.length);</div><div class="line">            <span class="built_in">hash</span> = (null != key) ? <span class="built_in">hash</span>(key) : 0;</div><div class="line">            bucketIndex = indexFor(<span class="built_in">hash</span>, table.length);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        createEntry(<span class="built_in">hash</span>, key, value, bucketIndex);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>为什么取2的N次方，因为 在键值对插入的时候，会对index求hashcode值，然后将hashcode值和 数组长度-1 进行 &amp;运算（后面会重点讲 &amp;运算）</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">public V put(K key, V value) &#123;</div><div class="line">        <span class="keyword">if</span> (table == EMPTY_TABLE) &#123;</div><div class="line">            inflateTable(threshold);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> (key == null)</div><div class="line">            <span class="built_in">return</span> putForNullKey(value);</div><div class="line">        int <span class="built_in">hash</span> = <span class="built_in">hash</span>(key);</div><div class="line">        int i = indexFor(<span class="built_in">hash</span>, table.length);</div><div class="line">        <span class="keyword">for</span> (Entry&lt;K,V&gt; e = table[i]; e != null; e = e.next) &#123;</div><div class="line">            Object k;</div><div class="line">            <span class="keyword">if</span> (e.hash == <span class="built_in">hash</span> &amp;&amp; ((k = e.key) == key || key.equals(k))) &#123;</div><div class="line">                V oldValue = e.value;</div><div class="line">                e.value = value;</div><div class="line">                e.recordAccess(this);</div><div class="line">                <span class="built_in">return</span> oldValue;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        modCount++;</div><div class="line">        addEntry(<span class="built_in">hash</span>, key, value, i);</div><div class="line">        <span class="built_in">return</span> null;</div><div class="line">&#125;</div><div class="line"></div><div class="line">static int indexFor(int h, int length) &#123;</div><div class="line">        // assert Integer.bitCount(length) == 1 : <span class="string">"length must be a non-zero power of 2"</span>;</div><div class="line">        <span class="built_in">return</span> h &amp; (length-1);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h1 id="amp-运算"><a href="#amp-运算" class="headerlink" title="&amp;运算"></a>&amp;运算</h1><p>就是把前后2个值转换为 2进制，相同位置上都为1 则为1，其他的都为0</p>
+<p>例如左边图是 16长度数组，也就是  9&amp;15   8&amp;15 运算结果，一个1001(9 十进制) table[9]的位置， 一个1000（8 十进制）table[8]的位置</p>
+<p><img src="/img/2.png" alt="&amp;运算示例"></p>
+<p>如果不是2的N次方，那么总数-1 转换为2进制的时候，肯定有一个位置上为0</p>
+<p>例如如果数组长度为15，那么 N-1=14， 14转换为二进制就是 1110</p>
+<p>进行&amp;运算的时候，因为1110与任何数进行&amp;运算的结果都不可能是 <em>*</em>1，所以例如 0001 也就是 table[1]这个位置上始终都不可能有键值对可以插入进去，所以数组的长度只能是2的N次方。</p>
+<h1 id="resize的时机"><a href="#resize的时机" class="headerlink" title="resize的时机"></a>resize的时机</h1><ul>
+<li>当size达到 length的时候，必然触发</li>
+<li>size&gt;=0.75<em>length  和 table[index]！=null。也就是当size超过0.75</em>length的时候就有概率触发扩容，而且这种触发是随机的。</li>
+</ul>
+<h1 id="loadFactor的设置"><a href="#loadFactor的设置" class="headerlink" title="loadFactor的设置"></a>loadFactor的设置</h1><p>当然也可以根据实际的需求设置 loadFactor，来设置适合业务规则的 hashmap。<br>如果内存富余，那么建议把loadFactor设置的小一点，但是要注意 初始size的设置，如果不合适会导致频繁的 resize 严重影响插入的效率。<br>如果内存比较吃紧，就可以把loadFactor设置的大一些，但是loadFactor设置大的话，键值对以链表的形式存储的概率就提高，平均的查询时间变慢，但是对于插入而言，虽然没有直接的影响，但是loadFactor提高，<br>需要插入更多的数据才会触发 resize，这样某种程度上是提升了 插入的效率</p>
+<p>插入到某个有值的位置，挨个对比是否有 key值相同的对象</p>
+<p>2.4.1）如果有key值一样(hashcode值相同，而且key==oldKey|| key.equals(k)），则替换并返回老的key的value值</p>
+<p>2.4.2）如果没有key值一样的，那么该位置会被最后一个进来的Entry 占据，并且Entry的next属性，指向 之前第一个位置的Entry，也就是链表了，一个找一个</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">void addEntry(int <span class="built_in">hash</span>, K key, V value, int bucketIndex) &#123;</div><div class="line">        <span class="keyword">if</span> ((size &gt;= threshold) &amp;&amp; (null != table[bucketIndex])) &#123;</div><div class="line">            resize(2 * table.length);</div><div class="line">            <span class="built_in">hash</span> = (null != key) ? <span class="built_in">hash</span>(key) : 0;</div><div class="line">            bucketIndex = indexFor(<span class="built_in">hash</span>, table.length);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        createEntry(<span class="built_in">hash</span>, key, value, bucketIndex);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>初始化hashmap 2种 构造函数，</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><div class="line"> public HashMap(int initialCapacity, <span class="built_in">float</span> loadFactor) &#123;</div><div class="line">  public HashMap(int initialCapacity) &#123;</div><div class="line"></div><div class="line">/**</div><div class="line">     * Constructs an empty &lt;tt&gt;HashMap&lt;/tt&gt; with the specified initial</div><div class="line">     * capacity and load factor.</div><div class="line">     *</div><div class="line">     * @param  initialCapacity the initial capacity</div><div class="line">     * @param  loadFactor      the load factor</div><div class="line">     * @throws IllegalArgumentException <span class="keyword">if</span> the initial capacity is negative</div><div class="line">     *         or the load factor is nonpositive</div><div class="line">     */</div><div class="line">    public HashMap(int initialCapacity, <span class="built_in">float</span> loadFactor) &#123;</div><div class="line">        <span class="keyword">if</span> (initialCapacity &lt; 0)</div><div class="line">            throw new IllegalArgumentException(<span class="string">"Illegal initial capacity: "</span> +</div><div class="line">                                               initialCapacity);</div><div class="line">        <span class="keyword">if</span> (initialCapacity &gt; MAXIMUM_CAPACITY)</div><div class="line">            initialCapacity = MAXIMUM_CAPACITY;</div><div class="line">        <span class="keyword">if</span> (loadFactor &lt;= 0 || Float.isNaN(loadFactor))</div><div class="line">            throw new IllegalArgumentException(<span class="string">"Illegal load factor: "</span> +</div><div class="line">                                               loadFactor);</div><div class="line"></div><div class="line">        this.loadFactor = loadFactor;</div><div class="line">        threshold = initialCapacity;</div><div class="line">        init();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Constructs an empty &lt;tt&gt;HashMap&lt;/tt&gt; with the specified initial</div><div class="line">     * capacity and the default load factor (0.75).</div><div class="line">     *</div><div class="line">     * @param  initialCapacity the initial capacity.</div><div class="line">     * @throws IllegalArgumentException <span class="keyword">if</span> the initial capacity is negative.</div><div class="line">     */</div><div class="line">    public HashMap(int initialCapacity) &#123;</div><div class="line">        this(initialCapacity, DEFAULT_LOAD_FACTOR);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h1 id="初始化hashmap-length的设置"><a href="#初始化hashmap-length的设置" class="headerlink" title="初始化hashmap length的设置"></a>初始化hashmap length的设置</h1><p>如果不修改 loadFactor的话（默认0.75），那么初始化的length应该为 1.34*size，比如1万个键值对，那么初始化的时候长度给13400比较合适，不会导致resize()，当然也要结合实际的内存情况做权衡</p>
+<h1 id="数据的put（插入一个元素）"><a href="#数据的put（插入一个元素）" class="headerlink" title="数据的put（插入一个元素）"></a>数据的put（插入一个元素）</h1><p>3.1）key=null</p>
+<p>会直接放在数组的table[0]位置</p>
+<p>3.2）插入的位置没有值</p>
+<p>直接返回null</p>
+<p>3.3）插入的位置已经有值了</p>
+<pre><code>3.31）遍历该key是否存在
+</code></pre><p><img src="/img/3.png" alt="key值遍历"></p>
+<p>判断该key是否已经存在有2个条件 &amp;&amp;，hashcode值相同 并且 equals为true，一般实际开发不太可能出现这种情况，除非自己故意设置成这样。</p>
+<h1 id="hashmap的重构-resize"><a href="#hashmap的重构-resize" class="headerlink" title="hashmap的重构 resize()"></a>hashmap的重构 resize()</h1><p>会遍历之前所有的 Entry</p>
+<p>计算新的 table.index  </p>
+<p>—   如果该Entry的 next不为空，则next占据原位置，并且下一个处理这个next<br>—-  如果待插入的位置已经有Entry，则按照之前的规则，把老的Entry 作为 next存在新的 Entry里面。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><div class="line"></div><div class="line">void resize(int newCapacity) &#123;</div><div class="line">        Entry[] oldTable = table;</div><div class="line">        int oldCapacity = oldTable.length;</div><div class="line">        <span class="keyword">if</span> (oldCapacity == MAXIMUM_CAPACITY) &#123;</div><div class="line">            threshold = Integer.MAX_VALUE;</div><div class="line">            <span class="built_in">return</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        Entry[] newTable = new Entry[newCapacity];</div><div class="line">        transfer(newTable, initHashSeedAsNeeded(newCapacity));</div><div class="line">        table = newTable;</div><div class="line">        threshold = (int)Math.min(newCapacity * loadFactor, MAXIMUM_CAPACITY + 1);</div><div class="line">&#125;</div><div class="line">void transfer(Entry[] newTable, boolean <span class="built_in">rehash</span>) &#123;</div><div class="line">        int newCapacity = newTable.length;</div><div class="line">        <span class="keyword">for</span> (Entry&lt;K,V&gt; e : table) &#123;</div><div class="line">            <span class="keyword">while</span>(null != e) &#123;</div><div class="line">                Entry&lt;K,V&gt; next = e.next;</div><div class="line">                <span class="keyword">if</span> (<span class="built_in">rehash</span>) &#123;</div><div class="line">                    e.hash = null == e.key ? 0 : <span class="built_in">hash</span>(e.key);</div><div class="line">                &#125;</div><div class="line">                int i = indexFor(e.hash, newCapacity);</div><div class="line">                e.next = newTable[i];</div><div class="line">                newTable[i] = e;</div><div class="line">                e = next;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h1 id="遍历"><a href="#遍历" class="headerlink" title="遍历"></a>遍历</h1><ul>
+<li><p>使用迭代器遍历（最优）<br>相对于下面这种方法，此方法更高效，挨个的首位获取元素，再输出值，第二种方法相当于遍历了一次hashmap的key值，然后，根据key值找value。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">　　Map map = new HashMap();</div><div class="line">　　Iterator iter = map.entrySet().iterator();</div><div class="line">　　while (iter.hasNext()) &#123;</div><div class="line">　　Map.Entry entry = (Map.Entry) iter.next();</div><div class="line">　　Object key = entry.getKey();</div><div class="line">　　Object val = entry.getValue();</div><div class="line">　　&#125;</div><div class="line"></div><div class="line">```	</div><div class="line"></div><div class="line">- 使用增强for循环遍历，因为hashmap封装了 entrySet()方法</div></pre></td></tr></table></figure>
+<p>  Map<string, string=""> map = new HashMap<string, string="">();<br>  for (Entry<string, string=""> entry : map.entrySet()) {</string,></string,></string,></p>
+<pre><code>entry.getKey();
+entry.getValue();
+</code></pre><p>  }<br>```</p>
+</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2016/11/24/HashMap-数据结构/" data-title="HashMap 数据结构 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/11/30/吉他总/" title="吉他收录">
+  <strong>上一篇：</strong><br/>
+  <span>
+  吉他收录</span>
+</a>
+</div>
+
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/11/24/HashMap-数据结构/" data-title="HashMap 数据结构" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2016/11/24/HashMap-数据结构/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#解决的问题"><span class="toc-number">1.</span> <span class="toc-text">解决的问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#结构特点"><span class="toc-number">2.</span> <span class="toc-text">结构特点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#使用的注意事项"><span class="toc-number">3.</span> <span class="toc-text">使用的注意事项</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#数组的长度"><span class="toc-number">4.</span> <span class="toc-text">数组的长度</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#amp-运算"><span class="toc-number">5.</span> <span class="toc-text">&运算</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#resize的时机"><span class="toc-number">6.</span> <span class="toc-text">resize的时机</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#loadFactor的设置"><span class="toc-number">7.</span> <span class="toc-text">loadFactor的设置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#初始化hashmap-length的设置"><span class="toc-number">8.</span> <span class="toc-text">初始化hashmap length的设置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#数据的put（插入一个元素）"><span class="toc-number">9.</span> <span class="toc-text">数据的put（插入一个元素）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#hashmap的重构-resize"><span class="toc-number">10.</span> <span class="toc-text">hashmap的重构 resize()</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#遍历"><span class="toc-number">11.</span> <span class="toc-text">遍历</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

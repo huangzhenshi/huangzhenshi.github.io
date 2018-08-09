@@ -1,0 +1,547 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>JVM二 垃圾回收 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="参考大神的blog：http://www.cnblogs.com/ityouknow/p/5614961.html 另外参考《深入理解JAVA虚拟机》 默认的内存分配 堆区默认最小1/64，最大1/4，老年代:新生代=2，Eden:S0=8 ratio 堆区空余空间 40% 到70% 都会触发resize  所以JVM优化的第一步就是修改默认的内存设置 回收的过程 年轻代的内置增长机制和老年代增长">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM二 垃圾回收">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/11/06/JVM二 垃圾回收/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="参考大神的blog：http://www.cnblogs.com/ityouknow/p/5614961.html 另外参考《深入理解JAVA虚拟机》 默认的内存分配 堆区默认最小1/64，最大1/4，老年代:新生代=2，Eden:S0=8 ratio 堆区空余空间 40% 到70% 都会触发resize  所以JVM优化的第一步就是修改默认的内存设置 回收的过程 年轻代的内置增长机制和老年代增长">
+<meta property="og:image" content="https://github.com/img/jvm/GCModes.jpg">
+<meta property="og:image" content="https://github.com/img/jvm/jstat_jvm.JPG">
+<meta property="og:image" content="https://github.com/img/jvm/HeapJmap.png">
+<meta property="og:image" content="https://github.com/img/jvm/GCLOG.png">
+<meta property="og:image" content="https://github.com/img/jvm/TestEnvGC.png">
+<meta property="og:updated_time" content="2017-11-17T08:55:58.917Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JVM二 垃圾回收">
+<meta name="twitter:description" content="参考大神的blog：http://www.cnblogs.com/ityouknow/p/5614961.html 另外参考《深入理解JAVA虚拟机》 默认的内存分配 堆区默认最小1/64，最大1/4，老年代:新生代=2，Eden:S0=8 ratio 堆区空余空间 40% 到70% 都会触发resize  所以JVM优化的第一步就是修改默认的内存设置 回收的过程 年轻代的内置增长机制和老年代增长">
+<meta name="twitter:image" content="https://github.com/img/jvm/GCModes.jpg">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/11/06/JVM二 垃圾回收/" title="JVM二 垃圾回收" itemprop="url">JVM二 垃圾回收</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2017-11-06T09:13:31.646Z" itemprop="datePublished"> 发表于 2017-11-06</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#默认的内存分配"><span class="toc-number">1.</span> <span class="toc-text">默认的内存分配</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#回收的过程"><span class="toc-number">2.</span> <span class="toc-text">回收的过程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#栈中的垃圾回收"><span class="toc-number">3.</span> <span class="toc-text">栈中的垃圾回收</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#年轻代GC"><span class="toc-number">4.</span> <span class="toc-text">年轻代GC</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#结构"><span class="toc-number">4.1.</span> <span class="toc-text">结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#触发"><span class="toc-number">4.2.</span> <span class="toc-text">触发</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#垃圾回收器"><span class="toc-number">5.</span> <span class="toc-text">垃圾回收器</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Serial收集器"><span class="toc-number">5.1.</span> <span class="toc-text">Serial收集器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ParNew收集器"><span class="toc-number">5.2.</span> <span class="toc-text">ParNew收集器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Parallel-Scanvenge-收集器"><span class="toc-number">5.3.</span> <span class="toc-text">Parallel Scanvenge 收集器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CMS收集器-concurrent-Mark-Sweep-并发标记清除"><span class="toc-number">5.4.</span> <span class="toc-text">CMS收集器(concurrent Mark Sweep) 并发标记清除</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#特点"><span class="toc-number">5.4.1.</span> <span class="toc-text">特点:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#缺点："><span class="toc-number">5.4.2.</span> <span class="toc-text">缺点：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JVM优化"><span class="toc-number">5.4.3.</span> <span class="toc-text">JVM优化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#G1回收器（Gabage-First"><span class="toc-number">5.5.</span> <span class="toc-text">G1回收器（Gabage First)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#G1的新生代回收"><span class="toc-number">5.5.1.</span> <span class="toc-text">G1的新生代回收</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#G1老年代的回收"><span class="toc-number">5.5.2.</span> <span class="toc-text">G1老年代的回收</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JVM调优"><span class="toc-number">6.</span> <span class="toc-text">JVM调优</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#jstat"><span class="toc-number">6.1.</span> <span class="toc-text">jstat</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#查看JVM内存容量分配"><span class="toc-number">6.1.1.</span> <span class="toc-text">查看JVM内存容量分配</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查看当前使用情况"><span class="toc-number">6.1.2.</span> <span class="toc-text">查看当前使用情况</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#当前总容量下的实际使用率（强调百分比）"><span class="toc-number">6.1.3.</span> <span class="toc-text">当前总容量下的实际使用率（强调百分比）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#jmap"><span class="toc-number">6.2.</span> <span class="toc-text">jmap</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#查看当前堆的参数设置和使用情况"><span class="toc-number">6.2.1.</span> <span class="toc-text">查看当前堆的参数设置和使用情况</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#jinfo"><span class="toc-number">6.3.</span> <span class="toc-text">jinfo</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#GC日志计算规则"><span class="toc-number">7.</span> <span class="toc-text">GC日志计算规则</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#虚拟机环境"><span class="toc-number">7.1.</span> <span class="toc-text">虚拟机环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试环境含FULL-GC"><span class="toc-number">7.2.</span> <span class="toc-text">测试环境含FULL GC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GC日志参数设置"><span class="toc-number">7.3.</span> <span class="toc-text">GC日志参数设置</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<p>参考大神的blog：<br><a href="http://www.cnblogs.com/ityouknow/p/5614961.html" target="_blank" rel="external">http://www.cnblogs.com/ityouknow/p/5614961.html</a></p>
+<p>另外参考《深入理解JAVA虚拟机》</p>
+<h1 id="默认的内存分配"><a href="#默认的内存分配" class="headerlink" title="默认的内存分配"></a>默认的内存分配</h1><ul>
+<li>堆区默认最小1/64，最大1/4，老年代:新生代=2，Eden:S0=8</li>
+<li>ratio 堆区空余空间 40% 到70% 都会触发resize</li>
+</ul>
+<p>所以JVM优化的第一步就是修改默认的内存设置</p>
+<h1 id="回收的过程"><a href="#回收的过程" class="headerlink" title="回收的过程"></a>回收的过程</h1><ul>
+<li>年轻代的内置增长机制和老年代增长机制可以不同步，比如 NGC 增大，但是OGC 可以不变。</li>
+<li>第一次Minor GC，年轻代 double，而且每2次Minor都触发double。（差不多是 86% – 92%的比例扩增）</li>
+</ul>
+<h1 id="栈中的垃圾回收"><a href="#栈中的垃圾回收" class="headerlink" title="栈中的垃圾回收"></a>栈中的垃圾回收</h1><p>jvm 栈中，程序计数器、虚拟机栈、本地方法栈都是随线程而生随线程而灭，栈帧随着方法的进入和退出做入栈和出栈操作，实现了自动的内存清理，因此，我们的内存垃圾回收主要集中于 java 堆和方法区中。</p>
+<p>在Java语言中，GC Roots包括：</p>
+<ul>
+<li>虚拟机栈中引用的对象。</li>
+<li>方法区中类静态属性实体引用的对象。</li>
+<li>方法区中常量引用的对象。</li>
+<li>本地方法栈中JNI引用的对象。</li>
+</ul>
+<h1 id="年轻代GC"><a href="#年轻代GC" class="headerlink" title="年轻代GC"></a>年轻代GC</h1><h2 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h2><ul>
+<li>Eden : S0 ：S1 默认（8:1：1) 可以通过设置-XX:SurvivorRatio 设置比例</li>
+<li>minor GC 针对Eden 和 S(from），复制法GC.Minor GC会一直重复这样的过程，直到“To”区被填满，“To”区被填满之后，会将所有对象移动到年老代中。</li>
+</ul>
+<h2 id="触发"><a href="#触发" class="headerlink" title="触发"></a>触发</h2><ul>
+<li>Eden内存不够的时候触发minor GC</li>
+<li>S(to) 被填满之后会触发所有对象到老年代</li>
+<li>Minor GC一定次数的对象也会被分配到 老年代（默认15，可以通XX:MaxTenuringThreshold=15来设置)</li>
+</ul>
+<h1 id="垃圾回收器"><a href="#垃圾回收器" class="headerlink" title="垃圾回收器"></a>垃圾回收器</h1><ul>
+<li>年轻代的垃圾回收器: Serial、Parnew、Parallel Scanvenge</li>
+<li>老年代的垃圾回收器: Serial Old、CMS、Parallel Old</li>
+<li>混合带垃圾回收器: G1回收器</li>
+</ul>
+<p><img src="/img/jvm/GCModes.jpg" alt="垃圾回收器搭配"></p>
+<p>并且垃圾回收器的搭配是有限定的，不是任意都可以搭配</p>
+<h2 id="Serial收集器"><a href="#Serial收集器" class="headerlink" title="Serial收集器"></a>Serial收集器</h2><ul>
+<li>分为年轻代就叫 Serial 和老年代的 Serial Old</li>
+<li>串行回收，高效 稳定但是stop the world较长</li>
+<li>适合单核CPU，效率高而且稳定，但是STW 较长</li>
+<li>是Client模式下的默认GC机制</li>
+</ul>
+<h2 id="ParNew收集器"><a href="#ParNew收集器" class="headerlink" title="ParNew收集器"></a>ParNew收集器</h2><ul>
+<li>serial 收集器的年轻代多线程版本</li>
+<li>但是存在线程切换的开销，如果CPU核数不多的情况下，效率还没有Serial高，且不能保证在2个内核的情况下比Serial快</li>
+<li>因为Parallel Scanvage不能和CMS搭配，所以新生代只有ParNew可以和CMS进行搭配了</li>
+</ul>
+<h2 id="Parallel-Scanvenge-收集器"><a href="#Parallel-Scanvenge-收集器" class="headerlink" title="Parallel Scanvenge 收集器"></a>Parallel Scanvenge 收集器</h2><ul>
+<li>根据内部算法自动调整内存分配，从而达到吞吐量(工作时间/工作时间+GC时间)最大，默认99%</li>
+<li>适合不需要和后台交互的系统，从而达到CPU利用最大化<br>参数： 设置最大停顿时间，设置吞吐量比例</li>
+</ul>
+<h2 id="CMS收集器-concurrent-Mark-Sweep-并发标记清除"><a href="#CMS收集器-concurrent-Mark-Sweep-并发标记清除" class="headerlink" title="CMS收集器(concurrent Mark Sweep) 并发标记清除"></a>CMS收集器(concurrent Mark Sweep) 并发标记清除</h2><h3 id="特点"><a href="#特点" class="headerlink" title="特点:"></a>特点:</h3><ul>
+<li>追求的是停顿时间最短</li>
+<li>初始标记：STW 快速可达根节点对象 </li>
+<li>并发标记：并发客户线程，分配一个线程来tracking GC ROOTS</li>
+<li>重新标记 并发清除</li>
+</ul>
+<h3 id="缺点："><a href="#缺点：" class="headerlink" title="缺点："></a>缺点：</h3><ul>
+<li><p>对CPU 资源敏感<br>在耗时的并发标记和并发清除的时候，都需要单独一个线程来耗时完成，如果只有2个CPU的话，那么需要占用1个CPU来长时间的GC，程序就会慢</p>
+</li>
+<li><p>空间利用率不高<br>因为是标记清除所以有内存碎片，可以设置几次Full GC的时候压缩内存空间，可能因为有大对象没有足够的连续空间而提前触发full GC</p>
+</li>
+<li><p>无法处理浮动垃圾<br>也就是并发清除的阶段可能会产生新的垃圾，所以这一阶段产生的垃圾要在下一次GC完成，并且要预留一定的space来存这些对象。如果新增的对象太多，会GC失败，触发Serial Old来重新GC。</p>
+</li>
+</ul>
+<h3 id="JVM优化"><a href="#JVM优化" class="headerlink" title="JVM优化"></a>JVM优化</h3><ul>
+<li>默认情况下每次FULL GC都会做一次 标记压缩，可以设置参数，多少次FULL GC后压缩一次</li>
+<li>可以设置在FULL GC之前进行压缩，从而减少FULL GC的频率</li>
+</ul>
+<h2 id="G1回收器（Gabage-First"><a href="#G1回收器（Gabage-First" class="headerlink" title="G1回收器（Gabage First)"></a>G1回收器（Gabage First)</h2><p>特点：</p>
+<ul>
+<li>针对多CPU 高性能服务器采用的复杂的回收机制（都是多线程的）</li>
+<li>同时做到高吞吐 可以设置 STW时间，又保证高效（因为是按照活度来优先回收region)</li>
+<li>G1回收器管理了整个堆，而不是像其他回收器针对年轻代还是老年代管理。</li>
+</ul>
+<p>问题：</p>
+<ol>
+<li>说是老年代用的是标记整理算法，为什么有 Recently Copied old generation?这不是标记复制吗？不是说效率很低的吗？</li>
+<li>是否支持部分回收？ 因为设置了最长时间，可以按照存活比率优先回收 region</li>
+</ol>
+<h3 id="G1的新生代回收"><a href="#G1的新生代回收" class="headerlink" title="G1的新生代回收"></a>G1的新生代回收</h3><p>当新生代(可能是Eden）区达到一定比例的时候（新生代可能是多个region组成的），并行的做一次MinorGC，多个Region的 Eden 和Survior区（recently copied young generation 新名子)，扫完之后，年龄超过15的进入老年代，其余的参与对象复制到一个或者多个 空的region里，成为新的Suvior区，然后清空掉老的Suvior和Eden区。</p>
+<h3 id="G1老年代的回收"><a href="#G1老年代的回收" class="headerlink" title="G1老年代的回收"></a>G1老年代的回收</h3><p>网上的都看不懂，特点记住</p>
+<ul>
+<li>分region的，老年代采用标记整理的方式进行，相比CMS，不会有碎片导致大对象引发提前Full GC</li>
+<li>而且目前也不是非常成熟</li>
+<li>Remember Set 看不懂</li>
+</ul>
+<h1 id="JVM调优"><a href="#JVM调优" class="headerlink" title="JVM调优"></a>JVM调优</h1><p>在不依赖工具的情况下，调用JVM接口查看jvm参数和使用情况<br><a href="http://www.ityouknow.com/jvm/2017/09/03/jvm-command.html" target="_blank" rel="external">http://www.ityouknow.com/jvm/2017/09/03/jvm-command.html</a></p>
+<p>注意事项：<br>jstat -gc 看的S0C 容量是当前容量，和-gccapacity 的S0C不是一个概念， 后者是上限和下限，而前者指的是当前容量，因为当前容量是可以策略调整的。<br>-gc 里面的 S0U 才是最真实的实时的使用量。可以根据这个实际使用量来衡量设置的阈值是否合适</p>
+<h2 id="jstat"><a href="#jstat" class="headerlink" title="jstat"></a>jstat</h2><h3 id="查看JVM内存容量分配"><a href="#查看JVM内存容量分配" class="headerlink" title="查看JVM内存容量分配"></a>查看JVM内存容量分配</h3><p>./jstat -gccapacity pid</p>
+<p>ps -ef|grep java   找到JDK的pid 和路径，然后进入到bin目录下，查看容量大小<br><img src="/img/jvm/jstat_jvm.JPG" alt="java内存分解图"></p>
+<h3 id="查看当前使用情况"><a href="#查看当前使用情况" class="headerlink" title="查看当前使用情况"></a>查看当前使用情况</h3><p>./jstat -gc pid times count<br>对20289 pid进行1秒钟监控一次，共输出5次<br>./jstat -gc 20289 1000 5</p>
+<h3 id="当前总容量下的实际使用率（强调百分比）"><a href="#当前总容量下的实际使用率（强调百分比）" class="headerlink" title="当前总容量下的实际使用率（强调百分比）"></a>当前总容量下的实际使用率（强调百分比）</h3><p>jstat -gcutil pid<br>查看在当前总容量下的实际使用率，当前总容量不一定是设置的最大容量，可以动态调整的</p>
+<h2 id="jmap"><a href="#jmap" class="headerlink" title="jmap"></a>jmap</h2><h3 id="查看当前堆的参数设置和使用情况"><a href="#查看当前堆的参数设置和使用情况" class="headerlink" title="查看当前堆的参数设置和使用情况"></a>查看当前堆的参数设置和使用情况</h3><p>这个是最详细的描述堆区信息的命令，包括GC回收器的类型，堆区默认参数和使用情况<br>./jmap -heap 28920</p>
+<h2 id="jinfo"><a href="#jinfo" class="headerlink" title="jinfo"></a>jinfo</h2><p>./jinfo -flags 3181 查看jvm的所有参数<br>./jinfo pid  查看系统参数 和jvm参数</p>
+<h1 id="GC日志计算规则"><a href="#GC日志计算规则" class="headerlink" title="GC日志计算规则"></a>GC日志计算规则</h1><p><img src="/img/jvm/HeapJmap.png" alt="堆内存信息"></p>
+<ul>
+<li>回收器类型 JDK 1.7 默认是 Mark Sweep Compact</li>
+<li>最大堆区：设置的1500M</li>
+<li>最小500M， 而默认的新生代 和老年代的比例是2，所以 新生代的大小是500/3=166M</li>
+<li>Eden:S=4,所以S0=166/6=27.75， Eden: 27.75*4=111M， 111 +27.75 +27.75=16</li>
+<li>都是不含S0区的大小</li>
+<li>GC实际耗时 参考的是一个时间0.0314790秒 解决 real=0.04</li>
+<li>FULL GC会触发 Minor GC OldGC PermGC</li>
+</ul>
+<h2 id="虚拟机环境"><a href="#虚拟机环境" class="headerlink" title="虚拟机环境"></a>虚拟机环境</h2><p>所以第一行:   113792       –&gt; 13544K        (142208)<br>            年轻代GC前大小 –&gt; 年轻代GC后大小 (年轻代容量 不含S0）</p>
+<p>(500M/3）<em>1024K=170666K （新生代总大小）<br>170666/6=28444K（S0区大小)<br>(170666/6)</em>5=142221( S0+Eden区的大小 也就是显示的 142208K）</p>
+<p>113792 –&gt;13544K（483585K） 堆内存GC前实际大小 –&gt; GC后堆内存大小 (堆实际大小 不含S0区)<br>483585K+28444=512029K /1024=500M</p>
+<p><img src="/img/jvm/GCLOG.png" alt="MinorGClog分析"></p>
+<h2 id="测试环境含FULL-GC"><a href="#测试环境含FULL-GC" class="headerlink" title="测试环境含FULL GC"></a>测试环境含FULL GC</h2><p>因为测试环境用的是 Parallel GC回收器，系统会根据算法分配内存空间，从而获取最大的吞吐量(减少GC时间占用总时间的比率)<br><img src="/img/jvm/TestEnvGC.png" alt="MinorGClog分析"></p>
+<h2 id="GC日志参数设置"><a href="#GC日志参数设置" class="headerlink" title="GC日志参数设置"></a>GC日志参数设置</h2><p>可以参照这个设置在 catelina.sh中配置<br>JAVA_OPTS=”-server -Xms500m -Xmx1500m  -XX:PermSize=64m -XX:MaxPermSize=256m -XX:SurvivorRatio=4<br>-verbose:gc -Xloggc:/usr/local/jvmlog/gc.log<br>-Djava.awt.headless=true<br>-XX:+PrintGCDateStamps -XX:+PrintGCDetails<br>-Dsun.rmi.dgc.server.gcInterval=600000 -Dsun.rmi.dgc.client.gcInterval=600000 -XX:MaxTenuringThreshold=15” </p>
+<p>-XX:+PrintGC 输出GC日志<br>-XX:+PrintGCDetails 输出GC的详细日志<br>-XX:+PrintGCTimeStamps 输出GC的时间戳（以基准时间的形式 基准时间是tomcat的启动时间）<br>-XX:+PrintGCDateStamps 输出GC的时间戳（以日期的形式，如 2013-05-04T21:53:59.234+0800）<br>-XX:+PrintHeapAtGC 在进行GC的前后打印出堆的信息<br>-Xloggc:../logs/gc.log 日志文件的输出路径</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/11/06/JVM二 垃圾回收/" data-title="JVM二 垃圾回收 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2017/11/09/JVM三 实战/" title="JVM三 实战">
+  <strong>上一篇：</strong><br/>
+  <span>
+  JVM三 实战</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/11/06/JVM一 内存结构、类生命周期/"  title="JVM一 内存结构、类生命周期">
+ <strong>下一篇：</strong><br/> 
+ <span>JVM一 内存结构、类生命周期
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/11/06/JVM二 垃圾回收/" data-title="JVM二 垃圾回收" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/11/06/JVM二 垃圾回收/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#默认的内存分配"><span class="toc-number">1.</span> <span class="toc-text">默认的内存分配</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#回收的过程"><span class="toc-number">2.</span> <span class="toc-text">回收的过程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#栈中的垃圾回收"><span class="toc-number">3.</span> <span class="toc-text">栈中的垃圾回收</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#年轻代GC"><span class="toc-number">4.</span> <span class="toc-text">年轻代GC</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#结构"><span class="toc-number">4.1.</span> <span class="toc-text">结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#触发"><span class="toc-number">4.2.</span> <span class="toc-text">触发</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#垃圾回收器"><span class="toc-number">5.</span> <span class="toc-text">垃圾回收器</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Serial收集器"><span class="toc-number">5.1.</span> <span class="toc-text">Serial收集器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ParNew收集器"><span class="toc-number">5.2.</span> <span class="toc-text">ParNew收集器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Parallel-Scanvenge-收集器"><span class="toc-number">5.3.</span> <span class="toc-text">Parallel Scanvenge 收集器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CMS收集器-concurrent-Mark-Sweep-并发标记清除"><span class="toc-number">5.4.</span> <span class="toc-text">CMS收集器(concurrent Mark Sweep) 并发标记清除</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#特点"><span class="toc-number">5.4.1.</span> <span class="toc-text">特点:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#缺点："><span class="toc-number">5.4.2.</span> <span class="toc-text">缺点：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JVM优化"><span class="toc-number">5.4.3.</span> <span class="toc-text">JVM优化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#G1回收器（Gabage-First"><span class="toc-number">5.5.</span> <span class="toc-text">G1回收器（Gabage First)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#G1的新生代回收"><span class="toc-number">5.5.1.</span> <span class="toc-text">G1的新生代回收</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#G1老年代的回收"><span class="toc-number">5.5.2.</span> <span class="toc-text">G1老年代的回收</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JVM调优"><span class="toc-number">6.</span> <span class="toc-text">JVM调优</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#jstat"><span class="toc-number">6.1.</span> <span class="toc-text">jstat</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#查看JVM内存容量分配"><span class="toc-number">6.1.1.</span> <span class="toc-text">查看JVM内存容量分配</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查看当前使用情况"><span class="toc-number">6.1.2.</span> <span class="toc-text">查看当前使用情况</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#当前总容量下的实际使用率（强调百分比）"><span class="toc-number">6.1.3.</span> <span class="toc-text">当前总容量下的实际使用率（强调百分比）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#jmap"><span class="toc-number">6.2.</span> <span class="toc-text">jmap</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#查看当前堆的参数设置和使用情况"><span class="toc-number">6.2.1.</span> <span class="toc-text">查看当前堆的参数设置和使用情况</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#jinfo"><span class="toc-number">6.3.</span> <span class="toc-text">jinfo</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#GC日志计算规则"><span class="toc-number">7.</span> <span class="toc-text">GC日志计算规则</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#虚拟机环境"><span class="toc-number">7.1.</span> <span class="toc-text">虚拟机环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试环境含FULL-GC"><span class="toc-number">7.2.</span> <span class="toc-text">测试环境含FULL GC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GC日志参数设置"><span class="toc-number">7.3.</span> <span class="toc-text">GC日志参数设置</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

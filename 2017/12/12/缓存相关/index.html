@@ -1,0 +1,541 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>缓存相关 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="内容大纲 Spring的缓存注解 Mybatis的一级、二级缓存 Ehcache  源码 Spring 各种注解的源码,这里面service里面有keyGenerator的示例：https://github.com/huangzhenshi/SSM_REDIS_ANNOTATION_DEMO  Spring 整合ehcache源码 参考封装在公司PC里面的webTest 项目C:\huangzs\">
+<meta property="og:type" content="article">
+<meta property="og:title" content="缓存相关">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/12/12/缓存相关/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="内容大纲 Spring的缓存注解 Mybatis的一级、二级缓存 Ehcache  源码 Spring 各种注解的源码,这里面service里面有keyGenerator的示例：https://github.com/huangzhenshi/SSM_REDIS_ANNOTATION_DEMO  Spring 整合ehcache源码 参考封装在公司PC里面的webTest 项目C:\huangzs\">
+<meta property="og:updated_time" content="2017-12-12T11:04:59.821Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="缓存相关">
+<meta name="twitter:description" content="内容大纲 Spring的缓存注解 Mybatis的一级、二级缓存 Ehcache  源码 Spring 各种注解的源码,这里面service里面有keyGenerator的示例：https://github.com/huangzhenshi/SSM_REDIS_ANNOTATION_DEMO  Spring 整合ehcache源码 参考封装在公司PC里面的webTest 项目C:\huangzs\">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/12/12/缓存相关/" title="缓存相关" itemprop="url">缓存相关</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2017-12-12T03:29:27.529Z" itemprop="datePublished"> 发表于 2017-12-12</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#内容大纲"><span class="toc-number">1.</span> <span class="toc-text">内容大纲</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#源码"><span class="toc-number">2.</span> <span class="toc-text">源码</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring的缓存注解"><span class="toc-number">3.</span> <span class="toc-text">Spring的缓存注解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#引用博客"><span class="toc-number">3.1.</span> <span class="toc-text">引用博客</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#常用注解"><span class="toc-number">3.2.</span> <span class="toc-text">常用注解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Cacheable"><span class="toc-number">3.3.</span> <span class="toc-text">@Cacheable</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#value-设置两种方法"><span class="toc-number">3.3.1.</span> <span class="toc-text">value 设置两种方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#key"><span class="toc-number">3.3.2.</span> <span class="toc-text">key</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#condition"><span class="toc-number">3.3.3.</span> <span class="toc-text">condition</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CachePut"><span class="toc-number">3.4.</span> <span class="toc-text">@CachePut</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CacheEvict"><span class="toc-number">3.5.</span> <span class="toc-text">@CacheEvict</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CacheConfig"><span class="toc-number">3.6.</span> <span class="toc-text">@CacheConfig</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Mybatis的一级、二级缓存"><span class="toc-number">4.</span> <span class="toc-text">Mybatis的一级、二级缓存</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Ehcache"><span class="toc-number">5.</span> <span class="toc-text">Ehcache</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Ehcache特点"><span class="toc-number">5.1.</span> <span class="toc-text">Ehcache特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#引入spring中结合注解"><span class="toc-number">5.2.</span> <span class="toc-text">引入spring中结合注解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Ehcache-xml"><span class="toc-number">5.3.</span> <span class="toc-text">Ehcache.xml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Hibernate-一级、二级缓存"><span class="toc-number">5.4.</span> <span class="toc-text">Hibernate 一级、二级缓存</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="内容大纲"><a href="#内容大纲" class="headerlink" title="内容大纲"></a>内容大纲</h1><ul>
+<li>Spring的缓存注解</li>
+<li>Mybatis的一级、二级缓存</li>
+<li>Ehcache</li>
+</ul>
+<h1 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h1><ol>
+<li><p>Spring 各种注解的源码,这里面service里面有keyGenerator的示例：<br><a href="https://github.com/huangzhenshi/SSM_REDIS_ANNOTATION_DEMO">https://github.com/huangzhenshi/SSM_REDIS_ANNOTATION_DEMO</a></p>
+</li>
+<li><p>Spring 整合ehcache源码 参考封装在公司PC里面的webTest 项目<br>C:\huangzs\缓存\缓存\Spring-ehcache_demos\webTest</p>
+</li>
+</ol>
+<h1 id="Spring的缓存注解"><a href="#Spring的缓存注解" class="headerlink" title="Spring的缓存注解"></a>Spring的缓存注解</h1><h2 id="引用博客"><a href="#引用博客" class="headerlink" title="引用博客"></a>引用博客</h2><ul>
+<li>非常全面的缓存注解博客<br><a href="http://blog.csdn.net/sanjay_f/article/details/47372967" target="_blank" rel="external">http://blog.csdn.net/sanjay_f/article/details/47372967</a></li>
+</ul>
+<h2 id="常用注解"><a href="#常用注解" class="headerlink" title="常用注解"></a>常用注解</h2><ul>
+<li>@Cacheable</li>
+<li>@CachePut </li>
+<li>@CacheEvict</li>
+<li>@CacheConfig</li>
+</ul>
+<h2 id="Cacheable"><a href="#Cacheable" class="headerlink" title="@Cacheable"></a>@Cacheable</h2><ul>
+<li>value</li>
+<li>key</li>
+<li>condition</li>
+</ul>
+<p>value 类似于 班级，key类似于学号的概念，例如调用下面的方法，分别用id=1 id=2调用，<br>会在keys *中产生3个对象，必须要通过 value getById~keys 才找的到\xac\xed\x00\x05t\x00(com.lyz.user.service.UserServicegetById1这个键，再找到对应的真实缓存的值</p>
+<p>getById~keys<br>\xac\xed\x00\x05t\x00(com.lyz.user.service.UserServicegetById2<br>\xac\xed\x00\x05t\x00(com.lyz.user.service.UserServicegetById1<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">   @Cacheable(value=&quot;getById&quot;)</div><div class="line">public String getById(Integer id) &#123;</div><div class="line">	return template.selectOne(&quot;com.lyz.user.mapper.UserMapper.getNameById&quot;, id);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="value-设置两种方法"><a href="#value-设置两种方法" class="headerlink" title="value 设置两种方法"></a>value 设置两种方法</h3><p>一个方法也可以指定多个value<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Cacheable(value=&quot;getAllUser&quot;)</div><div class="line">public List&lt;User&gt; getAllUser() &#123;</div><div class="line">	return template.selectList(&quot;com.lyz.user.mapper.UserMapper.getAllUser&quot;);</div><div class="line">&#125;</div><div class="line"></div><div class="line">@Cacheable(&quot;getAllUser&quot;)</div><div class="line">public List&lt;User&gt; getAllUser() &#123;</div><div class="line">	return template.selectList(&quot;com.lyz.user.mapper.UserMapper.getAllUser&quot;);</div><div class="line">&#125;</div><div class="line"></div><div class="line">@Cacheable(value=&#123;”cache1”,”cache2”&#125;</div><div class="line">public List&lt;User&gt; getAllUser() &#123;</div><div class="line">	return template.selectList(&quot;com.lyz.user.mapper.UserMapper.getAllUser&quot;);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="key"><a href="#key" class="headerlink" title="key"></a>key</h3><ul>
+<li><p>可以通过SpringEL表达式 指定key</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">   @Cacheable(value=&quot;getById&quot;, key=&quot;&apos;getUserById&apos;+#id&quot;)</div><div class="line">public String getUserById(Integer id) &#123;</div><div class="line">	return template.selectOne(&quot;com.lyz.user.mapper.UserMapper.getNameById&quot;, id);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>可以通过配置重写keyGenerator的方法，如果重写了的话，同时也指定了key的话，优先取指定的key</p>
+</li>
+</ul>
+<h3 id="condition"><a href="#condition" class="headerlink" title="condition"></a>condition</h3><p>支持SpringEl表达式，可以添加 useCache 来动态 支持是否要从缓存中读取数据，还是直接通过数据库中即时的读取数据<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">   @Cacheable(value=&quot;getUserById&quot; ,condition=&quot;#useCache&quot;)</div><div class="line">public String getById(Integer id,Boolean useCache) &#123;</div><div class="line">	return template.selectOne(&quot;com.lyz.user.mapper.UserMapper.getNameById&quot;, id);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="CachePut"><a href="#CachePut" class="headerlink" title="@CachePut"></a>@CachePut</h2><ul>
+<li>每次执行的时候不会查看缓存，直接执行方法</li>
+<li>执行完之后，会把最新的结果更新到缓存中</li>
+<li>执行完 CachePut的时候，缓存中已经有了结果，如果其他方法的 value 和key值一定用cacheable的话，则可以获取到这个 缓存值</li>
+</ul>
+<p>例如下面2个方法， value  和 key一样共享缓存的，如果更新过数据库要更新某个数据的缓存，可以调用第二个方法，同时下次执行第一个缓存方法的时候，会取到更新过后的结果。<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">   @Cacheable(value=&quot;getUserById&quot; , key=&quot;&apos;getUserById&apos;+#id&quot;)</div><div class="line">public String getByIdCacheFirst(Integer id) &#123;</div><div class="line">   	System.out.println(&quot;search CacheFirst&quot;);</div><div class="line">	return template.selectOne(&quot;com.lyz.user.mapper.UserMapper.getNameById&quot;, id);</div><div class="line">&#125;</div><div class="line">   </div><div class="line">   @CachePut(value=&quot;getUserById&quot; , key=&quot;&apos;getUserById&apos;+#id&quot;)</div><div class="line">public String getByIdDBDirectly(Integer id) &#123;</div><div class="line">   	System.out.println(&quot;go to database,then update cache!&quot;);</div><div class="line">	return template.selectOne(&quot;com.lyz.user.mapper.UserMapper.getNameById&quot;, id);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="CacheEvict"><a href="#CacheEvict" class="headerlink" title="@CacheEvict"></a>@CacheEvict</h2><p>清空一个或者多个缓存的 部分或者全部key的缓存</p>
+<ul>
+<li>可以定点删除某个缓存下的 某个key的缓存</li>
+</ul>
+<p>如下会删除 getUserById的缓存下 getUserById+参数 为key的缓存<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"> @CacheEvict(value=&quot;getUserById&quot; , key=&quot;&apos;getUserById&apos;+#id&quot;)</div><div class="line">public String deleteCache(Integer id) &#123;</div><div class="line">   	System.out.println(&quot;go go go &quot;);</div><div class="line">	return null;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<ul>
+<li><p>删除getUserById的缓存中的所有key的缓存</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"> @CacheEvict(value=&quot;getUserById&quot; , allEntries=true)</div><div class="line">public String deleteCache(Integer id) &#123;</div><div class="line">   	System.out.println(&quot;go go go &quot;);</div><div class="line">	return null;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>删除多个缓存下的所有key的缓存</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"> @CacheEvict(value=&#123;&quot;getUserById&quot;,&quot;getAllUser&quot;&#125; , allEntries=true)</div><div class="line">public String deleteCache(Integer id) &#123;</div><div class="line">   	System.out.println(&quot;go go go &quot;);</div><div class="line">	return null;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="CacheConfig"><a href="#CacheConfig" class="headerlink" title="@CacheConfig"></a>@CacheConfig</h2><ul>
+<li>类级别的缓存标志，所有的方法如果有 @cacheable 并且未指定 value的话都会默认继承</li>
+<li>如果没有@Cacheable的方法，不会缓存</li>
+<li>如果有@Cacheable的注解，但是指定了 value的话，以指定的value为实际的value</li>
+</ul>
+<h1 id="Mybatis的一级、二级缓存"><a href="#Mybatis的一级、二级缓存" class="headerlink" title="Mybatis的一级、二级缓存"></a>Mybatis的一级、二级缓存</h1><ul>
+<li>mybatis的一级缓存是默认开启的，但是只有在该方法是在事务开启的时候才有效，否则还是一个request当中重复读取的，重点注意</li>
+<li>mybatis 二级缓存需要配置 开启即可，但是mybatis的二级缓存是针对 mapper的文件的缓存，但是ehcache是方法级别的缓存，所以优先使用 ehcache</li>
+</ul>
+<h1 id="Ehcache"><a href="#Ehcache" class="headerlink" title="Ehcache"></a>Ehcache</h1><h2 id="Ehcache特点"><a href="#Ehcache特点" class="headerlink" title="Ehcache特点"></a>Ehcache特点</h2><ul>
+<li>JAVA写的非分布式缓存框架</li>
+<li>支持缓存持久化</li>
+<li>结合Spring的缓存注解可以实现方法级别的缓存和灵活的配置</li>
+</ul>
+<h2 id="引入spring中结合注解"><a href="#引入spring中结合注解" class="headerlink" title="引入spring中结合注解"></a>引入spring中结合注解</h2><ol>
+<li><p>Application.xml</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;!-- 引入ehcache配置 start --&gt;  </div><div class="line">    &lt;cache:annotation-driven cache-manager=&quot;cacheManager&quot; /&gt;  </div><div class="line">    &lt;bean id=&quot;cacheManager&quot; class=&quot;org.springframework.cache.ehcache.EhCacheCacheManager&quot;&gt;  </div><div class="line">        &lt;property name=&quot;cacheManager&quot; ref=&quot;ehcache&quot;&gt;&lt;/property&gt;  </div><div class="line">    &lt;/bean&gt;  </div><div class="line">    &lt;bean id=&quot;ehcache&quot; class=&quot;org.springframework.cache.ehcache.EhCacheManagerFactoryBean&quot;&gt;  </div><div class="line">        &lt;property name=&quot;configLocation&quot; value=&quot;classpath:ehcache.xml&quot;&gt;&lt;/property&gt;  </div><div class="line">    &lt;/bean&gt;  </div><div class="line">    &lt;!-- 引入ehcache配置 end --&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>引入对应的ehcache.xml文件</p>
+</li>
+</ol>
+<p>然后就可以根据通用Spring 缓存注解一样使用了，注意 value要等于ehcache的 name</p>
+<h2 id="Ehcache-xml"><a href="#Ehcache-xml" class="headerlink" title="Ehcache.xml"></a>Ehcache.xml</h2><ul>
+<li>配置 cache的name  对应，Spring  注解当中的 value，否则会报错，实现对一类 cacheTest类的缓存 根据key不同缓存</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;cache name=&quot;cacheTest&quot;</div><div class="line">        maxElementsInMemory=&quot;1000&quot;</div><div class="line">        eternal=&quot;false&quot;</div><div class="line">        overflowToDisk=&quot;true&quot;</div><div class="line">        timeToIdleSeconds=&quot;1000&quot;</div><div class="line">        timeToLiveSeconds=&quot;2000&quot;/&gt;</div><div class="line"></div><div class="line"></div><div class="line">    @Cacheable(value = &quot;cacheTest&quot;, key = &quot;#username&quot;)</div><div class="line">    public List&lt;User&gt; getAll(String username) &#123;</div><div class="line">    	System.out.println(&quot;gogogo&quot;);</div><div class="line">        List&lt;User&gt; list = template.selectList(&quot;com.test.dao.UserMapper.findAll&quot;);</div><div class="line">        return list;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<ul>
+<li><p>指定缓存文件持久化的路径</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;!-- 指定一个文件目录，当EhCache把数据写到硬盘上时，将把数据写到这个文件目录下 --&gt;</div><div class="line"> &lt;diskStore path=&quot;C:/huangzs/缓存&quot;/&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>maxElementsInMemory 最大缓存数<br>内存缓存中最多可以存放的元素数量,若放入Cache中的元素超过这个数值,则有以下两<br>种情况<br>1)若overflowToDisk=true,则会将Cache中多出的元素放入磁盘文件中<br>2)若overflowToDisk=false,则根据memoryStoreEvictionPolicy策略替换Cache中原有的元素</p>
+</li>
+<li><p>memoryStoreEvictionPolicy</p>
+</li>
+</ul>
+<p>ehcache 中缓存的3 种清空策略： </p>
+<ol>
+<li>FIFO ，first in first out ，这个是大家最熟的，先进先出，不多讲了 </li>
+<li>LFU ， Less Frequently Used ，就是上面例子中使用的策略，直白一点就是讲一直以来最少被使用的。如上面所讲，缓存的元素有一个hit 属性，hit 值最小的将会被清出缓存。 </li>
+<li>LRU ，Least Recently Used ，最近最少使用的，缓存的元素有一个时间戳，当缓存容量满了，而又需要腾出地方来缓存新的元素的时候，那么现有缓存元素中时间戳离当前时间最远的元素将被清出缓存。</li>
+</ol>
+<p>LRU 和FIFO的区别是，最先进去的缓存对象如果后来被使用过，则时间戳会改变</p>
+<ul>
+<li>标准可用的ehcache.xml  参考<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</div><div class="line">&lt;ehcache xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</div><div class="line">         xsi:noNamespaceSchemaLocation=&quot;ehcache.xsd&quot;</div><div class="line">         updateCheck=&quot;false&quot;&gt;</div><div class="line">    &lt;!-- 指定一个文件目录，当EhCache把数据写到硬盘上时，将把数据写到这个文件目录下 --&gt;</div><div class="line">    &lt;diskStore path=&quot;C:/huangzs/缓存&quot;/&gt;</div><div class="line">    &lt;defaultCache</div><div class="line">            maxElementsInMemory=&quot;10000&quot; </div><div class="line">            eternal=&quot;false&quot; </div><div class="line">            overflowToDisk=&quot;true&quot;</div><div class="line">            timeToIdleSeconds=&quot;10&quot;</div><div class="line">            timeToLiveSeconds=&quot;20&quot;</div><div class="line">            diskPersistent=&quot;false&quot;</div><div class="line">            diskExpiryThreadIntervalSeconds=&quot;120&quot;/&gt;</div><div class="line"></div><div class="line">   	&lt;cache name=&quot;cacheTest&quot;</div><div class="line">        maxElementsInMemory=&quot;1000&quot;</div><div class="line">        eternal=&quot;false&quot;</div><div class="line">        overflowToDisk=&quot;true&quot;</div><div class="line">        timeToIdleSeconds=&quot;1000&quot;</div><div class="line">        timeToLiveSeconds=&quot;2000&quot;/&gt;</div><div class="line">        </div><div class="line">        &lt;cache name=&quot;cacheTest3&quot;</div><div class="line">            maxElementsInMemory=&quot;10000&quot; </div><div class="line">            eternal=&quot;false&quot; </div><div class="line">            overflowToDisk=&quot;true&quot;</div><div class="line">            timeToIdleSeconds=&quot;1000&quot;</div><div class="line">            timeToLiveSeconds=&quot;2000&quot;</div><div class="line">            diskPersistent=&quot;false&quot;</div><div class="line">            diskExpiryThreadIntervalSeconds=&quot;120&quot;/&gt;</div><div class="line"></div><div class="line">&lt;/ehcache&gt;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="Hibernate-一级、二级缓存"><a href="#Hibernate-一级、二级缓存" class="headerlink" title="Hibernate 一级、二级缓存"></a>Hibernate 一级、二级缓存</h2><ul>
+<li>hibernate的二级缓存是基于HQL或者 SQL的二级缓存<br>例如根据ID查询某个对象的时候，开启配置了二级缓存，就会从缓存中读取结果集。</li>
+</ul>
+<p>参考这个对Bean进行缓存设置<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)</div><div class="line">@Entity</div><div class="line">@Table(name = &quot;region&quot;)</div><div class="line">public class Region implements Serializable &#123;</div></pre></td></tr></table></figure></p>
+<ul>
+<li>Ehcache 实战<br>E学E用利用的是hibernate的二级缓存</li>
+<li>对地区类进行二级缓存<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)</div><div class="line">@Entity</div><div class="line">@Table(name = &quot;region&quot;)</div><div class="line">public class Region implements Serializable &#123;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>ehcache.xml 里面的配置到这个Bean<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;cache name=&quot;com.ge.dh.edu.domain.Region&quot; </div><div class="line">    maxElementsInMemory=&quot;5000&quot;</div><div class="line">    eternal=&quot;true&quot;</div><div class="line">    overflowToDisk=&quot;true&quot;</div><div class="line"> /&gt;</div></pre></td></tr></table></figure></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/12/12/缓存相关/" data-title="缓存相关 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2017/12/13/JVM总篇 - Copy/" title="JVM总篇">
+  <strong>上一篇：</strong><br/>
+  <span>
+  JVM总篇</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/12/08/keepalived实战/"  title="keepalived 实战">
+ <strong>下一篇：</strong><br/> 
+ <span>keepalived 实战
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/12/12/缓存相关/" data-title="缓存相关" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/12/12/缓存相关/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#内容大纲"><span class="toc-number">1.</span> <span class="toc-text">内容大纲</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#源码"><span class="toc-number">2.</span> <span class="toc-text">源码</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring的缓存注解"><span class="toc-number">3.</span> <span class="toc-text">Spring的缓存注解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#引用博客"><span class="toc-number">3.1.</span> <span class="toc-text">引用博客</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#常用注解"><span class="toc-number">3.2.</span> <span class="toc-text">常用注解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Cacheable"><span class="toc-number">3.3.</span> <span class="toc-text">@Cacheable</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#value-设置两种方法"><span class="toc-number">3.3.1.</span> <span class="toc-text">value 设置两种方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#key"><span class="toc-number">3.3.2.</span> <span class="toc-text">key</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#condition"><span class="toc-number">3.3.3.</span> <span class="toc-text">condition</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CachePut"><span class="toc-number">3.4.</span> <span class="toc-text">@CachePut</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CacheEvict"><span class="toc-number">3.5.</span> <span class="toc-text">@CacheEvict</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CacheConfig"><span class="toc-number">3.6.</span> <span class="toc-text">@CacheConfig</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Mybatis的一级、二级缓存"><span class="toc-number">4.</span> <span class="toc-text">Mybatis的一级、二级缓存</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Ehcache"><span class="toc-number">5.</span> <span class="toc-text">Ehcache</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Ehcache特点"><span class="toc-number">5.1.</span> <span class="toc-text">Ehcache特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#引入spring中结合注解"><span class="toc-number">5.2.</span> <span class="toc-text">引入spring中结合注解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Ehcache-xml"><span class="toc-number">5.3.</span> <span class="toc-text">Ehcache.xml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Hibernate-一级、二级缓存"><span class="toc-number">5.4.</span> <span class="toc-text">Hibernate 一级、二级缓存</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

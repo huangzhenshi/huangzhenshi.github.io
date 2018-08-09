@@ -1,0 +1,505 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>MongoDB | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="示例源码Spring集成MongoDB，演示CRUD和地理位置查询功能https://github.com/huangzhenshi/mongodb_Spring_Maven 特点官方介绍:https://docs.spring.io/spring-data/data-mongo/docs/1.5.2.RELEASE/reference/html/mongo.core.html https://z">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MongoDB">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/12/29/MongoDB/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="示例源码Spring集成MongoDB，演示CRUD和地理位置查询功能https://github.com/huangzhenshi/mongodb_Spring_Maven 特点官方介绍:https://docs.spring.io/spring-data/data-mongo/docs/1.5.2.RELEASE/reference/html/mongo.core.html https://z">
+<meta property="og:updated_time" content="2018-01-03T10:23:11.149Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MongoDB">
+<meta name="twitter:description" content="示例源码Spring集成MongoDB，演示CRUD和地理位置查询功能https://github.com/huangzhenshi/mongodb_Spring_Maven 特点官方介绍:https://docs.spring.io/spring-data/data-mongo/docs/1.5.2.RELEASE/reference/html/mongo.core.html https://z">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/12/29/MongoDB/" title="MongoDB" itemprop="url">MongoDB</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2017-12-29T03:56:17.023Z" itemprop="datePublished"> 发表于 2017-12-29</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#示例源码"><span class="toc-number">1.</span> <span class="toc-text">示例源码</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#特点"><span class="toc-number">2.</span> <span class="toc-text">特点</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#特点描述"><span class="toc-number">2.1.</span> <span class="toc-text">特点描述</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#单片集群功能"><span class="toc-number">3.</span> <span class="toc-text">单片集群功能</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#适用场景"><span class="toc-number">4.</span> <span class="toc-text">适用场景</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#有待学习的"><span class="toc-number">5.</span> <span class="toc-text">有待学习的</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#安装和初步使用"><span class="toc-number">6.</span> <span class="toc-text">安装和初步使用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#启动"><span class="toc-number">6.1.</span> <span class="toc-text">启动</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#基本指令"><span class="toc-number">7.</span> <span class="toc-text">基本指令</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#全文检索命令"><span class="toc-number">8.</span> <span class="toc-text">全文检索命令</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#demo"><span class="toc-number">9.</span> <span class="toc-text">demo</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实战1（整合spring注解）"><span class="toc-number">10.</span> <span class="toc-text">实战1（整合spring注解）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实战-位置查询"><span class="toc-number">11.</span> <span class="toc-text">实战 位置查询</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="示例源码"><a href="#示例源码" class="headerlink" title="示例源码"></a>示例源码</h1><p>Spring集成MongoDB，演示CRUD和地理位置查询功能<br><a href="https://github.com/huangzhenshi/mongodb_Spring_Maven">https://github.com/huangzhenshi/mongodb_Spring_Maven</a></p>
+<h1 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h1><p>官方介绍:<br><a href="https://docs.spring.io/spring-data/data-mongo/docs/1.5.2.RELEASE/reference/html/mongo.core.html" target="_blank" rel="external">https://docs.spring.io/spring-data/data-mongo/docs/1.5.2.RELEASE/reference/html/mongo.core.html</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/24377636" target="_blank" rel="external">https://zhuanlan.zhihu.com/p/24377636</a><br><a href="https://yq.aliyun.com/articles/64352?spm=5176.8091938.0.0.oAHbxp" target="_blank" rel="external">https://yq.aliyun.com/articles/64352?spm=5176.8091938.0.0.oAHbxp</a><br>索引博客非常详细:<br><a href="https://www.jianshu.com/p/53c974273218?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation" target="_blank" rel="external">https://www.jianshu.com/p/53c974273218?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation</a></p>
+<h2 id="特点描述"><a href="#特点描述" class="headerlink" title="特点描述"></a>特点描述</h2><ul>
+<li>MongoDB是为大数据而生的</li>
+<li>大文本的存储和快速检索的功能，GB PB级别，这个是mysql无法比拟的</li>
+<li><p>MongoDB的复制集是数据库领域领先的高可用和读写负载均衡解决方案</p>
+</li>
+<li><p>介于Nosql和Mysql之间，支持索引、联合索引、复杂查询、排序，基本上除了join和事务类型的操作外，mongodb支持所有mysql支持的查询</p>
+</li>
+<li><p>支持不确定的value结构，mysql需要指定字段的类型，而MongoDB不需要指定结构，甚至连内容都不要指定可以是基本类型可以是实体类甚至可以是list数组，从而间接的实现关系型数据的查找</p>
+</li>
+<li><p>MongoDB还提供了执行计划功能</p>
+</li>
+<li><p>支持非常丰富的地理位置索引，mysql没有这个函数哎。既支持经纬度 $near函数，还有$geoWithin 在矩形或者圆形或者自定义形状内的数据，还支持$maxDistance $minDistance 完美，基本都可以覆盖地理位置相关的检索功能了<br><a href="https://www.jianshu.com/p/53c974273218?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation" target="_blank" rel="external">https://www.jianshu.com/p/53c974273218?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation</a></p>
+</li>
+<li><p>基于文档存储（JSON结构的文档)</p>
+</li>
+<li>丰富的索引功能：大文本全文检索（平民版不支持中文全文检索，企业版支持）、位置索引、TTL过期作废索引、其他常规索引：唯一性索引、联合索引</li>
+</ul>
+<h1 id="单片集群功能"><a href="#单片集群功能" class="headerlink" title="单片集群功能"></a>单片集群功能</h1><p>介绍和演示windows下单片集群的配置<br><a href="http://blog.csdn.net/yyywyr/article/details/27238411" target="_blank" rel="external">http://blog.csdn.net/yyywyr/article/details/27238411</a></p>
+<h1 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h1><p><a href="https://www.zhihu.com/question/32071167?sort=created" target="_blank" rel="external">https://www.zhihu.com/question/32071167?sort=created</a></p>
+<ul>
+<li>应用不需要事务及复杂 join 支持必须 Yes</li>
+<li>新应用，需求会变，数据模型无法确定，想快速迭代开发？</li>
+<li>应用需要2000-3000以上的读写QPS（更高也可以）？</li>
+<li>应用需要TB甚至 PB 级别数据存储?</li>
+<li>应用发展迅速，需要能快速水平扩展?</li>
+<li>应用要求存储的数据不丢失?</li>
+<li>应用需要99.999%高可用?</li>
+<li>应用需要大量的地理位置查询、文本查询？</li>
+</ul>
+<p>比如快递信息的更新、大日志的存储、</p>
+<h1 id="有待学习的"><a href="#有待学习的" class="headerlink" title="有待学习的"></a>有待学习的</h1><ul>
+<li><p>schema-less，存储结构不确定的数据，比如user数据，或者log数据。<br>（比如插入user表中，开始的信息可以只有name属性， 后面也可以插入包含name 和age属性的user对象，从而实现schema-less)</p>
+</li>
+<li><p>三种索引功能  地理索引 、 文本索引、TTL索引</p>
+</li>
+<li>单片功能 和灾备方案过一下，非常棒的运用，如何实现高可用</li>
+<li>实现一套简单的用户和用户介绍的程序</li>
+<li>索引的内存化</li>
+<li>多数据源，结合mysql一起整一个项目，把适合的数据放到MongoDB里面</li>
+</ul>
+<h1 id="安装和初步使用"><a href="#安装和初步使用" class="headerlink" title="安装和初步使用"></a>安装和初步使用</h1><ul>
+<li>安装完之后建立 相应的目录保存 文档和日志，一般 data/db  data/log</li>
+<li>创建配置文件 mongo.config<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">##数据文件</div><div class="line">dbpath=C:\huangzs\install\MongoDB\data\db</div><div class="line"></div><div class="line">##日志文件</div><div class="line">logpath=C:\huangzs\install\MongoDB\data\log\mongo.log</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2><p>进入到bin 路径下面<br>mongod –config C:\huangzs\install\MongoDB\mongo.config<br>然后打开一个新的cmd窗口<br>mongo 即可</p>
+<h1 id="基本指令"><a href="#基本指令" class="headerlink" title="基本指令"></a>基本指令</h1><p>参考：<a href="http://www.yiibai.com/mongodb/mongodb_quick_guide.html" target="_blank" rel="external">http://www.yiibai.com/mongodb/mongodb_quick_guide.html</a></p>
+<ul>
+<li><p>数据库操作</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">创建/使用数据库</div><div class="line">use newdb</div><div class="line"></div><div class="line">查看所有数据库,只有插入了至少一条数据，才会显示出来</div><div class="line">show dbs</div><div class="line"></div><div class="line">进入该数据库后 删除该数据库</div><div class="line">db.dropDatabase()</div><div class="line"></div><div class="line">查看当前数据库下所有的表（集合)</div><div class="line">show collections</div></pre></td></tr></table></figure>
+</li>
+<li><p>表级别增删改查</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">db.COLLECTION_NAME.insert(document)</div><div class="line">db.COLLECTION_NAME.find()</div><div class="line">db.COLLECTION_NAME.find().pretty()</div><div class="line">db.COLLECTION_NAME.findOne()</div><div class="line">只展示name字段，不展示id</div><div class="line">db.user.find(&#123;&#125;,&#123;&quot;name&quot;:1,_id:0&#125;) </div><div class="line"></div><div class="line">*huangzhenshi* like 查询</div><div class="line">db.user.find(&#123;&quot;name&quot;:/huangzhenshi/&#125;) </div><div class="line"></div><div class="line">数量限制</div><div class="line">db.user.find(&#123;&quot;name&quot;:/huangzhenshi/&#125;).limit(2) </div><div class="line"></div><div class="line">结合skip实现分页，从skipIndex开始查，查询pagesize数量</div><div class="line">db.user.find(&#123;&quot;name&quot;:/huangzhenshi/&#125;).limit(2).skip(2) </div><div class="line"></div><div class="line">排序</div><div class="line">db.COLLECTION_NAME.find().sort(&#123;KEY:1&#125;)</div><div class="line"></div><div class="line">全部删除</div><div class="line">db.mycol.remove()</div><div class="line">db.COLLECTION_NAME.remove(DELETION_CRITERIA,1)</div><div class="line"></div><div class="line">聚合函数 分组求和</div><div class="line">db.mycol.aggregate([&#123;$group : &#123;_id : &quot;$by_user&quot;, num_tutorial : &#123;$sum : 1&#125;&#125;&#125;])</div><div class="line"></div><div class="line">count</div><div class="line">db.shops.find().count()</div></pre></td></tr></table></figure>
+</li>
+<li><p>备份和恢复</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">备份 test数据库，备份到 C:\huangzs\install\MongoDB\bin\dump\backup 路径下</div><div class="line">mongodump --db test  --out C:\huangzs\install\MongoDB\bin\dump\backup</div><div class="line"></div><div class="line">恢复数据</div><div class="line">mongorestore</div></pre></td></tr></table></figure>
+</li>
+<li><p>索引相关<br>参考blog<br><a href="https://www.jianshu.com/p/53c974273218?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation" target="_blank" rel="external">https://www.jianshu.com/p/53c974273218?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation</a></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">//查看该collection的所有索引</div><div class="line"> db.mapinfo.getIndexes()    </div><div class="line"></div><div class="line"># 在loc上面创建2d索引，创建完之后可以使用 $near函数</div><div class="line">&gt; db.mapinfo.ensureIndex(&#123;&quot;loc&quot; : &quot;2d&quot;&#125;,&#123;&quot;background&quot; : true&#125;)</div><div class="line"></div><div class="line">插入数据：</div><div class="line"> db.mapinfo.insert(&#123;&quot;category&quot; : &quot;coffee&quot;,&quot;name&quot; : &quot;digoal coffee bar&quot;,&quot;loc&quot; : [70,80]&#125;)</div><div class="line">db.mapinfo.insert(&#123;&quot;category&quot; : &quot;tea&quot;,&quot;name&quot; : &quot;digoal tea bar&quot;,&quot;loc&quot; : [70,80]&#125;)      </div><div class="line">db.mapinfo.insert(&#123;&quot;category&quot; : &quot;tea&quot;,&quot;name&quot; : &quot;hangzhou tea bar&quot;,&quot;loc&quot; : [71,81]&#125;)</div><div class="line">db.mapinfo.insert(&#123;&quot;category&quot; : &quot;coffee&quot;,&quot;name&quot; : &quot;hangzhou coffee bar&quot;,&quot;loc&quot; : [71,81]&#125;)</div><div class="line"></div><div class="line">索引查询数据：所有的咖啡店，位置靠近 精度 维度69 69的店，会默认按照near排序的</div><div class="line"> db.mapinfo.find(&#123;loc : &#123;$near : [69,69]&#125;,&quot;category&quot; : &quot;coffee&quot;&#125;)</div><div class="line"></div><div class="line"># 找出限制离[50,50]在37 的商店,使用maxDistance</div><div class="line">&gt; db.mapinfo.find(&#123;&quot;loc&quot; : &#123;&quot;$near&quot; : [50,50], &quot;$maxDistance&quot; : 37&#125;,&quot;category&quot; : &quot;shop&quot;&#125;)</div><div class="line"></div><div class="line">// maxDistance单位是弧度, 地球表面1弧度距离约为6378137米, 0.001弧度距离为6378米</div><div class="line">db.col.find(&#123;&quot;loc&quot;: &#123;$near: [longtitude, lattitude], $maxDistance:0.1&#125;&#125;)</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="全文检索命令"><a href="#全文检索命令" class="headerlink" title="全文检索命令"></a>全文检索命令</h1><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">db.posts.ensureIndex(&#123;post_text:&quot;text&quot;&#125;)</div><div class="line">db.posts.dropIndex(&quot;post_text&quot;)</div><div class="line">db.posts.find(&#123;$text:&#123;$search:&quot;runoob&quot;&#125;&#125;)</div><div class="line">//排除掉含java的检索结果</div><div class="line">db.posts.find(&#123;$text:&#123;$search:&quot;runoob -java&quot;&#125;&#125;)</div></pre></td></tr></table></figure>
+<h1 id="demo"><a href="#demo" class="headerlink" title="demo"></a>demo</h1><ul>
+<li>基于地理位置的搜索功能（Done）</li>
+<li>做一个大的日志保存和搜索的功能</li>
+<li>练习一下负载均衡和单片扩展的功能。支持创建唯一索引、二级索引、TTL索引和地理位置索引等</li>
+<li>多数据源的引入，和mysql整合在一起使用</li>
+</ul>
+<h1 id="实战1（整合spring注解）"><a href="#实战1（整合spring注解）" class="headerlink" title="实战1（整合spring注解）"></a>实战1（整合spring注解）</h1><p>依赖jar<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;properties&gt;</div><div class="line">	&lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;</div><div class="line">	&lt;spring.data.mongodb&gt;1.9.2.RELEASE&lt;/spring.data.mongodb&gt;</div><div class="line">	&lt;mongodb.java.driver&gt;3.2.2&lt;/mongodb.java.driver&gt;</div><div class="line">	&lt;fastjson.version&gt;1.2.3&lt;/fastjson.version&gt;</div><div class="line">	&lt;spring.version&gt;4.2.6.RELEASE&lt;/spring.version&gt;</div><div class="line">	&lt;jackson.version&gt;2.7.0&lt;/jackson.version&gt;</div><div class="line">	&lt;junit&gt;3.8.1&lt;/junit&gt;</div><div class="line">&lt;/properties&gt;</div><div class="line"></div><div class="line">	&lt;dependency&gt;</div><div class="line">		&lt;groupId&gt;org.mongodb&lt;/groupId&gt;</div><div class="line">		&lt;artifactId&gt;mongo-java-driver&lt;/artifactId&gt;</div><div class="line">		&lt;version&gt;$&#123;mongodb.java.driver&#125;&lt;/version&gt;</div><div class="line">	&lt;/dependency&gt;</div><div class="line"></div><div class="line">       &lt;dependency&gt;</div><div class="line">	    &lt;groupId&gt;org.springframework.data&lt;/groupId&gt;</div><div class="line">	    &lt;artifactId&gt;spring-data-mongodb&lt;/artifactId&gt;</div><div class="line">	    &lt;version&gt;$&#123;spring.data.mongodb&#125;&lt;/version&gt;</div><div class="line">	&lt;/dependency&gt;</div></pre></td></tr></table></figure></p>
+<p>spring 配置<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;mongo:mongo-client id=&quot;mongo&quot; replica-set=&quot;$&#123;mongo.hostport&#125;&quot;/&gt;</div><div class="line"></div><div class="line">&lt;mongo:db-factory dbname=&quot;database&quot; mongo-ref=&quot;mongo&quot; /&gt;</div><div class="line"></div><div class="line">&lt;bean id=&quot;mongoTemplate&quot; class=&quot;org.springframework.data.mongodb.core.MongoTemplate&quot;&gt;</div><div class="line">    &lt;constructor-arg ref=&quot;mongo&quot; /&gt;</div><div class="line">    &lt;constructor-arg name=&quot;databaseName&quot; value=&quot;$&#123;mongo.databaseName&#125;&quot; /&gt;</div><div class="line">&lt;/bean&gt;</div></pre></td></tr></table></figure></p>
+<p>实体类UserBo，通过mongoDB的注解@Document来实现指定集合和ID<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">import org.springframework.data.annotation.Id;</div><div class="line">import org.springframework.data.mongodb.core.mapping.Document;</div><div class="line"></div><div class="line">@Document(collection=&quot;user_test&quot;)</div><div class="line">public class UserBo implements Serializable&#123;</div><div class="line">	private static final long serialVersionUID = 2928923917001675021L;</div><div class="line">		@Id</div><div class="line">		private String id; //对应文档里面的 _id </div><div class="line">	</div><div class="line">		private String userNo;</div></pre></td></tr></table></figure></p>
+<p>引入mongoTemplate直接操作<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Autowired</div><div class="line">private MongoTemplate mongoTemplate;</div><div class="line">public UserBo save(UserBo userBo) &#123;</div><div class="line">	mongoTemplate.save(userBo);</div><div class="line">	return userBo;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="实战-位置查询"><a href="#实战-位置查询" class="headerlink" title="实战 位置查询"></a>实战 位置查询</h1><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">//查找point(100，50)附近相差2度的所有店铺，获取到的是 List哎</div><div class="line">public void testCircle()&#123;</div><div class="line">	Circle circle = new Circle(100, 50, 2);</div><div class="line">	List&lt;Shop&gt; find = mongoTemplate.find(new Query(Criteria.where(&quot;location&quot;).within(circle)), Shop.class);</div><div class="line">       System.out.println(find);</div><div class="line">       System.out.println(find.size());</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">/**等价于 这个sql，距离 100 50这个点距离100KM以内的所有的店</div><div class="line"> * db.shops.find( &#123; location : &#123; $geoWithin :  </div><div class="line">                               &#123; $centerSphere :  </div><div class="line">                                  [ [ 100 , 50 ] , 62.137119/ 3963.2 ]  </div><div class="line">                    &#125; &#125; &#125; ) </div><div class="line"> */</div><div class="line">public void testNear()&#123;</div><div class="line">	Point point = new Point(100, 50);</div><div class="line">	//10km</div><div class="line">	Sphere sphere = new Sphere(point, 62.137119 / 3963.2);  </div><div class="line">       List&lt;Shop&gt; venues = </div><div class="line">               mongoTemplate.find(new Query(Criteria.where(&quot;location&quot;).within(sphere)), Shop.class);</div><div class="line">       System.out.println(venues.size());</div><div class="line">       System.out.println(venues);</div><div class="line">&#125;</div></pre></td></tr></table></figure>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/12/29/MongoDB/" data-title="MongoDB | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/01/04/Mysql大纲_存储引擎/" title="Mysql大纲、存储引擎">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Mysql大纲、存储引擎</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/12/26/dubbo/"  title="dubbo实战">
+ <strong>下一篇：</strong><br/> 
+ <span>dubbo实战
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/12/29/MongoDB/" data-title="MongoDB" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/12/29/MongoDB/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#示例源码"><span class="toc-number">1.</span> <span class="toc-text">示例源码</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#特点"><span class="toc-number">2.</span> <span class="toc-text">特点</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#特点描述"><span class="toc-number">2.1.</span> <span class="toc-text">特点描述</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#单片集群功能"><span class="toc-number">3.</span> <span class="toc-text">单片集群功能</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#适用场景"><span class="toc-number">4.</span> <span class="toc-text">适用场景</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#有待学习的"><span class="toc-number">5.</span> <span class="toc-text">有待学习的</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#安装和初步使用"><span class="toc-number">6.</span> <span class="toc-text">安装和初步使用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#启动"><span class="toc-number">6.1.</span> <span class="toc-text">启动</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#基本指令"><span class="toc-number">7.</span> <span class="toc-text">基本指令</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#全文检索命令"><span class="toc-number">8.</span> <span class="toc-text">全文检索命令</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#demo"><span class="toc-number">9.</span> <span class="toc-text">demo</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实战1（整合spring注解）"><span class="toc-number">10.</span> <span class="toc-text">实战1（整合spring注解）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实战-位置查询"><span class="toc-number">11.</span> <span class="toc-text">实战 位置查询</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

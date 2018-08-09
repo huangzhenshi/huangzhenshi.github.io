@@ -1,0 +1,505 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Redis、Memcache | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="Redis特点 速度快，利用内存保存数据 支持丰富数据类型，支持string，list，set，sorted set，hash 支持事务，操作都是原子性，所谓的原子性就是对数据的更改要么全部执行，要么全部不执行 丰富的特性：可用于缓存，消息，按key设置过期时间，过期后将会自动删除  Redis 目标搭建一套完整的 分布式高可用带缓存的web服务器了  redis+spring+generator">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis、Memcache">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/12/04/Redis_Memcache/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="Redis特点 速度快，利用内存保存数据 支持丰富数据类型，支持string，list，set，sorted set，hash 支持事务，操作都是原子性，所谓的原子性就是对数据的更改要么全部执行，要么全部不执行 丰富的特性：可用于缓存，消息，按key设置过期时间，过期后将会自动删除  Redis 目标搭建一套完整的 分布式高可用带缓存的web服务器了  redis+spring+generator">
+<meta property="og:updated_time" content="2017-12-07T08:50:26.014Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis、Memcache">
+<meta name="twitter:description" content="Redis特点 速度快，利用内存保存数据 支持丰富数据类型，支持string，list，set，sorted set，hash 支持事务，操作都是原子性，所谓的原子性就是对数据的更改要么全部执行，要么全部不执行 丰富的特性：可用于缓存，消息，按key设置过期时间，过期后将会自动删除  Redis 目标搭建一套完整的 分布式高可用带缓存的web服务器了  redis+spring+generator">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/12/04/Redis_Memcache/" title="Redis、Memcache" itemprop="url">Redis、Memcache</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2017-12-04T08:00:52.922Z" itemprop="datePublished"> Published 2017-12-04</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis特点"><span class="toc-number">1.</span> <span class="toc-text">Redis特点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis-目标"><span class="toc-number">2.</span> <span class="toc-text">Redis 目标</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis-instal"><span class="toc-number">2.1.</span> <span class="toc-text">Redis instal</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis-启动和连接"><span class="toc-number">2.2.</span> <span class="toc-text">Redis 启动和连接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis-常见命令"><span class="toc-number">2.3.</span> <span class="toc-text">Redis 常见命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis-集成spring"><span class="toc-number">2.4.</span> <span class="toc-text">Redis 集成spring</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis重写keyGenerator"><span class="toc-number">2.5.</span> <span class="toc-text">Redis重写keyGenerator</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis-参考demo"><span class="toc-number">2.6.</span> <span class="toc-text">Redis 参考demo</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis-实现session共享"><span class="toc-number">3.</span> <span class="toc-text">Redis 实现session共享</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Memcache"><span class="toc-number">4.</span> <span class="toc-text">Memcache</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="Redis特点"><a href="#Redis特点" class="headerlink" title="Redis特点"></a>Redis特点</h1><ul>
+<li>速度快，利用内存保存数据</li>
+<li>支持丰富数据类型，支持string，list，set，sorted set，hash</li>
+<li>支持事务，操作都是原子性，所谓的原子性就是对数据的更改要么全部执行，要么全部不执行</li>
+<li>丰富的特性：可用于缓存，消息，按key设置过期时间，过期后将会自动删除</li>
+</ul>
+<h1 id="Redis-目标"><a href="#Redis-目标" class="headerlink" title="Redis 目标"></a>Redis 目标</h1><p>搭建一套完整的 分布式高可用带缓存的web服务器了</p>
+<ol>
+<li>redis+spring+generator(Done)</li>
+<li>nginx +redis+spring +多tomcat +zookeeper</li>
+<li>spring @cacheable 等多缓存接口的整理</li>
+</ol>
+<h2 id="Redis-instal"><a href="#Redis-instal" class="headerlink" title="Redis instal"></a>Redis instal</h2><p><a href="https://www.cnblogs.com/piaolingzxh/p/4199999.html" target="_blank" rel="external">https://www.cnblogs.com/piaolingzxh/p/4199999.html</a></p>
+<h2 id="Redis-启动和连接"><a href="#Redis-启动和连接" class="headerlink" title="Redis 启动和连接"></a>Redis 启动和连接</h2><p>详细API  <a href="http://doc.redisfans.com/" target="_blank" rel="external">http://doc.redisfans.com/</a></p>
+<ul>
+<li>启动</li>
+</ul>
+<p>默认模式启动<br>redis-server.exe &amp;</p>
+<p>按照config 设置模式启动(例如设置默认端口和连接密码）<br>redis-server.exe redis.windows.conf</p>
+<p>可以在redis.windows.conf 设置连接密码<br>requirepass 123456</p>
+<ul>
+<li>客户端连接redis服务器 密码<br>redis-cli.exe -h 127.0.0.1 -p 6379 -a 123456</li>
+</ul>
+<h2 id="Redis-常见命令"><a href="#Redis-常见命令" class="headerlink" title="Redis 常见命令"></a>Redis 常见命令</h2><ul>
+<li>keys *    #查看所有的键</li>
+<li><p>存取字符串<br>set name ‘huangzhenshi’  #设置键值对<br>get name</p>
+</li>
+<li><p>存取list<br>lpush 命令往集合里面放东西<br>lpush emp huangzs1<br>lpush emp huangzs2<br>lpush emp huangzs3</p>
+<p>lrange 从里面获取，从第一个开始取，取到下标的最后一个<br>lrange emp 0 -1</p>
+</li>
+<li><p>删除key<br>DEL name</p>
+</li>
+<li><p>exists 查看是否存在，是返回1 无返回0<br>exists name</p>
+</li>
+<li><p>HSET  website google ‘www.google.com’</p>
+</li>
+<li>HGET website google<br>按照hashmap的结构，在 website命名的 hashmap的key值为google， value为 ‘www.google.com’</li>
+</ul>
+<h2 id="Redis-集成spring"><a href="#Redis-集成spring" class="headerlink" title="Redis 集成spring"></a>Redis 集成spring</h2><ul>
+<li>maven 依赖</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;!-- redis cache related.....start --&gt;</div><div class="line">	&lt;dependency&gt;</div><div class="line">		&lt;groupId&gt;org.springframework.data&lt;/groupId&gt;</div><div class="line">		&lt;artifactId&gt;spring-data-redis&lt;/artifactId&gt;</div><div class="line">		&lt;version&gt;1.6.0.RELEASE&lt;/version&gt;</div><div class="line">	&lt;/dependency&gt;</div><div class="line">	&lt;dependency&gt;</div><div class="line">		&lt;groupId&gt;redis.clients&lt;/groupId&gt;</div><div class="line">		&lt;artifactId&gt;jedis&lt;/artifactId&gt;</div><div class="line">		&lt;version&gt;2.7.3&lt;/version&gt;</div><div class="line">	&lt;/dependency&gt;</div><div class="line">	&lt;!-- redis cache related.....end --&gt;</div></pre></td></tr></table></figure>
+<ul>
+<li><p>配置 poolConfig、jedisConnectionFactory、redisTemplate</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;!-- redis  config  start --&gt;</div><div class="line">&lt;!-- 配置JedisPoolConfig实例 --&gt;</div><div class="line">&lt;bean id=&quot;poolConfig&quot; class=&quot;redis.clients.jedis.JedisPoolConfig&quot;&gt;</div><div class="line">	&lt;property name=&quot;maxIdle&quot; value=&quot;$&#123;redis.maxIdle&#125;&quot; /&gt;</div><div class="line">	&lt;property name=&quot;maxTotal&quot; value=&quot;$&#123;redis.maxActive&#125;&quot; /&gt;</div><div class="line">	&lt;property name=&quot;maxWaitMillis&quot; value=&quot;$&#123;redis.maxWait&#125;&quot; /&gt;</div><div class="line">	&lt;property name=&quot;testOnBorrow&quot; value=&quot;$&#123;redis.testOnBorrow&#125;&quot; /&gt;</div><div class="line">&lt;/bean&gt;</div><div class="line"></div><div class="line">&lt;!-- 配置JedisConnectionFactory --&gt;</div><div class="line">&lt;bean id=&quot;jedisConnectionFactory&quot; class=&quot;org.springframework.data.redis.connection.jedis.JedisConnectionFactory&quot;&gt;</div><div class="line">	&lt;property name=&quot;hostName&quot; value=&quot;$&#123;redis.host&#125;&quot;/&gt;</div><div class="line">	&lt;property name=&quot;port&quot; value=&quot;$&#123;redis.port&#125;&quot;/&gt;</div><div class="line">	&lt;property name=&quot;database&quot; value=&quot;$&#123;redis.dbIndex&#125;&quot;/&gt;</div><div class="line">	&lt;property name=&quot;poolConfig&quot; ref=&quot;poolConfig&quot;/&gt;</div><div class="line">&lt;/bean&gt;</div><div class="line"></div><div class="line">&lt;!-- 配置RedisTemplate --&gt;</div><div class="line">&lt;bean id=&quot;redisTemplate&quot; class=&quot;org.springframework.data.redis.core.RedisTemplate&quot;&gt;</div><div class="line">	&lt;property name=&quot;connectionFactory&quot; ref=&quot;jedisConnectionFactory&quot;/&gt;</div><div class="line">&lt;/bean&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>service层调用</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">   @Cacheable(value=&quot;getById&quot;)</div><div class="line">public String getById(Integer id) &#123;</div><div class="line">	return template.selectOne(&quot;com.lyz.user.mapper.UserMapper.getNameById&quot;, id);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="Redis重写keyGenerator"><a href="#Redis重写keyGenerator" class="headerlink" title="Redis重写keyGenerator"></a>Redis重写keyGenerator</h2><p>因为默认情况下，redis的key为 方法名拼接参数的名，例如下面的keyId 为 getByIdid1<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">   @Cacheable(value=&quot;getById&quot;)</div><div class="line">public String getById(Integer id) &#123;</div><div class="line">	return template.selectOne(&quot;com.lyz.user.mapper.UserMapper.getNameById&quot;, id);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>添加配置application.xml<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;!-- 配置RedisCacheManager --&gt;</div><div class="line">&lt;bean id=&quot;redisCacheManager&quot; class=&quot;org.springframework.data.redis.cache.RedisCacheManager&quot;&gt;</div><div class="line">     &lt;constructor-arg name=&quot;redisOperations&quot; ref=&quot;redisTemplate&quot; /&gt;</div><div class="line">	&lt;property name=&quot;defaultExpiration&quot; value=&quot;$&#123;redis.expiration&#125;&quot;/&gt;</div><div class="line">&lt;/bean&gt;</div><div class="line"></div><div class="line">&lt;!-- 配置RedisCacheConfig --&gt;</div><div class="line">&lt;bean id=&quot;redisCacheConfig&quot; class=&quot;com.lyz.cache.redis.RedisCacheConfig&quot;&gt;</div><div class="line">	&lt;constructor-arg ref=&quot;jedisConnectionFactory&quot; /&gt;</div><div class="line">	&lt;constructor-arg ref=&quot;redisTemplate&quot; /&gt;</div><div class="line">	&lt;constructor-arg ref=&quot;redisCacheManager&quot; /&gt;</div><div class="line">&lt;/bean&gt;</div></pre></td></tr></table></figure></p>
+<h2 id="Redis-参考demo"><a href="#Redis-参考demo" class="headerlink" title="Redis 参考demo"></a>Redis 参考demo</h2><p><a href="https://github.com/huangzhenshi/SSM_REDIS_ANNOTATION_DEMO/tree/master">https://github.com/huangzhenshi/SSM_REDIS_ANNOTATION_DEMO/tree/master</a><br>注意事项：</p>
+<ul>
+<li><p>访问url 要加 *.do  如下所示<br><a href="http://localhost:8082/lyz/getUserById.do?id=1" target="_blank" rel="external">http://localhost:8082/lyz/getUserById.do?id=1</a></p>
+</li>
+<li><p>开先开启redis才行啊</p>
+</li>
+<li>mysql 数据库  创建 lyz 数据库，导入对应的初始数据，数据库 root  123456</li>
+</ul>
+<h1 id="Redis-实现session共享"><a href="#Redis-实现session共享" class="headerlink" title="Redis 实现session共享"></a>Redis 实现session共享</h1><p>注意事项： 在nginx 配置 ip_hash的话，会根据IP解决负载的问题，分析IP地址，每个用户每次都会访问同一个服务器，但是如果是内网的话，大家实际的IP是一个，所以不适合用户在一个公司，而适合真正的不同的IP地址的访问<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">    upstream my_tomcat &#123; </div><div class="line">      ip_hash;</div><div class="line">      server  127.0.0.1:8082; </div><div class="line">      server  127.0.0.1:8080; </div><div class="line">      &#125; </div><div class="line">```		</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">参考demo2：</div><div class="line">https://github.com/huangzhenshi/SSM_REDIS_ANNOTATION_DEMO/tree/master</div><div class="line">- pom 添加依赖</div></pre></td></tr></table></figure></p>
+<pre><code>&lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.session&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-session-data-redis&lt;/artifactId&gt;
+      &lt;version&gt;1.1.1.RELEASE&lt;/version&gt;
+      &lt;type&gt;pom&lt;/type&gt;
+&lt;/dependency&gt;
+</code></pre><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"></div><div class="line">- application 配置里面添加管理的session Bean</div></pre></td></tr></table></figure>
+<pre><code>  &lt;!-- session设置 --&gt;
+&lt;bean class=&quot;org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration&quot;&gt;
+    &lt;property name=&quot;maxInactiveIntervalInSeconds&quot; value=&quot;3600&quot;&gt;&lt;/property&gt;
+&lt;/bean&gt;
+</code></pre><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">- web.xml里面添加过滤，要放在最前面的位置</div></pre></td></tr></table></figure>
+<p>  <filter><br>    <filter-name>springSessionRepositoryFilter</filter-name><br>    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class><br>  </filter><br>  <filter-mapping><br>    <filter-name>springSessionRepositoryFilter</filter-name><br>    <url-pattern>/*</url-pattern><br>  </filter-mapping><br>```</p>
+<h1 id="Memcache"><a href="#Memcache" class="headerlink" title="Memcache"></a>Memcache</h1><p>参考blog:<br><a href="http://blog.csdn.net/l1028386804/article/category/5792345" target="_blank" rel="external">http://blog.csdn.net/l1028386804/article/category/5792345</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/12/04/Redis_Memcache/" data-title="Redis、Memcache | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2017/12/07/nginx实战/" title="nginx 实战">
+  <strong>上一篇：</strong><br/>
+  <span>
+  nginx 实战</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/12/02/缓存、消息队列总篇/"  title="缓存、分布式">
+ <strong>下一篇：</strong><br/> 
+ <span>缓存、分布式
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/12/04/Redis_Memcache/" data-title="Redis、Memcache" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/12/04/Redis_Memcache/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis特点"><span class="toc-number">1.</span> <span class="toc-text">Redis特点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis-目标"><span class="toc-number">2.</span> <span class="toc-text">Redis 目标</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis-instal"><span class="toc-number">2.1.</span> <span class="toc-text">Redis instal</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis-启动和连接"><span class="toc-number">2.2.</span> <span class="toc-text">Redis 启动和连接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis-常见命令"><span class="toc-number">2.3.</span> <span class="toc-text">Redis 常见命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis-集成spring"><span class="toc-number">2.4.</span> <span class="toc-text">Redis 集成spring</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis重写keyGenerator"><span class="toc-number">2.5.</span> <span class="toc-text">Redis重写keyGenerator</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis-参考demo"><span class="toc-number">2.6.</span> <span class="toc-text">Redis 参考demo</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis-实现session共享"><span class="toc-number">3.</span> <span class="toc-text">Redis 实现session共享</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Memcache"><span class="toc-number">4.</span> <span class="toc-text">Memcache</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

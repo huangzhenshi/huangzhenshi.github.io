@@ -1,0 +1,509 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>排序算法 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="不同算法之间的比较总则：1）结合实际数据的情况  数组的数量不大的情况下，其实比较算法的优劣根本没有意义,相对来说，数量不大的情况下，插入排序比快排 归并排序 堆排序更快 内存非常充裕的时候，最佳的算法又不同了,归并排序就有意义了； 如果数组已经是一个接近有序的数组，插入排序就是最快的。  2）结合计算机的实际情况排序的性能消耗包括：   查找的成本  例如取arr[3]  和从链表中 取Node">
+<meta property="og:type" content="article">
+<meta property="og:title" content="排序算法">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/10/28/排序算法总结/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="不同算法之间的比较总则：1）结合实际数据的情况  数组的数量不大的情况下，其实比较算法的优劣根本没有意义,相对来说，数量不大的情况下，插入排序比快排 归并排序 堆排序更快 内存非常充裕的时候，最佳的算法又不同了,归并排序就有意义了； 如果数组已经是一个接近有序的数组，插入排序就是最快的。  2）结合计算机的实际情况排序的性能消耗包括：   查找的成本  例如取arr[3]  和从链表中 取Node">
+<meta property="og:image" content="https://github.com/img/performance.png">
+<meta property="og:updated_time" content="2017-10-31T09:01:19.085Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="排序算法">
+<meta name="twitter:description" content="不同算法之间的比较总则：1）结合实际数据的情况  数组的数量不大的情况下，其实比较算法的优劣根本没有意义,相对来说，数量不大的情况下，插入排序比快排 归并排序 堆排序更快 内存非常充裕的时候，最佳的算法又不同了,归并排序就有意义了； 如果数组已经是一个接近有序的数组，插入排序就是最快的。  2）结合计算机的实际情况排序的性能消耗包括：   查找的成本  例如取arr[3]  和从链表中 取Node">
+<meta name="twitter:image" content="https://github.com/img/performance.png">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/10/28/排序算法总结/" title="排序算法" itemprop="url">排序算法</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2017-10-28T08:21:20.000Z" itemprop="datePublished"> 发表于 2017-10-28</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#不同算法之间的比较"><span class="toc-number">1.</span> <span class="toc-text">不同算法之间的比较</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#总则："><span class="toc-number">1.1.</span> <span class="toc-text">总则：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#性能可视化"><span class="toc-number">1.2.</span> <span class="toc-text">性能可视化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#源码下载"><span class="toc-number">1.3.</span> <span class="toc-text">源码下载</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#经典排序算法概要分析"><span class="toc-number">2.</span> <span class="toc-text">经典排序算法概要分析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#选择排序"><span class="toc-number">2.1.</span> <span class="toc-text">选择排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#冒泡排序"><span class="toc-number">2.2.</span> <span class="toc-text">冒泡排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#插入排序"><span class="toc-number">2.3.</span> <span class="toc-text">插入排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#希尔排序"><span class="toc-number">2.4.</span> <span class="toc-text">希尔排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#快速排序"><span class="toc-number">2.5.</span> <span class="toc-text">快速排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#归并排序"><span class="toc-number">2.6.</span> <span class="toc-text">归并排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#堆排序"><span class="toc-number">2.7.</span> <span class="toc-text">堆排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#优先队列"><span class="toc-number">2.8.</span> <span class="toc-text">优先队列</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#关键代码实现"><span class="toc-number">3.</span> <span class="toc-text">关键代码实现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#选择排序代码"><span class="toc-number">3.1.</span> <span class="toc-text">选择排序代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#冒泡排序代码"><span class="toc-number">3.2.</span> <span class="toc-text">冒泡排序代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#插入排序代码"><span class="toc-number">3.3.</span> <span class="toc-text">插入排序代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#希尔排序代码"><span class="toc-number">3.4.</span> <span class="toc-text">希尔排序代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#快速排序代码"><span class="toc-number">3.5.</span> <span class="toc-text">快速排序代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#归并排序代码"><span class="toc-number">3.6.</span> <span class="toc-text">归并排序代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#堆排序代码"><span class="toc-number">3.7.</span> <span class="toc-text">堆排序代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#优先队列代码"><span class="toc-number">3.8.</span> <span class="toc-text">优先队列代码</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="不同算法之间的比较"><a href="#不同算法之间的比较" class="headerlink" title="不同算法之间的比较"></a>不同算法之间的比较</h1><h2 id="总则："><a href="#总则：" class="headerlink" title="总则："></a>总则：</h2><p>1）结合实际数据的情况</p>
+<ul>
+<li>数组的数量不大的情况下，其实比较算法的优劣根本没有意义,相对来说，数量不大的情况下，插入排序比快排 归并排序 堆排序更快</li>
+<li>内存非常充裕的时候，最佳的算法又不同了,归并排序就有意义了；</li>
+<li>如果数组已经是一个接近有序的数组，插入排序就是最快的。</li>
+</ul>
+<p>2）结合计算机的实际情况<br>排序的性能消耗包括： </p>
+<ul>
+<li>查找的成本<br>  例如取arr[3]  和从链表中 取Node[3]的消耗完全不同，当查找的性能不重要的时候，通过链表来实现排序，可能算法非常不同（例如基于二分查找的插入排序 会比用数组的普通插入排序要快的多）</li>
+<li>交换的成本 ，当交换的成本变得很高的时候，选择排序或许就是最佳的排序方式</li>
+<li>比较的成本 </li>
+</ul>
+<h2 id="性能可视化"><a href="#性能可视化" class="headerlink" title="性能可视化"></a>性能可视化</h2><p>在JDK 1.6 环境下，一个数组数量初始为1000，按照1000递增到10000大小，排序所耗费的毫秒数，见下图。 其中希尔排序使因为性能远远高于插入和冒泡，图像是灰色靠近X轴</p>
+<p><img src="/img/performance.png" alt="冒泡、插入、希尔排序性能比较"></p>
+<h2 id="源码下载"><a href="#源码下载" class="headerlink" title="源码下载"></a>源码下载</h2><p><a href="https://github.com/huangzhenshi/Algorithms_Fourth">https://github.com/huangzhenshi/Algorithms_Fourth</a></p>
+<h1 id="经典排序算法概要分析"><a href="#经典排序算法概要分析" class="headerlink" title="经典排序算法概要分析"></a>经典排序算法概要分析</h1><h2 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h2><p>1）原理：遍历所有的元素，min作为指针找到最小的元素的下标，结束后，替换第i个元素和最小的元素交换位置,一直到最后一个元素为止。<br>2）特点：</p>
+<ul>
+<li>不需要额外的内存空间</li>
+<li>交换的次数是所有的排序算法里面最少的，当交换的成本很高的时候，冒泡排序就是最高效的排序算法</li>
+<li>缺点是比较的次数太多了，每次排序了一个元素之后，第二次查询未用到第一次查询累计的结果</li>
+<li>时间复杂度是平方级别的。</li>
+</ul>
+<h2 id="冒泡排序"><a href="#冒泡排序" class="headerlink" title="冒泡排序"></a>冒泡排序</h2><p>1）原理：在要排序的一组数中，对当前还未排好序的范围内的全部数，自上而下对相邻的两个数依次进行比较和调整，让较大的数往下沉，较小的往上冒。即：每当两相邻的数比较后发现它们的排序与排序要求相反时，就将它们互换。</p>
+<p>2）特点：就是选择排序的糟糕版本，需要和选择排序相同的比较次数，和比较次数相同的交换次数，原本可以用一个下标标识最大值元素就可以避免大量的交换，可谓是糟糕的算法</p>
+<h2 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h2><p>1）原理：桥牌打发，从二个元素开始，维护一个递增的数组，如果某元素小于 最大值，就和最大值互换位置，与次大值比较</p>
+<p>2）特点：</p>
+<ul>
+<li>最适合已经有序或者基本有序的数组（数组中只有几个元素的位置不正确，每个元素距离它的最终位置都不远）</li>
+<li>数组的数量较少时，插入排序最优，一般JDK1.7 认定数量小于47的时候默认就用插入排序了。</li>
+<li>时间复杂度 N平方级别，但是比冒泡排序要快，但是交换的次数更多</li>
+</ul>
+<h2 id="希尔排序"><a href="#希尔排序" class="headerlink" title="希尔排序"></a>希尔排序</h2><p>1）原理：基于插入排序的加强版，先大跨度的做插入排序（先13调，调完再按4来调），基本接近最后位置，再按照1的一次完整插入排序.任意相隔 H 的元素都是有序的，由许许多个独立的有序的小数组组成</p>
+<p>2）特点：</p>
+<ul>
+<li>小小的一个改进，让时间复杂度变成 N 1&lt;X&lt;2次方级别</li>
+</ul>
+<p>3）备注：<br>网上的版本不一样，有的是按照size/2 的递减，不是按照 h=h*3+1 这种递增。</p>
+<h2 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h2><p>1）原理：获取一个随机且不重复的数组（如果不随机的话，需要随机打乱）；每次把首位元素作为哨兵，通过遍历，找到该哨兵在这个数组中的准确位置，交换位置后；把数组拦截成3部分: 所有的比哨兵小的数组、哨兵、所有的比哨兵大的数组；然后递归，直至全部有序。</p>
+<p>2）特点：</p>
+<ul>
+<li>需要该数组的分布是随机的，每次的哨兵才能更好的把大数组变成两个小数组</li>
+<li>时间复杂度 N*LOG(N)</li>
+</ul>
+<p>3）改进算法：</p>
+<ul>
+<li>三向快速排序，可以实现含有重复值的快速排序，更能适应实际问题</li>
+<li>当递归后数组的长度小于某个常数的时候，改用插入排序，会明显提升性能</li>
+</ul>
+<h2 id="归并排序"><a href="#归并排序" class="headerlink" title="归并排序"></a>归并排序</h2><p>1）原理：把一个数组两两切分，直到变成只有1个元素为止，再把每个有序的数组（只有1个元素肯定是有序的），两两归并，最后的数组就是一个有序的数组了。核心是一个把2个有序的数组归并为一个有序的数组的merge() 方法，然后递归合并即可。</p>
+<p>2）特点: </p>
+<ul>
+<li>每次都要new 一个长度一样的 aux[] 数组浪费内存</li>
+<li>性能不一定高才是关键</li>
+<li>不需要交换元素，直接重新赋值即可，从辅助数组中取数，赋值到原数组中</li>
+<li>加强版的归并排序，当数组长度小于10的时候用插入排序，可以大幅提升排序性能</li>
+<li>时间复杂度为O(nlog₂n) 这是该算法中最好、最坏和平均的时间性能。归并排序比较占用内存，但却是一种效率高且稳定的算法。</li>
+</ul>
+<h2 id="堆排序"><a href="#堆排序" class="headerlink" title="堆排序"></a>堆排序</h2><p>1）原理：基于优先队列的实现(关键是sink方法) </p>
+<ul>
+<li>先把数组变成一个 首位是null， 后续挨个的数组，此时为无序堆</li>
+<li>从N/2的位置开始，挨个sink排序，使无序堆有序</li>
+<li>挨个获取到堆顶元素 ，获取最大值，交换到数组末位，然后缩小长度，轮询操作</li>
+</ul>
+<p>2）特点：</p>
+<ul>
+<li>优先队列的引用，一个堆有序的结构，虽然不是数组有序，但是可以很小的成本找到最大值并且快速恢复堆有序。</li>
+<li>时间复杂度 N*LOG(N)</li>
+</ul>
+<h2 id="优先队列"><a href="#优先队列" class="headerlink" title="优先队列"></a>优先队列</h2><p>优先队列解决的问题：<br>1）快速的找到数组中的最大值<br>2）插入一个值，可以以对数级别的成本构建堆有序<br>3）删除最大值，可以以较小的成本恢复堆有序</p>
+<h1 id="关键代码实现"><a href="#关键代码实现" class="headerlink" title="关键代码实现"></a>关键代码实现</h1><h2 id="选择排序代码"><a href="#选择排序代码" class="headerlink" title="选择排序代码"></a>选择排序代码</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">	//数据源是一个不重复的数组</div><div class="line">	public void sort(int[] arr)&#123;</div><div class="line">	//从第一个数组开始和后面 (n-1）个数据比较，但是当i=最后一个的时候  arr[max]的时候就不需要比较了</div><div class="line">	for(int i=0;i&lt;arr.length-1;i++)&#123;</div><div class="line">		int min=i;</div><div class="line">		for(int j=i+1;j&lt;arr.length;j++)&#123;</div><div class="line">			if(less(arr[j],arr[min])) min=j;</div><div class="line">		&#125;</div><div class="line">		exch(arr,i,min);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="冒泡排序代码"><a href="#冒泡排序代码" class="headerlink" title="冒泡排序代码"></a>冒泡排序代码</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public  void sort(int[] arr)&#123;</div><div class="line">	for(int i=0;i&lt;arr.length-1;i++)&#123;</div><div class="line">		for(int j=1;j&lt;=arr.length-i-1;j++)&#123;</div><div class="line">			if(arr[j-1]&gt;arr[j])&#123;</div><div class="line">				exch(arr,j,j-1);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="插入排序代码"><a href="#插入排序代码" class="headerlink" title="插入排序代码"></a>插入排序代码</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">//数据源是一个不重复的数组</div><div class="line">//排序规则：桥牌打发，从二个元素开始，维护一个递增的数组，如果某元素小于 最大值，就和最大值互换位置，与次大值比较</div><div class="line">public static void sort(int[] arr)&#123;</div><div class="line">	count=0;</div><div class="line">	exchCount=0;</div><div class="line">	for(int i=1;i&lt;arr.length;i++)&#123;</div><div class="line">		int j=i;</div><div class="line">			while(j&gt;0&amp;&amp;less(arr[j],arr[j-1]))&#123;</div><div class="line">				exch(arr,j,j-1);</div><div class="line">				j--;</div><div class="line">			&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="希尔排序代码"><a href="#希尔排序代码" class="headerlink" title="希尔排序代码"></a>希尔排序代码</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">//排序规则：基于插入排序的加强版，先大跨度的做插入排序（先13调，调完再按4来调），基本接近最后位置，再按照1的一次完整插入排序</div><div class="line">//特点1）任意相隔 H 的元素都是有序的    2）由许许多个独立的有序的小数组组成 </div><div class="line">@Override</div><div class="line">public  void sort(int[] arr)&#123;</div><div class="line">	count=0;</div><div class="line">	exchCount=0;</div><div class="line">	int size=arr.length;</div><div class="line">	int h=1;</div><div class="line">	while(h&lt;size/3) h=h*3+1;   // 1 4 13 40 grow with size ,多乘一次，就多一次跨度的希尔排序</div><div class="line">	</div><div class="line">	while(h&gt;=1)&#123;</div><div class="line">		for(int i=h;i&lt;size;i++)&#123;</div><div class="line">			for(int j=i;j&gt;=h&amp;&amp;less(arr[j],arr[j-h]);j-=h)&#123;</div><div class="line">				exch(arr,j,j-h);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		h=h/3;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="快速排序代码"><a href="#快速排序代码" class="headerlink" title="快速排序代码"></a>快速排序代码</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">	//递归按照切分段 给数组排序</div><div class="line">public void sortPart(int[] arr,int lo,int hi)&#123;</div><div class="line">	if(lo&gt;=hi) return;</div><div class="line">	int index=partition(arr,lo,hi);</div><div class="line">	// 注意这里把数组分成3部分， 是 index-1 ； index；index+1 三部分</div><div class="line">	sortPart(arr,lo,index-1);</div><div class="line">	sortPart(arr,index+1,hi);</div><div class="line">&#125;</div><div class="line"></div><div class="line">// 功能： 1）移动数组   2）返回切分后的切分下标</div><div class="line">private static int partition(int[] arr,int lo,int hi)&#123;</div><div class="line">	int i=lo,j=hi+1;</div><div class="line">	int v=arr[lo];</div><div class="line">	while(true)&#123;</div><div class="line">		// 5  1 3 8 4 6 9 2 11   --&gt; 1 3 8  i=2  arr[2]=8      </div><div class="line">		</div><div class="line">		//标杆值 从初始位置挨个和后续元素比较，直到后续元素比标杆元素大，或者是后续元素到了最后的位置</div><div class="line">		//下标i 移动，直到找到比标杆元素大的下标为止，获取到i的值，要交换</div><div class="line">		while(less(arr[++i],v))&#123;</div><div class="line">			if(i&gt;=hi) break;</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		// 5  1 3 8 4 6 9 2 11  --&gt;2 11 j=7 arr[7]=2 </div><div class="line">		</div><div class="line">		while(less(v,arr[--j]))&#123;</div><div class="line">			if(j&lt;=lo) break;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		if(i&gt;=j) break;</div><div class="line">		//交换之后 因为i 和 j的值是在外面申明过的，所以不会重复比较之前比较过的对象 从 arr[i] -- arr[j] 区间继续比较</div><div class="line">		// 5  1 3 2      4 6 9       8 11  --&gt; 8  和 2 交换位置</div><div class="line">		exch(arr,i,j);</div><div class="line">	&#125;</div><div class="line">	//一定要记得 最后一次要把标杆值 和新的标杆值交换位置啊</div><div class="line">	exch(arr,lo,j);</div><div class="line">	return j;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="归并排序代码"><a href="#归并排序代码" class="headerlink" title="归并排序代码"></a>归并排序代码</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">	@Override</div><div class="line">public  void sort(int[] arr)&#123;</div><div class="line">	sort(arr,0,arr.length-1);</div><div class="line">&#125;</div><div class="line">//递归按照切分段 给数组排序</div><div class="line">public void sort(int[] arr,int lo,int hi)&#123;</div><div class="line">	if(lo&gt;=hi) return;</div><div class="line">    int mid=lo+(hi-lo)/2;</div><div class="line">	sort(arr,lo,mid);</div><div class="line">	sort(arr,mid+1,hi);</div><div class="line">	merge(arr,lo,mid,hi);</div><div class="line">&#125;</div><div class="line"></div><div class="line">// arr数组 arr[0] -- arr[mid] 是有序的数组； arr[mid+1] -- arr[hi] 也是有序的数组，当mid=0的时候，就只有一个元素的时候肯定就是有序的数组了</div><div class="line">public void merge(int[] arr, int lo,int mid,int hi)&#123;</div><div class="line">	//i 表示 arr1 的轮询到的下标位置， lo&lt;=i&lt;=mid  ； i++</div><div class="line">	int i=lo;</div><div class="line">	</div><div class="line">	//j 表示 arr2 的轮询到的下标位置，mid+1&lt;=j&lt;=hi ； j++</div><div class="line">	int j=mid+1;</div><div class="line">	</div><div class="line">	//申明一个数组作为辅助数组，拷贝出</div><div class="line">	int[] aux =new int[arr.length];</div><div class="line">	for(int k=lo;k&lt;=hi;k++)&#123;</div><div class="line">		aux[k]=arr[k];</div><div class="line">	&#125;</div><div class="line">	for(int k=lo;k&lt;=hi;k++)&#123;</div><div class="line">		//当第一个数组元素用尽的时候，后续就不需要调整了，因为后面的数组本来就是有序的</div><div class="line">		if(i&gt;mid) 						return;</div><div class="line">		//当第二个数组元素用尽的时候，就需要把前面的i之后的元素，填充到后面当中</div><div class="line">		else if(j&gt;hi)					arr[k]=aux[i++];</div><div class="line">		//记住这里是 用不变数值的 aux数组进行比较啊，千万不能用 arr 原数组比较啊，坑爹</div><div class="line">		else if(less(aux[j],aux[i]))    arr[k]=aux[j++];</div><div class="line">		else 							arr[k]=aux[i++];</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="堆排序代码"><a href="#堆排序代码" class="headerlink" title="堆排序代码"></a>堆排序代码</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">//不同于 MaxMQ，已知一个无序的堆，进行排序成 数组有序</div><div class="line">public void sort(List&lt;Integer&gt; list)&#123;</div><div class="line">	int N=list.size()-1;</div><div class="line">	//先把数组构建成堆结构</div><div class="line">	for(int k=N/2;k&gt;=1;k--)&#123;</div><div class="line">		sink(k,N);</div><div class="line">	&#125;</div><div class="line">	int copySize=N;</div><div class="line">	//需要重写 或者扩展 sink 方法，要让 sink 是根据 size大小进行下沉</div><div class="line">	//这里递减的要用 copySize啊，因为要循环N 次，如果直接用N--的话， k每增加一次 ，N就减少1次，只能做到一半的数据排序了</div><div class="line">	for(int k=1;k&lt;=N;k++)&#123;</div><div class="line">		exch(1,copySize);</div><div class="line">		sink(1,--copySize);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="优先队列代码"><a href="#优先队列代码" class="headerlink" title="优先队列代码"></a>优先队列代码</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public void swim(int index)&#123;</div><div class="line">		while(index&gt;1&amp;&amp;less(list.get(index/2),list.get(index)))&#123;</div><div class="line">				exch(index/2,index);</div><div class="line">			index=index/2;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	//递归的三个条件</div><div class="line">	//1)如果有子节点的话，就继续比较，可以是1个子节点，也可以是2个子节点</div><div class="line">	//2)如果有2个子节点且第二个子节点更大的话，最大子节点的下标就要++ ，也就是取第二个节点</div><div class="line">	//3)判断 父节点 和最大的子节点的大小</div><div class="line">	public void sink(int index)&#123;</div><div class="line">		//如果有子节点的话，就继续比较，可以是1个子节点，也可以是2个子节点</div><div class="line">		while(2*index&lt;=size())&#123;</div><div class="line">			int childmax=2*index;</div><div class="line">			//如果有2个子节点且第二个子节点更大的话，最大子节点的下标就要++ ，也就是取第二个节点</div><div class="line">			if(childmax+1&lt;=size()&amp;&amp;less(list.get(childmax),list.get(childmax+1)))&#123;</div><div class="line">				childmax++;</div><div class="line">			&#125;</div><div class="line">			</div><div class="line">			if(less(list.get(childmax),list.get(index))) break;</div><div class="line">			exch(childmax,index);</div><div class="line">			index=childmax;</div><div class="line">		&#125;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/10/28/排序算法总结/" data-title="排序算法 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2017/10/30/有趣的技术和好的资源/" title="有趣的技术 和好的资源">
+  <strong>上一篇：</strong><br/>
+  <span>
+  有趣的技术 和好的资源</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/10/28/HashMap数据结构/"  title="HashMap数据结构">
+ <strong>下一篇：</strong><br/> 
+ <span>HashMap数据结构
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/10/28/排序算法总结/" data-title="排序算法" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/10/28/排序算法总结/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#不同算法之间的比较"><span class="toc-number">1.</span> <span class="toc-text">不同算法之间的比较</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#总则："><span class="toc-number">1.1.</span> <span class="toc-text">总则：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#性能可视化"><span class="toc-number">1.2.</span> <span class="toc-text">性能可视化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#源码下载"><span class="toc-number">1.3.</span> <span class="toc-text">源码下载</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#经典排序算法概要分析"><span class="toc-number">2.</span> <span class="toc-text">经典排序算法概要分析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#选择排序"><span class="toc-number">2.1.</span> <span class="toc-text">选择排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#冒泡排序"><span class="toc-number">2.2.</span> <span class="toc-text">冒泡排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#插入排序"><span class="toc-number">2.3.</span> <span class="toc-text">插入排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#希尔排序"><span class="toc-number">2.4.</span> <span class="toc-text">希尔排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#快速排序"><span class="toc-number">2.5.</span> <span class="toc-text">快速排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#归并排序"><span class="toc-number">2.6.</span> <span class="toc-text">归并排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#堆排序"><span class="toc-number">2.7.</span> <span class="toc-text">堆排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#优先队列"><span class="toc-number">2.8.</span> <span class="toc-text">优先队列</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#关键代码实现"><span class="toc-number">3.</span> <span class="toc-text">关键代码实现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#选择排序代码"><span class="toc-number">3.1.</span> <span class="toc-text">选择排序代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#冒泡排序代码"><span class="toc-number">3.2.</span> <span class="toc-text">冒泡排序代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#插入排序代码"><span class="toc-number">3.3.</span> <span class="toc-text">插入排序代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#希尔排序代码"><span class="toc-number">3.4.</span> <span class="toc-text">希尔排序代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#快速排序代码"><span class="toc-number">3.5.</span> <span class="toc-text">快速排序代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#归并排序代码"><span class="toc-number">3.6.</span> <span class="toc-text">归并排序代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#堆排序代码"><span class="toc-number">3.7.</span> <span class="toc-text">堆排序代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#优先队列代码"><span class="toc-number">3.8.</span> <span class="toc-text">优先队列代码</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

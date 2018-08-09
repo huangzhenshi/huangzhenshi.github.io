@@ -1,0 +1,500 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>数据结构 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="经典数据结构 无序链表 数组 散列表（拉链表的hashmap 和线性探测法） 树结构 (二叉查找树 红黑树)  源码下载地址二分查找、二叉查找树、无序链表的代码https://github.com/huangzhenshi/Algorithms_Fourth 数据结构比较要解决的问题：维护一个有序的数据结构同时，实现下面的功能  快速的查找：是否存在该元素，查找到最大值最小值 支持灵活的操作：插入">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/10/30/数据结构/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="经典数据结构 无序链表 数组 散列表（拉链表的hashmap 和线性探测法） 树结构 (二叉查找树 红黑树)  源码下载地址二分查找、二叉查找树、无序链表的代码https://github.com/huangzhenshi/Algorithms_Fourth 数据结构比较要解决的问题：维护一个有序的数据结构同时，实现下面的功能  快速的查找：是否存在该元素，查找到最大值最小值 支持灵活的操作：插入">
+<meta property="og:updated_time" content="2017-10-31T11:17:09.759Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据结构">
+<meta name="twitter:description" content="经典数据结构 无序链表 数组 散列表（拉链表的hashmap 和线性探测法） 树结构 (二叉查找树 红黑树)  源码下载地址二分查找、二叉查找树、无序链表的代码https://github.com/huangzhenshi/Algorithms_Fourth 数据结构比较要解决的问题：维护一个有序的数据结构同时，实现下面的功能  快速的查找：是否存在该元素，查找到最大值最小值 支持灵活的操作：插入">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/10/30/数据结构/" title="数据结构" itemprop="url">数据结构</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2017-10-30T08:21:20.000Z" itemprop="datePublished"> 发表于 2017-10-30</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#经典数据结构"><span class="toc-number">1.</span> <span class="toc-text">经典数据结构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#源码下载地址"><span class="toc-number">1.1.</span> <span class="toc-text">源码下载地址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数据结构比较"><span class="toc-number">1.2.</span> <span class="toc-text">数据结构比较</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#无序链表"><span class="toc-number">1.3.</span> <span class="toc-text">无序链表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#性能消耗"><span class="toc-number">1.4.</span> <span class="toc-text">性能消耗</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二分查找维护有序数组"><span class="toc-number">1.5.</span> <span class="toc-text">二分查找维护有序数组</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二叉查找树维护有序数组"><span class="toc-number">1.6.</span> <span class="toc-text">二叉查找树维护有序数组</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#原理"><span class="toc-number">1.6.1.</span> <span class="toc-text">原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#性能分析"><span class="toc-number">1.6.2.</span> <span class="toc-text">性能分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#源码展示-难点在于递归"><span class="toc-number">1.6.3.</span> <span class="toc-text">源码展示 难点在于递归</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#平衡二叉树-红黑树、2-3树-维护有序数组"><span class="toc-number">1.7.</span> <span class="toc-text">平衡二叉树(红黑树、2-3树)维护有序数组</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#原理："><span class="toc-number">1.7.1.</span> <span class="toc-text">原理：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#特点："><span class="toc-number">1.7.2.</span> <span class="toc-text">特点：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#主要是插入有3种情况"><span class="toc-number">1.7.3.</span> <span class="toc-text">主要是插入有3种情况</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#性能"><span class="toc-number">1.7.4.</span> <span class="toc-text">性能</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#散列表"><span class="toc-number">1.8.</span> <span class="toc-text">散列表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#依赖高效的散列算法："><span class="toc-number">1.8.1.</span> <span class="toc-text">依赖高效的散列算法：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#经典散列方法："><span class="toc-number">1.8.2.</span> <span class="toc-text">经典散列方法：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#散列表的两种实现方式："><span class="toc-number">1.8.3.</span> <span class="toc-text">散列表的两种实现方式：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#拉链法："><span class="toc-number">1.8.4.</span> <span class="toc-text">拉链法：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#线性探测法："><span class="toc-number">1.8.5.</span> <span class="toc-text">线性探测法：</span></a></li></ol></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="经典数据结构"><a href="#经典数据结构" class="headerlink" title="经典数据结构"></a>经典数据结构</h1><ul>
+<li>无序链表</li>
+<li>数组</li>
+<li>散列表（拉链表的hashmap 和线性探测法）</li>
+<li>树结构 (二叉查找树 红黑树)</li>
+</ul>
+<h2 id="源码下载地址"><a href="#源码下载地址" class="headerlink" title="源码下载地址"></a>源码下载地址</h2><p>二分查找、二叉查找树、无序链表的代码<br><a href="https://github.com/huangzhenshi/Algorithms_Fourth">https://github.com/huangzhenshi/Algorithms_Fourth</a></p>
+<h2 id="数据结构比较"><a href="#数据结构比较" class="headerlink" title="数据结构比较"></a>数据结构比较</h2><p>要解决的问题：维护一个有序的数据结构同时，实现下面的功能</p>
+<ul>
+<li>快速的查找：是否存在该元素，查找到最大值最小值</li>
+<li>支持灵活的操作：插入、删除</li>
+</ul>
+<hr>
+<ul>
+<li>无序链表的优点在于插入快，但是在维护一个有序数组的时候，无法快速的找到 node[3]，也就是难找到排名第N的元素。</li>
+<li>数组的优势在于可以快速的定位到排名第三的元素，但是插入的时候需要后续元素顺延，根据下标查找快。</li>
+<li>树形结构结合了数组和链表的特点，牺牲了数组的查询性能，但是更高效的插入性能</li>
+<li>散列表结构实现了常数级别的查找，和快速的插入，但是没有顺序 </li>
+</ul>
+<h2 id="无序链表"><a href="#无序链表" class="headerlink" title="无序链表"></a>无序链表</h2><p>每次插入的时候，先遍历一遍是否已经有这个key了，有的话替换key的value，没有的话，插入在链表的首位。</p>
+<ul>
+<li>在插入不重复的数据的时候，每次插入都需要遍历所有元素，N^2/2 次比较。平方级别的比较次数。</li>
+<li>查找无需链表中是否有key值平均需要 N/2 次查询<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public  void insert(Node node)&#123;</div><div class="line">	for(Node x=first;x!=null;x=x.next)&#123;</div><div class="line">		if(node.key==x.key)&#123;</div><div class="line">			x.value=node.value;</div><div class="line">			return;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	Node old=first;</div><div class="line">	first=node;</div><div class="line">	first.next=old;</div><div class="line">	size++;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="性能消耗"><a href="#性能消耗" class="headerlink" title="性能消耗"></a>性能消耗</h2><ul>
+<li>查找的次数（性能消耗）</li>
+<li>比较的次数</li>
+<li>交换的次数</li>
+</ul>
+<h2 id="二分查找维护有序数组"><a href="#二分查找维护有序数组" class="headerlink" title="二分查找维护有序数组"></a>二分查找维护有序数组</h2><ul>
+<li>优点：容易理解，最差lgN 性能下实现查找，平均N/2性能的插入（中间位置，后面的顺延一个位置）</li>
+<li>缺点：在于每次插入一个新的元素的时候，后面的元素都要顺序顺延一个位置。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">//二分查找特性 最差情况想的比较次数是 lgN次</div><div class="line">// rank  arr,lo,--mid,key  而不是让hi=mid，因为 --mid的话，最后会有hi&lt;lo的时候</div><div class="line">//所以分为4种情况</div><div class="line">//如果命中就返回该key在 arr中的下标位置；</div><div class="line">//如果小于最小值 就返回 -1； 如果大于最大值就返回 hi+1</div><div class="line">//如果未命中，则返回的是该新元素在arr中 应有的位置</div><div class="line">public static int rank(int[] arr,int lo,int hi,int key)&#123;</div><div class="line">	 	if(hi==-1) return hi; </div><div class="line">		if(hi&lt;lo) return lo;</div><div class="line">		int mid=lo+(hi-lo)/2;</div><div class="line">		if(key&lt;arr[mid])&#123;</div><div class="line">			return rank(arr,lo,--mid,key);</div><div class="line">		&#125;else if (key&gt;arr[mid])&#123;</div><div class="line">			return rank(arr,++mid,hi,key);</div><div class="line">		&#125;else&#123;</div><div class="line">			return mid;</div><div class="line">		&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="二叉查找树维护有序数组"><a href="#二叉查找树维护有序数组" class="headerlink" title="二叉查找树维护有序数组"></a>二叉查找树维护有序数组</h2><h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>构建一棵树，小的在左边，大的在右边。每次插入都是挂在树的最外一层。最差情况下的查找和插入的性能由树的高度决定，当插入的数据为逆序的数据的时候，就是一个无序链表，最好的情况，就是一棵满二叉树，此时树的高度为lgN。被证明随机键的树高度为 2.99lgN,对数级别。</p>
+<h3 id="性能分析"><a href="#性能分析" class="headerlink" title="性能分析"></a>性能分析</h3><ul>
+<li>最差情况下的插入和查找成本都是N ，就是有序数组插入导致的 链表</li>
+<li>平均情况下 查找命中 1.39lgN 的查找和插入成本</li>
+</ul>
+<h3 id="源码展示-难点在于递归"><a href="#源码展示-难点在于递归" class="headerlink" title="源码展示 难点在于递归"></a>源码展示 难点在于递归</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public void put(char key,int value)&#123;</div><div class="line">	root=put(root,key,value);</div><div class="line">&#125;</div><div class="line">//每次put都是在树的末梢节点上新增一个节点</div><div class="line">//记住 递归调用return时不会结束父程序，父程序会进行 size+1操作的</div><div class="line">public Node put(Node x,char key,int value)&#123;</div><div class="line">	//当根节点为null时会调用 该方法，初始化根节点</div><div class="line">	//当put到树末端的时候也会调用该方法，使其挂在树上</div><div class="line">	if(x==null) return new Node(key,value,1);</div><div class="line">	if(key&gt;x.key)&#123;</div><div class="line">		x.right=put(x.right,key,value);</div><div class="line">	&#125;else if(key&lt;x.key)&#123;</div><div class="line">		x.left=put(x.left,key,value);</div><div class="line">	&#125;else&#123;</div><div class="line">		x.value=value;</div><div class="line">	&#125;</div><div class="line">	x.N=size(x.left)+size(x.right)+1;</div><div class="line">	return x;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="平衡二叉树-红黑树、2-3树-维护有序数组"><a href="#平衡二叉树-红黑树、2-3树-维护有序数组" class="headerlink" title="平衡二叉树(红黑树、2-3树)维护有序数组"></a>平衡二叉树(红黑树、2-3树)维护有序数组</h2><h3 id="原理："><a href="#原理：" class="headerlink" title="原理："></a>原理：</h3><p>为了降低二叉查找树在最差情况下的情况，发明的平衡二叉树，往一棵树里插入，如果只有1个元素就变2个，如果已经有2个了，就变成一个3个，就向上分裂，根节点分裂的话，树的高度就+1；</p>
+<h3 id="特点："><a href="#特点：" class="headerlink" title="特点："></a>特点：</h3><ul>
+<li>大小为N的红黑树高度不会超过2lgN</li>
+<li>可以实现随机一亿个数字插入之后，树的高度在19-30之间。</li>
+<li>红黑树就是转置把一个节点有2个元素的中间连接为红连接，展开就是红黑树了，但是总结了一套插入的方法</li>
+</ul>
+<h3 id="主要是插入有3种情况"><a href="#主要是插入有3种情况" class="headerlink" title="主要是插入有3种情况"></a>主要是插入有3种情况</h3><ul>
+<li>节点里面没有元素，直接存进入</li>
+<li>节点里面已经有1个元素，形成一个有2个元素的节点</li>
+<li>节点里面已经有2个元素，但是父节点只有1个元素，推到父节点</li>
+<li>节点里面已经有2个元素，而且父节点里面也有2个元素，推到父节点，父节点再推到父父节点</li>
+</ul>
+<h3 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h3><ul>
+<li>最差情况下： 查找和插入都是 2lgN</li>
+<li>平均情况下： lgN</li>
+</ul>
+<h2 id="散列表"><a href="#散列表" class="headerlink" title="散列表"></a>散列表</h2><h3 id="依赖高效的散列算法："><a href="#依赖高效的散列算法：" class="headerlink" title="依赖高效的散列算法："></a>依赖高效的散列算法：</h3><ol>
+<li>把键按照一定的规则塞到长度为M的数组中</li>
+<li>使数尽量散列开来，均匀的分布到数组当中，避免数组一个位置里面太多的键，同时也避免一个位置上，不挂元素</li>
+<li>这种运算对于计算机来说，开销越小越好</li>
+</ol>
+<h3 id="经典散列方法："><a href="#经典散列方法：" class="headerlink" title="经典散列方法："></a>经典散列方法：</h3><ol>
+<li>除留余数法：只是解决了键塞到数组中，但是散列均匀情况未做考虑。如果待插入的数字都是M的整数倍，那么所有的元素都会被塞到数组的第一个位置arr[0]的位置<br>把键转换为数字，除以M（数组大小）求余数，就是所在数组中的下标位置了。<br>例如 数字101 在 数组长度为10中的，余数为1，所以就在arr[1]的位置了。</li>
+<li>二进制 与运算(java HashMap的计算原理)</li>
+</ol>
+<h3 id="散列表的两种实现方式："><a href="#散列表的两种实现方式：" class="headerlink" title="散列表的两种实现方式："></a>散列表的两种实现方式：</h3><p>拉链法和线性探测法，但是这两种方法的高效都依赖有一个 好的散列算法（足够散列、算法对计算机运算友好），同时也都要支持动态调整大小。<br>相对于树形结构，散列表不具有排序功能，但是查找的性能是在常数级别，而不是对数级别。插入性能的话，散列表的性能依赖于 N/M 因子的设置和散列算法，总体而言肯定是高于树形结构。<br>牺牲的是没有了顺序功能。</p>
+<h3 id="拉链法："><a href="#拉链法：" class="headerlink" title="拉链法："></a>拉链法：</h3><p>hashmap的实现原理，一个小的数组 每个位置都是一个链表，通过散列求到对应的数组下标，看该位置是否有元素，有的话，遍历是否有同样的值后插进去。</p>
+<h3 id="线性探测法："><a href="#线性探测法：" class="headerlink" title="线性探测法："></a>线性探测法：</h3><p>要求一个相对较大的数组，一般 元素总数:数组长度 &lt;1：2，通过散列算法求到对应的数组下标，如果该位置已经有元素，则继续往后，直到找到null位置插入。</p>
+<p>比较：<br>线性探测法在删除元素的时候，需要把后续的簇元素全部重新插入，相对来说，拉链法更容易实现。但是如果连续的内存越多的话，线性探测法的簇很短的话，线性探测法更快。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/10/30/数据结构/" data-title="数据结构 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2017/11/02/Docker实战/" title="Docker实战">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Docker实战</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/10/30/java集合类/"  title="java集合类">
+ <strong>下一篇：</strong><br/> 
+ <span>java集合类
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/10/30/数据结构/" data-title="数据结构" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/10/30/数据结构/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#经典数据结构"><span class="toc-number">1.</span> <span class="toc-text">经典数据结构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#源码下载地址"><span class="toc-number">1.1.</span> <span class="toc-text">源码下载地址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数据结构比较"><span class="toc-number">1.2.</span> <span class="toc-text">数据结构比较</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#无序链表"><span class="toc-number">1.3.</span> <span class="toc-text">无序链表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#性能消耗"><span class="toc-number">1.4.</span> <span class="toc-text">性能消耗</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二分查找维护有序数组"><span class="toc-number">1.5.</span> <span class="toc-text">二分查找维护有序数组</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二叉查找树维护有序数组"><span class="toc-number">1.6.</span> <span class="toc-text">二叉查找树维护有序数组</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#原理"><span class="toc-number">1.6.1.</span> <span class="toc-text">原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#性能分析"><span class="toc-number">1.6.2.</span> <span class="toc-text">性能分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#源码展示-难点在于递归"><span class="toc-number">1.6.3.</span> <span class="toc-text">源码展示 难点在于递归</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#平衡二叉树-红黑树、2-3树-维护有序数组"><span class="toc-number">1.7.</span> <span class="toc-text">平衡二叉树(红黑树、2-3树)维护有序数组</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#原理："><span class="toc-number">1.7.1.</span> <span class="toc-text">原理：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#特点："><span class="toc-number">1.7.2.</span> <span class="toc-text">特点：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#主要是插入有3种情况"><span class="toc-number">1.7.3.</span> <span class="toc-text">主要是插入有3种情况</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#性能"><span class="toc-number">1.7.4.</span> <span class="toc-text">性能</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#散列表"><span class="toc-number">1.8.</span> <span class="toc-text">散列表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#依赖高效的散列算法："><span class="toc-number">1.8.1.</span> <span class="toc-text">依赖高效的散列算法：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#经典散列方法："><span class="toc-number">1.8.2.</span> <span class="toc-text">经典散列方法：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#散列表的两种实现方式："><span class="toc-number">1.8.3.</span> <span class="toc-text">散列表的两种实现方式：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#拉链法："><span class="toc-number">1.8.4.</span> <span class="toc-text">拉链法：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#线性探测法："><span class="toc-number">1.8.5.</span> <span class="toc-text">线性探测法：</span></a></li></ol></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

@@ -1,0 +1,522 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Docker实战 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="优势 方便移植环境，搭建好各种程序全家桶，然后给出一个，启动快，体积小的镜像 真的可以做到秒开机 docker run -itd -p 80:80 ImageId /bin/bash 跨操作系统，只要操作系统可以安装docker，就可以运行各种不同操作系统的镜像  比如在linux上搭建一个运行环境，只需要给一个docker镜像，便可以在linux上跑起来了，不需要任何配置，相对于 虚拟机镜像的话">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker实战">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/11/02/Docker实战/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="优势 方便移植环境，搭建好各种程序全家桶，然后给出一个，启动快，体积小的镜像 真的可以做到秒开机 docker run -itd -p 80:80 ImageId /bin/bash 跨操作系统，只要操作系统可以安装docker，就可以运行各种不同操作系统的镜像  比如在linux上搭建一个运行环境，只需要给一个docker镜像，便可以在linux上跑起来了，不需要任何配置，相对于 虚拟机镜像的话">
+<meta property="og:updated_time" content="2017-12-14T12:08:54.337Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Docker实战">
+<meta name="twitter:description" content="优势 方便移植环境，搭建好各种程序全家桶，然后给出一个，启动快，体积小的镜像 真的可以做到秒开机 docker run -itd -p 80:80 ImageId /bin/bash 跨操作系统，只要操作系统可以安装docker，就可以运行各种不同操作系统的镜像  比如在linux上搭建一个运行环境，只需要给一个docker镜像，便可以在linux上跑起来了，不需要任何配置，相对于 虚拟机镜像的话">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/11/02/Docker实战/" title="Docker实战" itemprop="url">Docker实战</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2017-11-02T06:53:01.283Z" itemprop="datePublished"> 发表于 2017-11-02</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#优势"><span class="toc-number">1.</span> <span class="toc-text">优势</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#基本概念"><span class="toc-number">2.</span> <span class="toc-text">基本概念</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Docker-制作镜像"><span class="toc-number">3.</span> <span class="toc-text">Docker 制作镜像</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Docker-容器内安装软件"><span class="toc-number">3.1.</span> <span class="toc-text">Docker 容器内安装软件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#nginx的-安装"><span class="toc-number">3.1.1.</span> <span class="toc-text">nginx的 安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JDK的安装"><span class="toc-number">3.1.2.</span> <span class="toc-text">JDK的安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tomcat-安装"><span class="toc-number">3.1.3.</span> <span class="toc-text">tomcat 安装</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#把制作好的镜像推到阿里云端"><span class="toc-number">4.</span> <span class="toc-text">把制作好的镜像推到阿里云端</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#从阿里云端拉取镜像"><span class="toc-number">5.</span> <span class="toc-text">从阿里云端拉取镜像</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#常用命令"><span class="toc-number">6.</span> <span class="toc-text">常用命令</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#安装"><span class="toc-number">7.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#问题排查"><span class="toc-number">8.</span> <span class="toc-text">问题排查</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#翻墙拉镜像-hello-world"><span class="toc-number">9.</span> <span class="toc-text">翻墙拉镜像 hello world</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#其他命令"><span class="toc-number">10.</span> <span class="toc-text">其他命令</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="优势"><a href="#优势" class="headerlink" title="优势"></a>优势</h1><ul>
+<li>方便移植环境，搭建好各种程序全家桶，然后给出一个，启动快，体积小的镜像</li>
+<li>真的可以做到秒开机 docker run -itd -p 80:80 ImageId /bin/bash</li>
+<li>跨操作系统，只要操作系统可以安装docker，就可以运行各种不同操作系统的镜像</li>
+</ul>
+<p>比如在linux上搭建一个运行环境，只需要给一个docker镜像，便可以在linux上跑起来了，不需要任何配置，相对于 虚拟机镜像的话，这个更轻便（因为不是一个完整的操作系统），启动也更快捷</p>
+<p>如果习惯了在linux上开发的话，则更是神器啊，新同事过来，给个docker，环境就搭建好了</p>
+<ul>
+<li>方便运维隔离管理，特别是多Docker的管理</li>
+</ul>
+<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><ul>
+<li><p>镜像<br>images ：就是一个实物，从阿里云拉出一个ubutun的镜像</p>
+</li>
+<li><p>容器<br>container ：建立在 镜像之上的一个虚拟运行环境。</p>
+</li>
+</ul>
+<h1 id="Docker-制作镜像"><a href="#Docker-制作镜像" class="headerlink" title="Docker 制作镜像"></a>Docker 制作镜像</h1><ol>
+<li>通过image ID run，以交互模式进入container<br>docker run -t -i test_rep /bin/bash</li>
+<li>制作镜像，完成后， exit退出，内容会被保存,容器也会stop</li>
+<li>如果要修改的话， docker ps -a 查看容器ID，<br><code>docker exec -ti ID /bin/bash</code>进入修改后 exit</li>
+<li>docker commit ContainerID new_image_name</li>
+</ol>
+<h2 id="Docker-容器内安装软件"><a href="#Docker-容器内安装软件" class="headerlink" title="Docker 容器内安装软件"></a>Docker 容器内安装软件</h2><h3 id="nginx的-安装"><a href="#nginx的-安装" class="headerlink" title="nginx的 安装"></a>nginx的 安装</h3><p>记得要先update<br>apt-get update<br>apt-get install nginx<br><a href="http://blog.csdn.net/shiyuezhong/article/details/39396487" target="_blank" rel="external">http://blog.csdn.net/shiyuezhong/article/details/39396487</a></p>
+<h3 id="JDK的安装"><a href="#JDK的安装" class="headerlink" title="JDK的安装"></a>JDK的安装</h3><ul>
+<li><p>通过挂载的方式把host解压缩的 JDK包暴露给 container<br>docker run -i -t -v /usr/java/jdk1.7.0_25:/usr/jdk1.7.0_25 89796a /bin/bash</p>
+</li>
+<li><p>复制JDK解压包到其他路径<br>cp /usr/jdk1.7.0_25 /opt/jdk1.7</p>
+</li>
+<li><p>设置环境变量<br>nano ~/.bashrc 末尾添加路径</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">export JAVA_HOME=/opt/jdk1.7  </div><div class="line">export JRE_HOME=/opt/jdk1.7/jre  </div><div class="line">export PATH=$PATH:/opt/jdk1.7/bin  </div><div class="line">export CLASSPATH=./:/opt/jdk1.7/lib:/opt/jdk1.7/jre/lib</div></pre></td></tr></table></figure>
+<ul>
+<li>生效环境变量<br>source ~/.bashrc</li>
+</ul>
+<p>docker run -i -t -v /home/wangjie/tomcat8:/home/wangjie 89796a /bin/bash</p>
+<h3 id="tomcat-安装"><a href="#tomcat-安装" class="headerlink" title="tomcat 安装"></a>tomcat 安装</h3><p>同JDK，只需要把tomcat的解压包拷贝过去即可</p>
+<h1 id="把制作好的镜像推到阿里云端"><a href="#把制作好的镜像推到阿里云端" class="headerlink" title="把制作好的镜像推到阿里云端"></a>把制作好的镜像推到阿里云端</h1><ol>
+<li>先要有阿里云的账号</li>
+<li>然后创建属于自己的镜像仓库，创建的时候需要 绑定github的代码库<br><a href="https://cr.console.aliyun.com/?spm=5176.1971733.0.2.duOGn4#/imageList" target="_blank" rel="external">https://cr.console.aliyun.com/?spm=5176.1971733.0.2.duOGn4#/imageList</a></li>
+<li>登录后，推到云端去即可<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">sudo docker login --username=dahuang666666 registry.cn-hangzhou.aliyuncs.com</div><div class="line"></div><div class="line">sudo docker tag 8bd687e55485 registry.cn-hangzhou.aliyuncs.com/mytest_jdk_tomcat/test</div><div class="line"></div><div class="line">sudo docker push registry.cn-hangzhou.aliyuncs.com/mytest_jdk_tomcat/test</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="从阿里云端拉取镜像"><a href="#从阿里云端拉取镜像" class="headerlink" title="从阿里云端拉取镜像"></a>从阿里云端拉取镜像</h1><p>docker pull registry.cn-hangzhou.aliyuncs.com/mytest_jdk_tomcat/test</p>
+<h1 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h1><ul>
+<li><p>查看<br>docker images<br>docker ps    # 查看所有正在运行的container<br>docker ps -a # 查看所有的container<br>docker ps -l # 查看最后一个执行的container</p>
+</li>
+<li><p>启动和进入<br>根据image Name启动镜像，并进入bash命令行，退出后，内容保存在container中，但是程序关闭<br><code>-p 81:80 表示对外开放的是81端口，映射到container当中的80端口</code><br>docker run -t -d -i -p 81:80 test_rep /bin/bash</p>
+</li>
+</ul>
+<p>启动但是不进入 container<br>docker start containerId</p>
+<p>进入container 并且交互，退出容器不关闭<br>docker exec -ti ID /bin/bash </p>
+<ul>
+<li><p>提交<br>前提是container 还在运行<br>docker commit ContainerID new_image_name</p>
+</li>
+<li><p>挂载文件夹<br>把host的 /home/wangjie/tomcat8 暴露给container的 /home/wangjie 路径下<br>docker run -i -t -v /home/wangjie/tomcat8:/home/wangjie 89796a /bin/bash</p>
+</li>
+<li><p>拷贝文件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">将主机./RS-MapReduce目录拷贝到容器30026605dcfe的/home/cloudera目录下。</div><div class="line">docker cp RS-MapReduce 30026605dcfe:/home/cloudera</div><div class="line"></div><div class="line">将容器30026605dcfe的/home/cloudera/RS-MapReduce目录拷贝到主机的/tmp目录中。</div><div class="line">docker cp  30026605dcfe:/home/cloudera/RS-MapReduce /tmp/</div></pre></td></tr></table></figure>
+</li>
+<li><p>查看容器日志<br>docker logs test</p>
+</li>
+</ul>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>Ubutun 14.04 X86_64<br>靠谱的安装步骤<br><a href="http://blog.csdn.net/zhangchao19890805/article/details/52849404" target="_blank" rel="external">http://blog.csdn.net/zhangchao19890805/article/details/52849404</a></p>
+<p>注意事项：</p>
+<ul>
+<li>每次操作之前都要 apt-get update</li>
+<li>安装好之后，需要把当前用户添加到docker用户当中并且 reboot才有效<br>$sudo gpasswd -a ${USER} docker</li>
+<li>即使是root 用户，也需要  sudo service docker start，不能用道理解释的现象，坑了我一下午</li>
+</ul>
+<h1 id="问题排查"><a href="#问题排查" class="headerlink" title="问题排查"></a>问题排查</h1><p>解决mysql 授权过期：<br><a href="http://www.jianshu.com/p/2316ec970946" target="_blank" rel="external">http://www.jianshu.com/p/2316ec970946</a><br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">apt-key list</div><div class="line">apt-key del 5072E1F5 </div><div class="line">apt-key adv --keyserver pgp.mit.edu --recv-keys A4A9406876FCBD3C456770C88C718D3B5072E1F5</div><div class="line"></div><div class="line">apt-get update</div></pre></td></tr></table></figure></p>
+<h1 id="翻墙拉镜像-hello-world"><a href="#翻墙拉镜像-hello-world" class="headerlink" title="翻墙拉镜像 hello world"></a>翻墙拉镜像 hello world</h1><p><a href="http://blog.csdn.net/wangtaoking1/article/details/49126621" target="_blank" rel="external">http://blog.csdn.net/wangtaoking1/article/details/49126621</a></p>
+<p>修改Docker配置文件/etc/default/docker如下：<br>DOCKER_OPTS=”–registry-mirror=<a href="http://aad0405c.m.daocloud.io" target="_blank" rel="external">http://aad0405c.m.daocloud.io</a>“</p>
+<p>网络切换到手机WIFI，公司网络好像做了拦截，hello-world 拉不下来，手机WIFI就好了<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">sudo docker run hello-world</div></pre></td></tr></table></figure></p>
+<h1 id="其他命令"><a href="#其他命令" class="headerlink" title="其他命令"></a>其他命令</h1><ul>
+<li><p>删除所有的关闭状态下的容器<br>docker rm $(docker ps -a -q)</p>
+</li>
+<li><p>启动和关闭docker<br>sudo service docker start<br>sudo service docker restart</p>
+</li>
+<li><p>交互模式进入镜像<br>docker run -t -i registry.cn-shenzhen.aliyuncs.com/cqyiyoutong/ubuntu /bin/bash</p>
+</li>
+<li><p>拉取镜像<br>进入阿里云里面拉取镜像<br>docker pull registry.cn-shenzhen.aliyuncs.com/cqyiyoutong/ubuntu</p>
+</li>
+</ul>
+<p><a href="https://cr.console.aliyun.com/?spm=5176.1972344.0.2.7a21aad5oeE6Mc#/imageDesc/37580/detail" target="_blank" rel="external">https://cr.console.aliyun.com/?spm=5176.1972344.0.2.7a21aad5oeE6Mc#/imageDesc/37580/detail</a></p>
+<p>当然也可以从某个人的公共仓库（包括自己是私人仓库）拉取，形如docker pull username/repository&lt;:tag_name&gt; ：</p>
+<p>-查看正在运行的image<br>docker ps</p>
+<p>docker start/stop id/name 启动/停止某个容器</p>
+<p>docker attach id 进入某个容器(使用exit退出后容器也跟着停止运行)</p>
+<p>docker exec -ti id 启动一个伪终端以交互式的方式进入某个容器（使用exit退出后容器不停止运行）</p>
+<p>docker images 查看本地镜像<br>docker rm id/name 删除某个容器<br>docker rmi id/name 删除某个镜像</p>
+<p>docker ps -l  查看刚运行过的镜像</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/11/02/Docker实战/" data-title="Docker实战 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2017/11/06/JVM一 内存结构、类生命周期/" title="JVM一 内存结构、类生命周期">
+  <strong>上一篇：</strong><br/>
+  <span>
+  JVM一 内存结构、类生命周期</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/10/30/数据结构/"  title="数据结构">
+ <strong>下一篇：</strong><br/> 
+ <span>数据结构
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/11/02/Docker实战/" data-title="Docker实战" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/11/02/Docker实战/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#优势"><span class="toc-number">1.</span> <span class="toc-text">优势</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#基本概念"><span class="toc-number">2.</span> <span class="toc-text">基本概念</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Docker-制作镜像"><span class="toc-number">3.</span> <span class="toc-text">Docker 制作镜像</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Docker-容器内安装软件"><span class="toc-number">3.1.</span> <span class="toc-text">Docker 容器内安装软件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#nginx的-安装"><span class="toc-number">3.1.1.</span> <span class="toc-text">nginx的 安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JDK的安装"><span class="toc-number">3.1.2.</span> <span class="toc-text">JDK的安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tomcat-安装"><span class="toc-number">3.1.3.</span> <span class="toc-text">tomcat 安装</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#把制作好的镜像推到阿里云端"><span class="toc-number">4.</span> <span class="toc-text">把制作好的镜像推到阿里云端</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#从阿里云端拉取镜像"><span class="toc-number">5.</span> <span class="toc-text">从阿里云端拉取镜像</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#常用命令"><span class="toc-number">6.</span> <span class="toc-text">常用命令</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#安装"><span class="toc-number">7.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#问题排查"><span class="toc-number">8.</span> <span class="toc-text">问题排查</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#翻墙拉镜像-hello-world"><span class="toc-number">9.</span> <span class="toc-text">翻墙拉镜像 hello world</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#其他命令"><span class="toc-number">10.</span> <span class="toc-text">其他命令</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

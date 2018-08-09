@@ -1,0 +1,559 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>消息队列 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="比较详细的bloghttp://www.jianshu.com/p/824066d70da8 github代码整合了一个spring 和activemq的简易demo，可以发gson转化后的字符串，也可以穿HashMap。https://github.com/huangzhenshi/ssm_activeMQ_Demo ActiveMq 安装、操作、注意事项http://blog.csdn.net">
+<meta property="og:type" content="article">
+<meta property="og:title" content="消息队列">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/12/15/消息队列/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="比较详细的bloghttp://www.jianshu.com/p/824066d70da8 github代码整合了一个spring 和activemq的简易demo，可以发gson转化后的字符串，也可以穿HashMap。https://github.com/huangzhenshi/ssm_activeMQ_Demo ActiveMq 安装、操作、注意事项http://blog.csdn.net">
+<meta property="og:image" content="https://i.imgur.com/rFDHXVk.jpg">
+<meta property="og:updated_time" content="2018-04-19T09:36:49.996Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="消息队列">
+<meta name="twitter:description" content="比较详细的bloghttp://www.jianshu.com/p/824066d70da8 github代码整合了一个spring 和activemq的简易demo，可以发gson转化后的字符串，也可以穿HashMap。https://github.com/huangzhenshi/ssm_activeMQ_Demo ActiveMq 安装、操作、注意事项http://blog.csdn.net">
+<meta name="twitter:image" content="https://i.imgur.com/rFDHXVk.jpg">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/12/15/消息队列/" title="消息队列" itemprop="url">消息队列</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2017-12-15T08:56:31.190Z" itemprop="datePublished"> 发表于 2017-12-15</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#github代码"><span class="toc-number">1.</span> <span class="toc-text">github代码</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ActiveMq-安装、操作、注意事项"><span class="toc-number">2.</span> <span class="toc-text">ActiveMq 安装、操作、注意事项</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ActiveMQ实现步骤"><span class="toc-number">3.</span> <span class="toc-text">ActiveMQ实现步骤</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ActiveMQ消息队列的功能"><span class="toc-number">4.</span> <span class="toc-text">ActiveMQ消息队列的功能</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ActiveMQ监控后台的使用"><span class="toc-number">5.</span> <span class="toc-text">ActiveMQ监控后台的使用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#同步、异步、无返回值、有返回值的发送"><span class="toc-number">6.</span> <span class="toc-text">同步、异步、无返回值、有返回值的发送</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ActiveMQ的持久化机制"><span class="toc-number">7.</span> <span class="toc-text">ActiveMQ的持久化机制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#JDBC式持久化"><span class="toc-number">7.1.</span> <span class="toc-text">JDBC式持久化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#KahaDB持久化（默认"><span class="toc-number">7.2.</span> <span class="toc-text">KahaDB持久化（默认)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LevelDB持久化"><span class="toc-number">7.3.</span> <span class="toc-text">LevelDB持久化</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ActiveMQ集群和高可用"><span class="toc-number">8.</span> <span class="toc-text">ActiveMQ集群和高可用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#MASTER-SLAVE模式"><span class="toc-number">8.1.</span> <span class="toc-text">MASTER/SLAVE模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Cluster模式（数据库共享模式-或者文件共享模式）"><span class="toc-number">8.2.</span> <span class="toc-text">Cluster模式（数据库共享模式 或者文件共享模式）</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#安装和配置用户"><span class="toc-number">9.</span> <span class="toc-text">安装和配置用户</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#RabbitMq"><span class="toc-number">10.</span> <span class="toc-text">RabbitMq</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#重要的概念"><span class="toc-number">11.</span> <span class="toc-text">重要的概念</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#channel"><span class="toc-number">11.1.</span> <span class="toc-text">channel</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#exchange-交换器"><span class="toc-number">11.2.</span> <span class="toc-text">exchange 交换器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#queue"><span class="toc-number">11.3.</span> <span class="toc-text">queue</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#注意事项"><span class="toc-number">12.</span> <span class="toc-text">注意事项</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#消息队列整合Spring"><span class="toc-number">13.</span> <span class="toc-text">消息队列整合Spring</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#我们项目的使用"><span class="toc-number">14.</span> <span class="toc-text">我们项目的使用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实战"><span class="toc-number">15.</span> <span class="toc-text">实战</span></a></li></ol>
+		
+		</div>
+		
+		<p>比较详细的blog<br><a href="http://www.jianshu.com/p/824066d70da8" target="_blank" rel="external">http://www.jianshu.com/p/824066d70da8</a></p>
+<h1 id="github代码"><a href="#github代码" class="headerlink" title="github代码"></a>github代码</h1><p>整合了一个spring 和activemq的简易demo，可以发gson转化后的字符串，也可以穿HashMap。<br><a href="https://github.com/huangzhenshi/ssm_activeMQ_Demo">https://github.com/huangzhenshi/ssm_activeMQ_Demo</a></p>
+<h1 id="ActiveMq-安装、操作、注意事项"><a href="#ActiveMq-安装、操作、注意事项" class="headerlink" title="ActiveMq 安装、操作、注意事项"></a>ActiveMq 安装、操作、注意事项</h1><p><a href="http://blog.csdn.net/clj198606061111/article/details/38145597" target="_blank" rel="external">http://blog.csdn.net/clj198606061111/article/details/38145597</a><br>注意事项：</p>
+<ul>
+<li>rabbitMQ 依赖的erl.exe 默认端口 5672和 activeMQ使用的一样，所以要先杀掉 erl.exe这个进程</li>
+<li>64位操作系统要进到 /bin/64 下启动 activemq.bat</li>
+<li><a href="http://localhost:8161/admin/index.jsp" target="_blank" rel="external">http://localhost:8161/admin/index.jsp</a>   账号密码 admin/admin （默认的)</li>
+<li>整合spring的监听器 依赖geronimo-jms_1.1_spec ，因为MessageListener</li>
+</ul>
+<h1 id="ActiveMQ实现步骤"><a href="#ActiveMQ实现步骤" class="headerlink" title="ActiveMQ实现步骤"></a>ActiveMQ实现步骤</h1><ul>
+<li>引入依赖jar包、配置消息服务器的URL和账号密码、配置QUEUE</li>
+<li>代码里写发送的内容再发送</li>
+<li>接收者还要配置消息监听器</li>
+</ul>
+<h1 id="ActiveMQ消息队列的功能"><a href="#ActiveMQ消息队列的功能" class="headerlink" title="ActiveMQ消息队列的功能"></a>ActiveMQ消息队列的功能</h1><ul>
+<li>分布式项目中解耦，消息发送者甚至不需要知道谁去消费了这个消息</li>
+<li>确保消息可靠（不会因为下游宕机而丢失)，发布者不需要知道消费者是否正常运行</li>
+<li>提速，消息的发布者不需要耗费线程等待消费者处理消息</li>
+<li>削峰、控流</li>
+<li>广播功能</li>
+<li>负载均衡，可以灵活易扩展无入侵式的负载均衡，多个consumer 订阅相同的queue然后每次取1个</li>
+</ul>
+<h1 id="ActiveMQ监控后台的使用"><a href="#ActiveMQ监控后台的使用" class="headerlink" title="ActiveMQ监控后台的使用"></a>ActiveMQ监控后台的使用</h1><p><a href="http://localhost:8161/admin/queues.jsp" target="_blank" rel="external">http://localhost:8161/admin/queues.jsp</a><br>程序启动后查看对应的queue里面的生产者数量，消费者数量，进队消息数，出队消息数</p>
+<h1 id="同步、异步、无返回值、有返回值的发送"><a href="#同步、异步、无返回值、有返回值的发送" class="headerlink" title="同步、异步、无返回值、有返回值的发送"></a>同步、异步、无返回值、有返回值的发送</h1><p>默认配置是异步发送</p>
+<ol>
+<li><p>使用同步方式：消费者会一直等待生产者发送消息或者超市。因其是阻塞式接收消息，故当第一次接收生产者发送过来的消息并消费后，第二次生产者提供的消息不再消费。</p>
+</li>
+<li><p>使用异步监听方式：消费者通过注册监听器，每当生产者有新的消息提供过来是会触发MessageListener的回调方法onMessage()方法。便于后续消息处理。</p>
+</li>
+</ol>
+<h1 id="ActiveMQ的持久化机制"><a href="#ActiveMQ的持久化机制" class="headerlink" title="ActiveMQ的持久化机制"></a>ActiveMQ的持久化机制</h1><p><a href="https://yq.aliyun.com/articles/38433" target="_blank" rel="external">https://yq.aliyun.com/articles/38433</a></p>
+<h2 id="JDBC式持久化"><a href="#JDBC式持久化" class="headerlink" title="JDBC式持久化"></a>JDBC式持久化</h2><p>数据库会创建3个表：activemq_msgs，activemq_acks和activemq_lock</p>
+<h2 id="KahaDB持久化（默认"><a href="#KahaDB持久化（默认" class="headerlink" title="KahaDB持久化（默认)"></a>KahaDB持久化（默认)</h2><ol>
+<li>日志形式存储消息；</li>
+<li>消息索引以B-Tree结构存储，可以快速更新；</li>
+<li>完全支持JMS事务；</li>
+<li>支持多种恢复机制；</li>
+</ol>
+<p>消息存储在基于文件的数据日志中。如果消息发送成功，变标记为可删除的。系统会周期性的清除或者归档日志文件。<br>消息文件的位置索引存储在内存中，这样能快速定位到。定期将内存中的消息索引保存到metadata store中，避免大量消息未发送时，消息索引占用过多内存空间。</p>
+<h2 id="LevelDB持久化"><a href="#LevelDB持久化" class="headerlink" title="LevelDB持久化"></a>LevelDB持久化</h2><p>基于LevelDB和Zookeeper的数据复制方式，用于Master-slave方式的首选数据复制方案。</p>
+<h1 id="ActiveMQ集群和高可用"><a href="#ActiveMQ集群和高可用" class="headerlink" title="ActiveMQ集群和高可用"></a>ActiveMQ集群和高可用</h1><h2 id="MASTER-SLAVE模式"><a href="#MASTER-SLAVE模式" class="headerlink" title="MASTER/SLAVE模式"></a>MASTER/SLAVE模式</h2><p>特点：</p>
+<ul>
+<li>一个Master只能有一个Slave</li>
+<li>Master会复制消息给Slave保持同步</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;value&gt;failover:(tcp://localhost:61616,tcp://localhost:61618)</div></pre></td></tr></table></figure>
+<h2 id="Cluster模式（数据库共享模式-或者文件共享模式）"><a href="#Cluster模式（数据库共享模式-或者文件共享模式）" class="headerlink" title="Cluster模式（数据库共享模式 或者文件共享模式）"></a>Cluster模式（数据库共享模式 或者文件共享模式）</h2><p>允许多个slave，持有锁的就是master，挂掉的话，不需要人工干预，其它slave成为新的master</p>
+<h1 id="安装和配置用户"><a href="#安装和配置用户" class="headerlink" title="安装和配置用户"></a>安装和配置用户</h1><p>安装的话参考（windows下的安装和配置环境变量和启动)<br><a href="http://blog.csdn.net/chwshuang/article/details/50543878" target="_blank" rel="external">http://blog.csdn.net/chwshuang/article/details/50543878</a></p>
+<p>windows下配置超级用户<br><a href="http://blog.csdn.net/xiaojieblog/article/details/70332469" target="_blank" rel="external">http://blog.csdn.net/xiaojieblog/article/details/70332469</a></p>
+<p>默认的超级用户是 guest/guest</p>
+<ul>
+<li>查看用户<br>rabbitmqctl list_users</li>
+<li>添加用户 设置密码<br>rabbitmqctl add_user root 123456</li>
+<li>设置用户为admin<br>rabbitmqctl set_user_tags root administrator</li>
+<li><p>分配资源<br>rabbitmqctl set_permissions -p / root “.<em>“ “.</em>“ “.*”</p>
+</li>
+<li><p>图形化界面<br><a href="http://localhost:15672/" target="_blank" rel="external">http://localhost:15672/</a> </p>
+</li>
+</ul>
+<h1 id="RabbitMq"><a href="#RabbitMq" class="headerlink" title="RabbitMq"></a>RabbitMq</h1><p>知乎的结果是学习 RabbitMQ，还有工具Erlang</p>
+<ul>
+<li>刷完这个rabbitMQq专栏，连windows下的安装和配置都有，太详细了<br><a href="http://blog.csdn.net/chwshuang/article/details/50543878" target="_blank" rel="external">http://blog.csdn.net/chwshuang/article/details/50543878</a></li>
+<li>理解我们项目中配置的消息队列结构</li>
+<li>windows rabbitMq 安装和配置<br><a href="http://blog.csdn.net/chwshuang/article/details/50543878" target="_blank" rel="external">http://blog.csdn.net/chwshuang/article/details/50543878</a></li>
+</ul>
+<h1 id="重要的概念"><a href="#重要的概念" class="headerlink" title="重要的概念"></a>重要的概念</h1><h2 id="channel"><a href="#channel" class="headerlink" title="channel"></a>channel</h2><p>生产者和消费者和队列服务器交互就必须建立一个物理连接。<br>特别是消费者，如果想持续收到消息的话，channel就不能关闭。</p>
+<ul>
+<li><p>channel创建和关闭</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">先创建好channel，所有的exchange，或者queue 都是绑定在channel上的</div><div class="line">    ConnectionFactory factory = new ConnectionFactory();</div><div class="line">    factory.setHost(&quot;localhost&quot;);</div><div class="line">    Connection connection = factory.newConnection();</div><div class="line">    Channel channel = connection.createChannel();</div><div class="line">	...</div><div class="line">    channel.close();</div><div class="line">	connection.close();</div></pre></td></tr></table></figure>
+</li>
+<li><p>queue绑定、消息的publish、交换器的绑定都是建立在channel上的</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">channel.queueDeclare(QUEUE_NAME, false, false, false, null);</div><div class="line">channel.basicPublish(&quot;&quot;, QUEUE_NAME, null, message.getBytes(&quot;UTF-8&quot;));</div><div class="line">channel.exchangeDeclare(EXCHANGE_NAME, &quot;fanout&quot;);</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="exchange-交换器"><a href="#exchange-交换器" class="headerlink" title="exchange 交换器"></a>exchange 交换器</h2><ol>
+<li>生产者直接把消息发给exchange,然后exchange根据type不同，会把消息发送到不同的quequ中</li>
+<li>所有的queue都要绑定在exchange，如果不声明的话，就绑定在默认的fanout的exchange当中</li>
+<li>exchange有2个属性: type 和routingKeys，type为fanout时就没有必要设置routingKeys了</li>
+<li>一个queue只能绑定在一个exchange当中，但是可以绑定routingKeys，如果是top的话，可以正则匹配任意个routingKeys</li>
+</ol>
+<p>exchange的类型<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">//设置 direct类型的交换器，需要在queue绑定 severity（也就是routingKeys)</div><div class="line">channel.exchangeDeclare(EXCHANGE_NAME, &quot;direct&quot;);</div><div class="line">channel.queueBind(queueName, EXCHANGE_NAME, severity);</div><div class="line">channel.basicPublish(EXCHANGE_NAME, severity, null, message.getBytes());</div><div class="line"></div><div class="line"></div><div class="line">//设置 fanout类型的交换器，</div><div class="line">channel.exchangeDeclare(EXCHANGE_NAME, &quot;fanout&quot;);</div><div class="line">//第二个参数不是queue的name，代表的是不设置routingKeys</div><div class="line">channel.basicPublish(EXCHANGE_NAME, &quot;&quot;, null, message.getBytes());</div><div class="line"></div><div class="line"></div><div class="line">channel.exchangeDeclare(EXCHANGE_NAME, &quot;topic&quot;);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">//不设置exchange，则使用默认的exchange 发送消息</div><div class="line">channel.queueDeclare(QUEUE_NAME, false, false, false, null);</div><div class="line">String message = &quot;Hello World!&quot;;</div><div class="line">channel.basicPublish(&quot;&quot;, QUEUE_NAME, null, message.getBytes(&quot;UTF-8&quot;));</div></pre></td></tr></table></figure></p>
+<ul>
+<li><p>fanout 类型，所有绑定这个exchange的queue都会收到消息，这时候设置routingKeys无效</p>
+</li>
+<li><p>direct 可以不指定queueName，指定routingKey 和 exchangeName，和type来发消息</p>
+</li>
+<li><p>topic direct的加强版，消费者建立订阅满足正在表达式式的routingKey的消息</p>
+</li>
+</ul>
+<h2 id="queue"><a href="#queue" class="headerlink" title="queue"></a>queue</h2><ul>
+<li><p>消息传送的通道，先进先出原则。queue是通过name来确定的，可以多个生产者往同一个queue中生产数据，也可以多个消费者同时订阅相同的queue。</p>
+</li>
+<li><p>下面获取的是独立 随机 且自动删除的queue，每次创建都不一样，和空的exchange完全不同，那个   是默认公用的交互器，这个是独立随机且自动删除的queue<br>String queueName = channel.queueDeclare().getQueue();</p>
+</li>
+<li><p>一个queue只能绑定在一个exchange上面，但是一个queue可以绑定多个routingKeys<br><img src="https://i.imgur.com/rFDHXVk.jpg" alt=""></p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">String queueName = channel.queueDeclare().getQueue();</div><div class="line">for (String severity : routingKeys) &#123;</div><div class="line">	channel.queueBind(queueName, EXCHANGE_NAME, severity);</div><div class="line">	System.out.println(&quot;ReceiveLogsDirect1 exchange:&quot;+EXCHANGE_NAME+&quot;, queue:&quot;+queueName+&quot;, BindRoutingKey:&quot; + severity);&#125;</div></pre></td></tr></table></figure>
+<h1 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h1><ul>
+<li><p>要先启动Consumer，建立对应的queue，发送消息的时候如果发现该exchange没有等待的queue，消息自动丢弃</p>
+</li>
+<li><p>一个queue可以连接着多个consumer，然后默认负载均衡从队列中消费消息；一个exchange可以连接多个queue</p>
+</li>
+</ul>
+<ul>
+<li><p>生产者可以不指定queue发送消息，只指定消息的路由器和routingKeys即可。例如direct类型的路由器发送特定routingKeys的消息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">Producer 不指定queue发送消息</div><div class="line"> channel.exchangeDeclare(EXCHANGE_NAME, &quot;direct&quot;);</div><div class="line">//		发送消息</div><div class="line">        for(String severity :routingKeys)&#123;</div><div class="line">        	String message = &quot;Send the message level:&quot; + severity;</div><div class="line">        	channel.basicPublish(EXCHANGE_NAME, severity, null, message.getBytes());</div><div class="line">        	System.out.println(&quot; [x] Sent &apos;&quot; + severity + &quot;&apos;:&apos;&quot; + message + &quot;&apos;&quot;);</div><div class="line">        &#125;</div><div class="line">Consumer 取随机queueName来 对应设置的exchange 和routingKey来接受消息</div><div class="line">		String queueName = channel.queueDeclare().getQueue();</div><div class="line">//		根据路由关键字进行多重绑定</div><div class="line">		for (String severity : routingKeys) &#123;</div><div class="line">			channel.queueBind(queueName, EXCHANGE_NAME, severity);</div><div class="line">			System.out.println(&quot;ReceiveLogsDirect1 exchange:&quot;+EXCHANGE_NAME+&quot;, queue:&quot;+queueName+&quot;, BindRoutingKey:&quot; + severity);</div><div class="line">		&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>生产者可以指定queueName来发送消息，</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">    channel.queueDeclare(QUEUE_NAME, false, false, false, null);</div><div class="line">    String message = &quot;Hello World!&quot;;</div><div class="line">    channel.basicPublish(&quot;&quot;, QUEUE_NAME, null, message.getBytes(&quot;UTF-8&quot;));</div><div class="line"></div><div class="line"></div><div class="line">Consumer:</div><div class="line">	channel.queueDeclare(QUEUE_NAME, false, false, false, null);</div><div class="line">	System.out.println(&quot;C [*] Waiting for messages. To exit press CTRL+C&quot;);</div><div class="line">	channel.basicConsume(QUEUE_NAME, true, consumer);</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="消息队列整合Spring"><a href="#消息队列整合Spring" class="headerlink" title="消息队列整合Spring"></a>消息队列整合Spring</h1><p>参考：<br><a href="http://blog.csdn.net/chwshuang/article/details/50580718" target="_blank" rel="external">http://blog.csdn.net/chwshuang/article/details/50580718</a></p>
+<p>生产者 依赖 和spring配置<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">	&lt;!-- RabbitMQ --&gt;</div><div class="line">	&lt;dependency&gt;</div><div class="line">		&lt;groupId&gt;org.springframework.amqp&lt;/groupId&gt;</div><div class="line">		&lt;artifactId&gt;spring-rabbit&lt;/artifactId&gt;</div><div class="line">		&lt;version&gt;1.3.5.RELEASE&lt;/version&gt;</div><div class="line">	&lt;/dependency&gt;</div><div class="line"></div><div class="line">&lt;rabbit:connection-factory id=&quot;connectionFactory&quot; host=&quot;127.0.0.1&quot; publisher-confirms=&quot;true&quot; virtual-host=&quot;test&quot; username=&quot;test&quot; password=&quot;test&quot; /&gt;</div><div class="line"></div><div class="line">&lt;rabbit:template id=&quot;rabbitTemplate&quot; connection-factory=&quot;connectionFactory&quot;/&gt;</div></pre></td></tr></table></figure></p>
+<p>调用<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public void setMessage(String msg, String routingKey) &#123;</div><div class="line">	rabbitTemplate.convertAndSend(routingKey, msg);</div><div class="line">	log.info(&quot;rabbitmq--发送消息完成: routingKey[&#123;&#125;]-msg[&#123;&#125;]&quot;, routingKey, msg);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>消费者：主要通知配置监听以及处理监听的方法的形式实现监听消息。<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;!-- 连接工厂 --&gt;  </div><div class="line">&lt;rabbit:connection-factory id=&quot;connectionFactory&quot; host=&quot;192.168.5.198&quot; publisher-confirms=&quot;true&quot; virtual-host=&quot;test&quot; username=&quot;test&quot; password=&quot;1234&quot; /&gt;  </div><div class="line">&lt;!-- 监听器 --&gt;  </div><div class="line">&lt;rabbit:listener-container connection-factory=&quot;connectionFactory&quot;&gt;  </div><div class="line">    &lt;!-- queues是队列名称，可填多个，用逗号隔开， method是ref指定的Bean调用Invoke方法执行的方法名称 --&gt;  </div><div class="line">    &lt;rabbit:listener queues=&quot;red&quot; method=&quot;onMessage&quot; ref=&quot;redQueueListener&quot; /&gt;  </div><div class="line">    &lt;rabbit:listener queues=&quot;blue&quot; method=&quot;onMessage&quot; ref=&quot;blueQueueListener&quot; /&gt;  </div><div class="line">&lt;/rabbit:listener-container&gt;  </div><div class="line">&lt;!-- 队列声明 --&gt;  </div><div class="line">&lt;rabbit:queue name=&quot;red&quot; durable=&quot;true&quot; /&gt;  </div><div class="line">&lt;!-- 队列声明 --&gt;  </div><div class="line">&lt;rabbit:queue name=&quot;blue&quot; durable=&quot;true&quot; /&gt;  </div><div class="line">&lt;!-- 红色监听处理器 --&gt;  </div><div class="line">&lt;bean id=&quot;redQueueListener&quot; class=&quot;com.aitongyi.customer.RedQueueListener&quot; /&gt;  </div><div class="line">&lt;!-- 蓝色监听处理器 --&gt;  </div><div class="line">&lt;bean id=&quot;blueQueueListener&quot; class=&quot;com.aitongyi.customer.BlueQueueListener&quot; /&gt;</div></pre></td></tr></table></figure></p>
+<h1 id="我们项目的使用"><a href="#我们项目的使用" class="headerlink" title="我们项目的使用"></a>我们项目的使用</h1><p>后台DML课件后，后端程序发消息到 ActiveMQ通知前端程序，<br>前端程序监听到消息后，删除原来的索引，添加进最新的索引。<br>因为负责搜索的solr是在前端程序里面，所以要监听后端程序控制的课件变化。</p>
+<h1 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h1><p>利用ActiveMq 实现一套，互动的消息。服务器A发消息 到B 然后，B接到消息后反馈给A<br>很全面的一个系列。<br>参考:<a href="http://blog.mayongfa.cn/94.html" target="_blank" rel="external">http://blog.mayongfa.cn/94.html</a></p>
+<p>依赖<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">  &lt;groupId&gt;org.apache.activemq&lt;/groupId&gt;</div><div class="line">  &lt;artifactId&gt;activemq-all&lt;/artifactId&gt;</div><div class="line">  &lt;version&gt;5.13.0&lt;/version&gt;</div><div class="line">&lt;/dependency&gt;</div><div class="line"></div><div class="line">&lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;org.apache.geronimo.specs&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;geronimo-jms_1.1_spec&lt;/artifactId&gt;</div><div class="line">    &lt;version&gt;1.1.1&lt;/version&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure></p>
+<ul>
+<li><p>发送文本消息和hashMap消息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;!-- 发送者依赖的最少配置 --&gt;</div><div class="line"></div><div class="line">&lt;bean id=&quot;jmsTemplate&quot; class=&quot;org.springframework.jms.core.JmsTemplate&quot;&gt;</div><div class="line">    &lt;property name=&quot;connectionFactory&quot; ref=&quot;connectionFactory&quot; /&gt;</div><div class="line">&lt;/bean&gt;</div><div class="line"></div><div class="line">&lt;bean id=&quot;targetConnectionFactory&quot; class=&quot;org.apache.activemq.ActiveMQConnectionFactory&quot;&gt;</div><div class="line">    &lt;property name=&quot;brokerURL&quot; value=&quot;failover:tcp://127.0.0.1:61616&quot; /&gt;</div><div class="line">    &lt;property name=&quot;userName&quot; value=&quot;admin&quot;/&gt;</div><div class="line">    &lt;property name=&quot;password&quot; value=&quot;admin&quot;/&gt;</div><div class="line">    &lt;property name=&quot;useAsyncSend&quot; value=&quot;true&quot;/&gt;</div><div class="line">&lt;/bean&gt;</div><div class="line"></div><div class="line">&lt;bean id=&quot;connectionFactory&quot;</div><div class="line">    class=&quot;org.springframework.jms.connection.SingleConnectionFactory&quot;&gt;</div><div class="line">    &lt;property name=&quot;targetConnectionFactory&quot; ref=&quot;targetConnectionFactory&quot; /&gt;</div><div class="line">&lt;/bean&gt;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">@Component</div><div class="line">public class MessageSender &#123;</div><div class="line">	@Autowired</div><div class="line">	private JmsTemplate jmsTemplate;</div><div class="line">	</div><div class="line">	String dataDistination=&quot;magic_queue&quot;;</div><div class="line">	private Gson gson = new Gson();</div><div class="line">	</div><div class="line">	public void sendMessage(User user)&#123;</div><div class="line">	    sendMessage(gson.toJson(user));</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	// 发送文本消息</div><div class="line">	public void sendMessage(final String dataMap) &#123;</div><div class="line">		jmsTemplate.send(dataDistination, new MessageCreator() &#123;</div><div class="line">					@Override</div><div class="line">					public Message createMessage(Session session) throws JMSException &#123;</div><div class="line">						return session.createTextMessage(dataMap);</div><div class="line">					&#125;</div><div class="line">				&#125;);</div><div class="line">		</div><div class="line">		 System.out.println(&quot;发送了一条消息。&quot;+dataMap);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//发送Map消息</div><div class="line">	private void sendMessage(final HashMap&lt;String, Object&gt; dataMap) &#123;</div><div class="line">		jmsTemplate.send(dataDistination, new MessageCreator() &#123;</div><div class="line">			@Override</div><div class="line">			public Message createMessage(Session session) throws JMSException &#123;</div><div class="line"></div><div class="line">				return session.createObjectMessage(dataMap);</div><div class="line">			&#125;</div><div class="line">		&#125;);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>接收文本、Map消息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;bean id=&quot;targetConnectionFactory&quot; class=&quot;org.apache.activemq.ActiveMQConnectionFactory&quot;&gt;</div><div class="line">    &lt;property name=&quot;brokerURL&quot; value=&quot;failover:tcp://127.0.0.1:61616&quot; /&gt;</div><div class="line">    &lt;property name=&quot;userName&quot; value=&quot;admin&quot;/&gt;</div><div class="line">    &lt;property name=&quot;password&quot; value=&quot;admin&quot;/&gt;</div><div class="line">    &lt;property name=&quot;useAsyncSend&quot; value=&quot;true&quot;/&gt;</div><div class="line">&lt;/bean&gt;</div><div class="line"></div><div class="line">&lt;!-- Spring用于管理真正的ConnectionFactory的ConnectionFactory --&gt;</div><div class="line">&lt;bean id=&quot;connectionFactory&quot;</div><div class="line">    class=&quot;org.springframework.jms.connection.SingleConnectionFactory&quot;&gt;</div><div class="line">    &lt;property name=&quot;targetConnectionFactory&quot; ref=&quot;targetConnectionFactory&quot; /&gt;</div><div class="line">&lt;/bean&gt;</div><div class="line"></div><div class="line">&lt;!--这个是队列目的地 --&gt;</div><div class="line">&lt;bean id=&quot;queueDestination&quot; class=&quot;org.apache.activemq.command.ActiveMQQueue&quot;&gt;</div><div class="line">    &lt;constructor-arg&gt;</div><div class="line">        &lt;value&gt;magic_queue&lt;/value&gt;</div><div class="line">    &lt;/constructor-arg&gt;</div><div class="line">&lt;/bean&gt;</div><div class="line"></div><div class="line">&lt;!-- 消息监听器 --&gt;</div><div class="line">&lt;bean id=&quot;consumerMessageListener&quot; class=&quot;com.test.message.TestMessageListener&quot; /&gt;</div><div class="line"></div><div class="line">&lt;!-- 消息监听容器 --&gt;</div><div class="line">&lt;bean id=&quot;jmsContainer&quot;</div><div class="line">    class=&quot;org.springframework.jms.listener.DefaultMessageListenerContainer&quot;&gt;</div><div class="line">    &lt;property name=&quot;connectionFactory&quot; ref=&quot;connectionFactory&quot; /&gt;</div><div class="line">    &lt;property name=&quot;destination&quot; ref=&quot;queueDestination&quot; /&gt;</div><div class="line">    &lt;property name=&quot;messageListener&quot; ref=&quot;consumerMessageListener&quot; /&gt;</div><div class="line">    &lt;property name=&quot;concurrentConsumers&quot; value=&quot;2&quot;&gt;&lt;/property&gt;</div><div class="line">    &lt;property name=&quot;concurrency&quot; value=&quot;2-5&quot;&gt;&lt;/property&gt;</div><div class="line">&lt;/bean&gt;</div><div class="line"></div><div class="line"></div><div class="line">@Component</div><div class="line">public class TestMessageListener  implements MessageListener &#123;</div><div class="line">	//接收String消息</div><div class="line">	@Override</div><div class="line">    public void onMessage(Message message) &#123;</div><div class="line">    	// 监听发送到消息队列的文本消息，作强制转换。</div><div class="line">    	TextMessage textMessage = (TextMessage) message;</div><div class="line">    	try &#123;</div><div class="line">			System.out.println(&quot;接收到的消息内容是：&quot; + textMessage.getText());</div><div class="line">		&#125; catch (JMSException e) &#123;</div><div class="line">			</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125;</div><div class="line">    &#125;</div><div class="line">	//接收Map</div><div class="line">	@Override</div><div class="line">    public void onMessage(Message message) &#123;</div><div class="line">        if (message instanceof ObjectMessage) &#123;</div><div class="line">            ObjectMessage objMsg = (ObjectMessage) message;</div><div class="line">            try &#123;</div><div class="line">            	Map&lt;String, Object&gt; dataMap = (Map&lt;String, Object&gt;) objMsg.getObject();</div><div class="line">            	String name=(String) dataMap.get(&quot;name&quot;);</div><div class="line">            	String password=(String) dataMap.get(&quot;password&quot;);</div><div class="line">                 System.out.println(name+password);</div><div class="line">            &#125; catch (JMSException e) &#123;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/12/15/消息队列/" data-title="消息队列 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2017/12/22/Zookeeper集群/" title="zookeeper集群">
+  <strong>上一篇：</strong><br/>
+  <span>
+  zookeeper集群</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/12/15/Memcache/"  title="Memcache">
+ <strong>下一篇：</strong><br/> 
+ <span>Memcache
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/12/15/消息队列/" data-title="消息队列" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/12/15/消息队列/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#github代码"><span class="toc-number">1.</span> <span class="toc-text">github代码</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ActiveMq-安装、操作、注意事项"><span class="toc-number">2.</span> <span class="toc-text">ActiveMq 安装、操作、注意事项</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ActiveMQ实现步骤"><span class="toc-number">3.</span> <span class="toc-text">ActiveMQ实现步骤</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ActiveMQ消息队列的功能"><span class="toc-number">4.</span> <span class="toc-text">ActiveMQ消息队列的功能</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ActiveMQ监控后台的使用"><span class="toc-number">5.</span> <span class="toc-text">ActiveMQ监控后台的使用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#同步、异步、无返回值、有返回值的发送"><span class="toc-number">6.</span> <span class="toc-text">同步、异步、无返回值、有返回值的发送</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ActiveMQ的持久化机制"><span class="toc-number">7.</span> <span class="toc-text">ActiveMQ的持久化机制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#JDBC式持久化"><span class="toc-number">7.1.</span> <span class="toc-text">JDBC式持久化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#KahaDB持久化（默认"><span class="toc-number">7.2.</span> <span class="toc-text">KahaDB持久化（默认)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LevelDB持久化"><span class="toc-number">7.3.</span> <span class="toc-text">LevelDB持久化</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ActiveMQ集群和高可用"><span class="toc-number">8.</span> <span class="toc-text">ActiveMQ集群和高可用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#MASTER-SLAVE模式"><span class="toc-number">8.1.</span> <span class="toc-text">MASTER/SLAVE模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Cluster模式（数据库共享模式-或者文件共享模式）"><span class="toc-number">8.2.</span> <span class="toc-text">Cluster模式（数据库共享模式 或者文件共享模式）</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#安装和配置用户"><span class="toc-number">9.</span> <span class="toc-text">安装和配置用户</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#RabbitMq"><span class="toc-number">10.</span> <span class="toc-text">RabbitMq</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#重要的概念"><span class="toc-number">11.</span> <span class="toc-text">重要的概念</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#channel"><span class="toc-number">11.1.</span> <span class="toc-text">channel</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#exchange-交换器"><span class="toc-number">11.2.</span> <span class="toc-text">exchange 交换器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#queue"><span class="toc-number">11.3.</span> <span class="toc-text">queue</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#注意事项"><span class="toc-number">12.</span> <span class="toc-text">注意事项</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#消息队列整合Spring"><span class="toc-number">13.</span> <span class="toc-text">消息队列整合Spring</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#我们项目的使用"><span class="toc-number">14.</span> <span class="toc-text">我们项目的使用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实战"><span class="toc-number">15.</span> <span class="toc-text">实战</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

@@ -1,0 +1,473 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>zookeeper集群 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="zookeeper集群特性 Zookeeper：一个leader，多个follower组成的集群 全局数据一致：每个server保存一份相同的数据副本，client无论连接到哪个server，数据都是一致的 更新请求顺序进行，来自同一个client的更新请求按其发送顺序依次执行，由FIFO信道维护有序性 数据更新原子性，一次数据更新要么成功，要么失败 实时性，在一定时间范围内，client能读到最">
+<meta property="og:type" content="article">
+<meta property="og:title" content="zookeeper集群">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/12/22/Zookeeper集群/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="zookeeper集群特性 Zookeeper：一个leader，多个follower组成的集群 全局数据一致：每个server保存一份相同的数据副本，client无论连接到哪个server，数据都是一致的 更新请求顺序进行，来自同一个client的更新请求按其发送顺序依次执行，由FIFO信道维护有序性 数据更新原子性，一次数据更新要么成功，要么失败 实时性，在一定时间范围内，client能读到最">
+<meta property="og:updated_time" content="2018-08-08T08:42:51.765Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="zookeeper集群">
+<meta name="twitter:description" content="zookeeper集群特性 Zookeeper：一个leader，多个follower组成的集群 全局数据一致：每个server保存一份相同的数据副本，client无论连接到哪个server，数据都是一致的 更新请求顺序进行，来自同一个client的更新请求按其发送顺序依次执行，由FIFO信道维护有序性 数据更新原子性，一次数据更新要么成功，要么失败 实时性，在一定时间范围内，client能读到最">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/12/22/Zookeeper集群/" title="zookeeper集群" itemprop="url">zookeeper集群</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2017-12-22T08:49:18.192Z" itemprop="datePublished"> 发表于 2017-12-22</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#zookeeper集群特性"><span class="toc-number">1.</span> <span class="toc-text">zookeeper集群特性</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#扩容和压缩"><span class="toc-number">2.</span> <span class="toc-text">扩容和压缩</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#默认选举方式-FastLeaderElection"><span class="toc-number">3.</span> <span class="toc-text">默认选举方式 FastLeaderElection</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#集群中读写"><span class="toc-number">4.</span> <span class="toc-text">集群中读写</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#一致性原则"><span class="toc-number">5.</span> <span class="toc-text">一致性原则</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#主从分工"><span class="toc-number">6.</span> <span class="toc-text">主从分工</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Leader工作流程"><span class="toc-number">6.1.</span> <span class="toc-text">Leader工作流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Follower工作流程"><span class="toc-number">6.2.</span> <span class="toc-text">Follower工作流程</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="zookeeper集群特性"><a href="#zookeeper集群特性" class="headerlink" title="zookeeper集群特性"></a>zookeeper集群特性</h1><ul>
+<li>Zookeeper：一个leader，多个follower组成的集群</li>
+<li>全局数据一致：每个server保存一份相同的数据副本，client无论连接到哪个server，数据都是一致的</li>
+<li>更新请求顺序进行，来自同一个client的更新请求按其发送顺序依次执行，由FIFO信道维护有序性</li>
+<li>数据更新原子性，一次数据更新要么成功，要么失败</li>
+<li>实时性，在一定时间范围内，client能读到最新数据</li>
+</ul>
+<h1 id="扩容和压缩"><a href="#扩容和压缩" class="headerlink" title="扩容和压缩"></a>扩容和压缩</h1><p>因为修改集群的数量需要修改每个zookeeper的zoo.cfg，所以要么全部重启，要么逐个重启，慢慢更新直到成功加入。</p>
+<h1 id="默认选举方式-FastLeaderElection"><a href="#默认选举方式-FastLeaderElection" class="headerlink" title="默认选举方式 FastLeaderElection"></a>默认选举方式 FastLeaderElection</h1><p><a href="https://www.cnblogs.com/leesf456/p/6107600.html" target="_blank" rel="external">https://www.cnblogs.com/leesf456/p/6107600.html</a><br>核心：每个Node有编号：ServerID。数据都有ZXID：（SID,ZXID）作为2个参数进行投票</p>
+<ul>
+<li>节点1的 SID为1，节点2的SID为2，如果大家都刚启动，则ZXID都为0，此时SID谁大谁做老大，当然还需要半数机器同意才行。</li>
+<li>如果新NODE加入，老集群已经有leader了，则不需要选举，同步自己的状态为Following即可</li>
+<li>如果非Leader节点挂了，不影响Leader，如果Leader挂了，重新选举</li>
+</ul>
+<h1 id="集群中读写"><a href="#集群中读写" class="headerlink" title="集群中读写"></a>集群中读写</h1><p>集群中所有的zk节点都对外提供暴露，提供读写服务</p>
+<ol>
+<li>集群中所有的ZK服务器都保存一份完整的数据，可以单独的相应所有的读操作</li>
+<li>当请求是写操作时，会把该请求转发给Master节点，然后Master节点通知所有的节点一起完成写操作，所有节点都写成功才成功，否则都写失败，再转给接入的节点，最后反馈给用户</li>
+<li>写的操作类似于2PC，Master向所有的Follower发起投票，F完成修改持久化后会ACK到M，M发现已经超过半数F完成了持久化，就认定该操作是成功的，就通知所有的F，都Commit，并且返回用户操作成功</li>
+</ol>
+<h1 id="一致性原则"><a href="#一致性原则" class="headerlink" title="一致性原则"></a>一致性原则</h1><ul>
+<li>顺序一致性（Sequential Consistency）：从一个客户端来的更新请求会被顺序执行。</li>
+<li>原子性（Atomicity）：更新要么成功要么失败，没有部分成功的情况。</li>
+<li>唯一的系统镜像（Single System Image）：无论客户端连接到哪个Server，看到系统镜像是一致的。</li>
+<li>可靠性（Reliability）：更新一旦有效，持续有效，直到被覆盖。</li>
+<li>时间线（Timeliness）：保证在一定的时间内各个客户端看到的系统信息是一致的。</li>
+</ul>
+<h1 id="主从分工"><a href="#主从分工" class="headerlink" title="主从分工"></a>主从分工</h1><h2 id="Leader工作流程"><a href="#Leader工作流程" class="headerlink" title="Leader工作流程"></a>Leader工作流程</h2><ol>
+<li>恢复数据；</li>
+<li>维持与follower的心跳，接收follower请求并判断follower的请求消息类型；</li>
+<li>follower的消息类型主要有PING消息、REQUEST消息、ACK消息、REVALIDATE消息，根据不同的消息类型，进行不同的处理。</li>
+</ol>
+<ul>
+<li>PING消息是指follower的心跳信息；REQUEST消息是follower发送的提议信息，包括写请求及同步请求；</li>
+<li>ACK消息是follower的对提议的回复，超过半数的follower通过，则commit该提议；</li>
+<li>REVALIDATE消息是用来延长SESSION有效时间。</li>
+</ul>
+<h2 id="Follower工作流程"><a href="#Follower工作流程" class="headerlink" title="Follower工作流程"></a>Follower工作流程</h2><ol>
+<li>向Leader发送请求（PING消息、REQUEST消息、ACK消息、REVALIDATE消息）；</li>
+<li>接收Leader消息并进行处理；</li>
+<li>接收Client的请求，如果为写请求，发送给Leader进行投票；</li>
+<li>返回Client结果。</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/12/22/Zookeeper集群/" data-title="zookeeper集群 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2017/12/26/dubbo/" title="dubbo实战">
+  <strong>上一篇：</strong><br/>
+  <span>
+  dubbo实战</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/12/15/消息队列/"  title="消息队列">
+ <strong>下一篇：</strong><br/> 
+ <span>消息队列
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/12/22/Zookeeper集群/" data-title="zookeeper集群" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/12/22/Zookeeper集群/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#zookeeper集群特性"><span class="toc-number">1.</span> <span class="toc-text">zookeeper集群特性</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#扩容和压缩"><span class="toc-number">2.</span> <span class="toc-text">扩容和压缩</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#默认选举方式-FastLeaderElection"><span class="toc-number">3.</span> <span class="toc-text">默认选举方式 FastLeaderElection</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#集群中读写"><span class="toc-number">4.</span> <span class="toc-text">集群中读写</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#一致性原则"><span class="toc-number">5.</span> <span class="toc-text">一致性原则</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#主从分工"><span class="toc-number">6.</span> <span class="toc-text">主从分工</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Leader工作流程"><span class="toc-number">6.1.</span> <span class="toc-text">Leader工作流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Follower工作流程"><span class="toc-number">6.2.</span> <span class="toc-text">Follower工作流程</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

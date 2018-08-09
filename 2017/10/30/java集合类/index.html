@@ -1,0 +1,493 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>java集合类 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="继承关系图 从collection衍生出来的都是不含键值对的 分为 有序的List  无序的Set 队列Queue   LinkedHashMap 数据结构 继承自HashMap，未重写get方法  用一个header维护一个双向链表，header本身为null，header.before指向最后一个添加的元素，header.after指向第一个添加的元素。例如顺序插入1 2 3 4，header">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java集合类">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/10/30/java集合类/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="继承关系图 从collection衍生出来的都是不含键值对的 分为 有序的List  无序的Set 队列Queue   LinkedHashMap 数据结构 继承自HashMap，未重写get方法  用一个header维护一个双向链表，header本身为null，header.before指向最后一个添加的元素，header.after指向第一个添加的元素。例如顺序插入1 2 3 4，header">
+<meta property="og:image" content="https://github.com/img/collection.png">
+<meta property="og:image" content="https://github.com/img/map.png">
+<meta property="og:updated_time" content="2017-11-02T09:38:11.637Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="java集合类">
+<meta name="twitter:description" content="继承关系图 从collection衍生出来的都是不含键值对的 分为 有序的List  无序的Set 队列Queue   LinkedHashMap 数据结构 继承自HashMap，未重写get方法  用一个header维护一个双向链表，header本身为null，header.before指向最后一个添加的元素，header.after指向第一个添加的元素。例如顺序插入1 2 3 4，header">
+<meta name="twitter:image" content="https://github.com/img/collection.png">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/10/30/java集合类/" title="java集合类" itemprop="url">java集合类</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2017-10-30T08:21:20.000Z" itemprop="datePublished"> 发表于 2017-10-30</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#继承关系图"><span class="toc-number">1.</span> <span class="toc-text">继承关系图</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#LinkedHashMap-数据结构"><span class="toc-number">2.</span> <span class="toc-text">LinkedHashMap 数据结构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Hashtable-数据结构"><span class="toc-number">3.</span> <span class="toc-text">Hashtable 数据结构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ArrayList-数据结构"><span class="toc-number">4.</span> <span class="toc-text">ArrayList 数据结构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#特点"><span class="toc-number">4.1.</span> <span class="toc-text">特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#注意事项"><span class="toc-number">4.2.</span> <span class="toc-text">注意事项</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Vector-数据结构"><span class="toc-number">5.</span> <span class="toc-text">Vector 数据结构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#HashSet-数据结构"><span class="toc-number">6.</span> <span class="toc-text">HashSet 数据结构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#LinkedList"><span class="toc-number">7.</span> <span class="toc-text">LinkedList</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#concurrentHashMap"><span class="toc-number">8.</span> <span class="toc-text">concurrentHashMap</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="继承关系图"><a href="#继承关系图" class="headerlink" title="继承关系图"></a>继承关系图</h1><ul>
+<li>从collection衍生出来的都是不含键值对的</li>
+<li>分为 有序的List  无序的Set 队列Queue<br><img src="/img/collection.png" alt="collection"></li>
+</ul>
+<p><img src="/img/map.png" alt="map"></p>
+<h1 id="LinkedHashMap-数据结构"><a href="#LinkedHashMap-数据结构" class="headerlink" title="LinkedHashMap 数据结构"></a>LinkedHashMap 数据结构</h1><ul>
+<li><p>继承自HashMap，未重写get方法</p>
+</li>
+<li><p>用一个header维护一个双向链表，header本身为null，header.before指向最后一个添加的元素，header.after指向第一个添加的元素。例如顺序插入1 2 3 4，header如下<br>  4-3-2-1(after)-header-4(before)</p>
+</li>
+<li><p>header里面的元素 和 table里面的元素指向的是同一个元素，header里面的元素都是引用，而不是new一个相同的entry，节省内存空间</p>
+</li>
+<li><p>迭代的时候修改了规则，最开始取header的after元素也就是第一个插入的元素</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">private abstract class LinkedHashIterator&lt;T&gt; implements Iterator&lt;T&gt; &#123;</div><div class="line">		//第一个nextEntry 就是header.after 也就是第一个插入的元素</div><div class="line">        Entry&lt;K,V&gt; nextEntry    = header.after;</div><div class="line">        Entry&lt;K,V&gt; lastReturned = null;</div></pre></td></tr></table></figure>
+</li>
+<li><p>重写了Entry（除了有next 给hashmap常规操作用，还有 before、after给header顺序读取用）其中before 和after记录的是插入的顺序的元素，next是在hashmap中同一个index下的下一个元素，after和next一般都不是指向同一个元素</p>
+</li>
+<li><p>插入有相同值时，元素在header中的顺序取的是第一次存储的位置</p>
+</li>
+<li><p>理论上也可以用一个数组来维护插入的顺序，可以更灵活的支持 get(3)</p>
+</li>
+</ul>
+<h1 id="Hashtable-数据结构"><a href="#Hashtable-数据结构" class="headerlink" title="Hashtable 数据结构"></a>Hashtable 数据结构</h1><p>和hashmap的区别：</p>
+<ol>
+<li><p>历史原因：Hashtable是基于陈旧的Dictionary类的，HashMap是java 1.2引进的Map接口的一个现实。</p>
+</li>
+<li><p>同步性：Hashtable是同步的，这个类中的一些方法保证了Hashtable中的对象是线程安全的，而HashMap则是异步的，因此HashMap中的对象并不是线程安全的，因为同步的要求会影响执行的效率，所以如果你不需要线程安全的结合那么使用HashMap是一个很好的选择，这样可以避免由于同步带来的不必要的性能开销，从而提高效率，我们一般所编写的程序都是异步的，但如果是服务器端的代码除外。</p>
+</li>
+<li><p>值：HashMap可以让你将空值作为一个表的条目的key或valueHashtable是不能放入空值（null）的</p>
+</li>
+</ol>
+<p>下图所示 put get size remove方法都是加锁的<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public synchronized V put(K key, V value) &#123;</div><div class="line">    // Make sure the value is not null</div><div class="line">    if (value == null) &#123;</div><div class="line">        throw new NullPointerException();</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<h1 id="ArrayList-数据结构"><a href="#ArrayList-数据结构" class="headerlink" title="ArrayList 数据结构"></a>ArrayList 数据结构</h1><h2 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h2><ol>
+<li>线性不安全，异步效率高，线性安全要用Vector</li>
+<li>默认大小给的是10，如果扩容的话，大小约为1.5倍，是指向新的一个对象而不是原list变长。<br>大的list的话，可以通过给定init大小来初始化list的长度。</li>
+<li>插入 和删除 会根据下标 移动下标后续的元素。<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2>为了提高插入的效率，new的时候指定大小可以节省内存空间和插入的效率，避免resize的发生</li>
+</ol>
+<h1 id="Vector-数据结构"><a href="#Vector-数据结构" class="headerlink" title="Vector 数据结构"></a>Vector 数据结构</h1><ul>
+<li><p>和ArrayList 相比，在JDK1.7中有一个包含capacityIncrement参数的构造函数，可以指定resize的时候扩容的大小，如果不指定的话，默认resize的时候翻倍，而ArrayList则是50%扩容<br>  public Vector(int initialCapacity, int capacityIncrement) {</p>
+</li>
+<li><p>线程安全的，操作都是加锁的，操作和 ArrayList 差不多</p>
+</li>
+</ul>
+<h1 id="HashSet-数据结构"><a href="#HashSet-数据结构" class="headerlink" title="HashSet 数据结构"></a>HashSet 数据结构</h1><ul>
+<li>可以去重，因为基于hashmap，把值作为key插到hashmap中</li>
+<li>常数级别的查找（其实一般contains方法会用到的查找），和数组相比不是一个量级的</li>
+<li>迭代就是hashmap的 keyIterator()</li>
+</ul>
+<h1 id="LinkedList"><a href="#LinkedList" class="headerlink" title="LinkedList"></a>LinkedList</h1><p>最大的特点是灵活，支持各种API。不支持随机访问，查找还是慢的，要从first结点 挨个遍历，在API里面是 contains(object o）函数来实现</p>
+<ul>
+<li>链表是双向的，并且由first结点和last结点连成一个线段<br>  顺序插入 1 2 3 4 –&gt;  null-4-3-2-1-null  </li>
+<li><p>结点Node构造如下</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">private static class Node&lt;E&gt; &#123;</div><div class="line">      E item;</div><div class="line">      Node&lt;E&gt; next;</div><div class="line">      Node&lt;E&gt; prev;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>默认的add方法是向链表 尾部追加，但是支持各种灵活的操作，getFirst()  addFirst（）getLast（） addLast（），所以可以实现 队列和栈结构</p>
+</li>
+<li><p>支持顺序插入 add(index，Item） set(index，item）</p>
+</li>
+</ul>
+<h1 id="concurrentHashMap"><a href="#concurrentHashMap" class="headerlink" title="concurrentHashMap"></a>concurrentHashMap</h1><p>有待添加，阿里面试喜欢问这个</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/10/30/java集合类/" data-title="java集合类 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2017/10/30/数据结构/" title="数据结构">
+  <strong>上一篇：</strong><br/>
+  <span>
+  数据结构</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/10/30/有趣的技术和好的资源/"  title="有趣的技术 和好的资源">
+ <strong>下一篇：</strong><br/> 
+ <span>有趣的技术 和好的资源
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/10/30/java集合类/" data-title="java集合类" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/10/30/java集合类/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#继承关系图"><span class="toc-number">1.</span> <span class="toc-text">继承关系图</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#LinkedHashMap-数据结构"><span class="toc-number">2.</span> <span class="toc-text">LinkedHashMap 数据结构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Hashtable-数据结构"><span class="toc-number">3.</span> <span class="toc-text">Hashtable 数据结构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ArrayList-数据结构"><span class="toc-number">4.</span> <span class="toc-text">ArrayList 数据结构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#特点"><span class="toc-number">4.1.</span> <span class="toc-text">特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#注意事项"><span class="toc-number">4.2.</span> <span class="toc-text">注意事项</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Vector-数据结构"><span class="toc-number">5.</span> <span class="toc-text">Vector 数据结构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#HashSet-数据结构"><span class="toc-number">6.</span> <span class="toc-text">HashSet 数据结构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#LinkedList"><span class="toc-number">7.</span> <span class="toc-text">LinkedList</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#concurrentHashMap"><span class="toc-number">8.</span> <span class="toc-text">concurrentHashMap</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
