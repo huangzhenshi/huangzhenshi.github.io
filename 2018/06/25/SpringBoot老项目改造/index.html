@@ -1,0 +1,532 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>SpringBoot老项目改造 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="源码：数据库里面有2个用户  huang/123456 admin用户 、 test/123456 vip用户https://github.com/huangzhenshi/psm_SpringBoot #以前的一个传统的maven管理的web项目，改造成SpringBoot并且集成一些新框架  文件夹路径的改变   maven项目把静态资源文件堆在webapp下面就可以了改用SpringBoot">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot老项目改造">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/06/25/SpringBoot老项目改造/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="源码：数据库里面有2个用户  huang/123456 admin用户 、 test/123456 vip用户https://github.com/huangzhenshi/psm_SpringBoot #以前的一个传统的maven管理的web项目，改造成SpringBoot并且集成一些新框架  文件夹路径的改变   maven项目把静态资源文件堆在webapp下面就可以了改用SpringBoot">
+<meta property="og:updated_time" content="2018-07-03T09:01:16.048Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringBoot老项目改造">
+<meta name="twitter:description" content="源码：数据库里面有2个用户  huang/123456 admin用户 、 test/123456 vip用户https://github.com/huangzhenshi/psm_SpringBoot #以前的一个传统的maven管理的web项目，改造成SpringBoot并且集成一些新框架  文件夹路径的改变   maven项目把静态资源文件堆在webapp下面就可以了改用SpringBoot">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/06/25/SpringBoot老项目改造/" title="SpringBoot老项目改造" itemprop="url">SpringBoot老项目改造</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-06-25T04:28:43.691Z" itemprop="datePublished"> 发表于 2018-06-25</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#集成Shiro"><span class="toc-number">1.</span> <span class="toc-text">集成Shiro</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#ShiroConfig配置"><span class="toc-number">1.1.</span> <span class="toc-text">ShiroConfig配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#集成ehcache缓存"><span class="toc-number">1.2.</span> <span class="toc-text">集成ehcache缓存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#引入shiro标签和路径的访问权限"><span class="toc-number">1.3.</span> <span class="toc-text">引入shiro标签和路径的访问权限</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#引入redis做集群的session共享"><span class="toc-number">2.</span> <span class="toc-text">引入redis做集群的session共享</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#使用redis集成shiro做session管理和权限缓存"><span class="toc-number">3.</span> <span class="toc-text">使用redis集成shiro做session管理和权限缓存</span></a></li></ol>
+		
+		</div>
+		
+		<p>源码：数据库里面有2个用户  huang/123456 admin用户 、 test/123456 vip用户<br><a href="https://github.com/huangzhenshi/psm_SpringBoot">https://github.com/huangzhenshi/psm_SpringBoot</a></p>
+<p>#<br>以前的一个传统的maven管理的web项目，改造成SpringBoot并且集成一些新框架</p>
+<ol>
+<li>文件夹路径的改变</li>
+</ol>
+<ul>
+<li>maven项目把静态资源文件堆在webapp下面就可以了<br>改用SpringBoot之后，默认的静态文件，要放在 resources\static下面</li>
+</ul>
+<ol>
+<li>老项目默认就可以直接用jsp啊</li>
+</ol>
+<ul>
+<li>引入maven依赖</li>
+<li>配置spring.mvc.view.prefix 和 suffix,这个很方便哎</li>
+<li>设置module(web resource directory  为 webapp即可)，设置web的路径为 webapp，和引入maven dependence</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;!--jsp页面使用jstl标签--&gt;</div><div class="line">&lt;dependency&gt;</div><div class="line">	&lt;groupId&gt;javax.servlet&lt;/groupId&gt;</div><div class="line">	&lt;artifactId&gt;jstl&lt;/artifactId&gt;</div><div class="line">&lt;/dependency&gt;</div><div class="line"></div><div class="line">&lt;!--用于编译jsp--&gt;</div><div class="line">&lt;dependency&gt;</div><div class="line">	&lt;groupId&gt;org.apache.tomcat.embed&lt;/groupId&gt;</div><div class="line">	&lt;artifactId&gt;tomcat-embed-jasper&lt;/artifactId&gt;</div><div class="line">	&lt;scope&gt;provided&lt;/scope&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure>
+<ol>
+<li>配置日志</li>
+</ol>
+<ul>
+<li>简单暴力，在resources文件夹下添加logback-spring.xml</li>
+<li>设置mysql 打印sql<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</div><div class="line">&lt;configuration  scan=&quot;true&quot; scanPeriod=&quot;60 seconds&quot; debug=&quot;false&quot;&gt;</div><div class="line">    &lt;appender name=&quot;console&quot; class=&quot;ch.qos.logback.core.ConsoleAppender&quot;&gt;</div><div class="line">        &lt;encoder&gt;</div><div class="line">            &lt;pattern&gt;%d&#123;HH:mm:ss.SSS&#125; %contextName [%thread] %-5level %logger&#123;36&#125; - %msg%n&lt;/pattern&gt;</div><div class="line">        &lt;/encoder&gt;</div><div class="line">    &lt;/appender&gt;</div><div class="line">    &lt;root level=&quot;debug&quot;&gt;</div><div class="line">        &lt;appender-ref ref=&quot;console&quot; /&gt;</div><div class="line">    &lt;/root&gt;</div><div class="line"></div><div class="line">&lt;logger name=&quot;account_huang.dao&quot; level=&quot;debug&quot;/&gt;</div><div class="line">&lt;/configuration&gt;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<ol>
+<li><p>设置热加载</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">	&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">	&lt;artifactId&gt;spring-boot-devtools&lt;/artifactId&gt;</div><div class="line">	&lt;optional&gt;true&lt;/optional&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>集成JPA<br><a href="https://blog.csdn.net/forezp/article/details/70545038" target="_blank" rel="external">https://blog.csdn.net/forezp/article/details/70545038</a></p>
+</li>
+</ol>
+<ul>
+<li>引入jpa依赖</li>
+<li>配置jpa选项</li>
+<li>修改实体类，引入注解</li>
+<li>修改接口<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">	 &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">	 &lt;artifactId&gt;spring-boot-starter-data-jpa&lt;/artifactId&gt;</div><div class="line">&lt;/dependency&gt;</div><div class="line"></div><div class="line">spring.jpa.database-platform= org.hibernate.dialect.MySQL5Dialect</div><div class="line">jpa.hibernate.show-sql= true</div><div class="line"></div><div class="line"></div><div class="line">@lombok.Data</div><div class="line">@Entity</div><div class="line">@Table(name=&quot;fuser&quot;)</div><div class="line">public class User&#123;</div><div class="line">    @Id</div><div class="line">    @GeneratedValue(strategy = GenerationType.IDENTITY)</div><div class="line">    private String id;</div><div class="line"></div><div class="line"></div><div class="line">public interface UserMapper extends JpaRepository&lt;User, Long&gt;&#123;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<ol>
+<li>事务控制的支持<br>直接在service实现类的方法上添加 @Transactional 即可，该方法是依赖了 jpa的jar包，或者是jdbc的jar包里面的配置。  </li>
+</ol>
+<p>注意事项：</p>
+<ul>
+<li>service必须是在接口层才有用啊，也是奇怪了。</li>
+<li>mybatis的事务也受到JPA的控制，同一个父接口</li>
+</ul>
+<h1 id="集成Shiro"><a href="#集成Shiro" class="headerlink" title="集成Shiro"></a>集成Shiro</h1><ul>
+<li>引入jar包依赖</li>
+<li>配置ShiroConfig</li>
+<li>重写Realm</li>
+<li>引入表</li>
+<li>添加对应的实体类</li>
+</ul>
+<h2 id="ShiroConfig配置"><a href="#ShiroConfig配置" class="headerlink" title="ShiroConfig配置"></a>ShiroConfig配置</h2><ol>
+<li>过滤路径的变更，因为资源都在 /res路径下面的，设置了/res的不校验、和 WEB-INFO下的tld、tag文件的免验证</li>
+<li>设置LoginUrl，进入程序自动跳转到登陆界面</li>
+<li>对登陆校验路径进行免验证</li>
+<li>设置没有权限的自动跳转页面<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Configuration</div><div class="line">public class ShiroConfig &#123;</div><div class="line">	@Bean</div><div class="line">	public ShiroFilterFactoryBean shirFilter(SecurityManager securityManager) &#123;</div><div class="line">		System.out.println(&quot;ShiroConfiguration.shirFilter()&quot;);</div><div class="line">		ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();</div><div class="line">		shiroFilterFactoryBean.setSecurityManager(securityManager);</div><div class="line">		//拦截器.</div><div class="line">		Map&lt;String,String&gt; filterChainDefinitionMap = new LinkedHashMap&lt;String,String&gt;();</div><div class="line">		// 配置不会被拦截的链接 顺序判断</div><div class="line">		filterChainDefinitionMap.put(&quot;/static/**&quot;, &quot;anon&quot;);</div><div class="line">		filterChainDefinitionMap.put(&quot;/**/*.tag&quot;, &quot;anon&quot;);</div><div class="line">		filterChainDefinitionMap.put(&quot;/**/*.tld&quot;, &quot;anon&quot;);</div><div class="line">		filterChainDefinitionMap.put(&quot;/res/**&quot;, &quot;anon&quot;);</div><div class="line">		</div><div class="line">		filterChainDefinitionMap.put(&quot;/loginCheck&quot;, &quot;anon&quot;);</div><div class="line">		shiroFilterFactoryBean.setLoginUrl(&quot;/login.do&quot;);</div><div class="line">		</div><div class="line">		//配置退出 过滤器,其中的具体的退出代码Shiro已经替我们实现了</div><div class="line">		filterChainDefinitionMap.put(&quot;/logout&quot;, &quot;logout&quot;);</div><div class="line">		filterChainDefinitionMap.put(&quot;/**&quot;, &quot;authc&quot;);</div><div class="line">		//未授权界面;</div><div class="line">		shiroFilterFactoryBean.setUnauthorizedUrl(&quot;/403&quot;);</div><div class="line">		shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);</div><div class="line">		return shiroFilterFactoryBean;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="集成ehcache缓存"><a href="#集成ehcache缓存" class="headerlink" title="集成ehcache缓存"></a>集成ehcache缓存</h2><p><a href="https://blog.csdn.net/snakemoving/article/details/77104217" target="_blank" rel="external">https://blog.csdn.net/snakemoving/article/details/77104217</a></p>
+<ol>
+<li>引入两个jar包</li>
+<li>在启动类中添加ehcache</li>
+<li>添加对应的ehcache配置文件<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">       &lt;dependency&gt;</div><div class="line">           &lt;groupId&gt;org.apache.shiro&lt;/groupId&gt;</div><div class="line">           &lt;artifactId&gt;shiro-ehcache&lt;/artifactId&gt;</div><div class="line">           &lt;version&gt;1.2.2&lt;/version&gt;</div><div class="line">       &lt;/dependency&gt;</div><div class="line">       &lt;dependency&gt;</div><div class="line">          &lt;groupId&gt;org.springframework&lt;/groupId&gt;</div><div class="line">          &lt;artifactId&gt;spring-context-support&lt;/artifactId&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line"></div><div class="line">	@Bean</div><div class="line">    public EhCacheManager ehCacheManager()&#123;</div><div class="line">       System.out.println(&quot;ShiroConfiguration.getEhCacheManager()&quot;);</div><div class="line">       EhCacheManager cacheManager = new EhCacheManager();</div><div class="line">       cacheManager.setCacheManagerConfigFile(&quot;classpath:ehcache-shiro.xml&quot;);</div><div class="line">       return cacheManager;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">	@Bean</div><div class="line">	public SecurityManager securityManager()&#123;</div><div class="line">		DefaultWebSecurityManager securityManager =  new DefaultWebSecurityManager();</div><div class="line">		securityManager.setCacheManager(ehCacheManager());//这个如果执行多次，也是同样的一个对象;</div><div class="line">		securityManager.setRealm(myShiroRealm());</div><div class="line">		return securityManager;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">&lt;ehcache xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; </div><div class="line">xsi:noNamespaceSchemaLocation=&quot;http://www.ehcache.org/ehcache.xsd&quot;&gt;</div><div class="line">    &lt;diskStore path=&quot;java.io.tmpdir&quot;/&gt;</div><div class="line">    &lt;defaultCache</div><div class="line">            maxElementsInMemory=&quot;10000&quot;</div><div class="line">            eternal=&quot;false&quot;</div><div class="line">            timeToIdleSeconds=&quot;120&quot;</div><div class="line">            timeToLiveSeconds=&quot;120&quot;</div><div class="line">            maxElementsOnDisk=&quot;10000000&quot;</div><div class="line">            diskExpiryThreadIntervalSeconds=&quot;120&quot;</div><div class="line">            memoryStoreEvictionPolicy=&quot;LRU&quot;&gt;</div><div class="line">    &lt;/defaultCache&gt;</div><div class="line">   </div><div class="line">&lt;/ehcache&gt;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="引入shiro标签和路径的访问权限"><a href="#引入shiro标签和路径的访问权限" class="headerlink" title="引入shiro标签和路径的访问权限"></a>引入shiro标签和路径的访问权限</h2><p>对系统配置的Code配置需要有admin管理权限</p>
+<ol>
+<li><p>对CodeController整个模块进行权限控制</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Controller</div><div class="line">@RequestMapping(&quot;/code&quot;)</div><div class="line">@RequiresRoles(value = &quot;admin&quot;)</div><div class="line">public class CodeController&#123;</div></pre></td></tr></table></figure>
+</li>
+<li><p>对code配置的标签进行权限控制<br>left-config.jsp里面进行配置</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;%@ taglib uri=&quot;http://shiro.apache.org/tags&quot; prefix=&quot;shiro&quot;%&gt;</div><div class="line"></div><div class="line">&lt;div class=&quot;F-left&quot; style=&quot;width:100%;&quot;&gt;</div><div class="line">	&lt;div class=&quot;PanelLeft F-left&quot;&gt;</div><div class="line">    	&lt;div class=&quot;BoxLeft&quot;&gt;</div><div class="line">        	&lt;img src=&quot;$&#123;ctx&#125;/res/resource/style/images/icon01Hit.png&quot; width=&quot;40&quot; height=&quot;38&quot; alt=&quot;&quot; /&gt;</div><div class="line">            &lt;h4&gt;&lt;b&gt;系统配置&lt;/b&gt;&lt;/h4&gt;</div><div class="line">        &lt;/div&gt;</div><div class="line">        &lt;div class=&quot;clear&quot;&gt;&lt;/div&gt;</div><div class="line">        &lt;div class=&quot;menuLeftFirst&quot;&gt;</div><div class="line">			&lt;ul&gt;</div><div class="line">			   &lt;shiro:hasRole name=&quot;admin&quot;&gt;</div><div class="line">			          &lt;li id=&quot;configCodeNav&quot; class=&quot;hit&quot;  onclick=&quot;refreshCenter(&apos;$&#123;ctx&#125;/code/toMainRecordPage.do?username=$&#123;username&#125;&apos;);&quot; &gt;</div><div class="line">			        	 &lt;span&gt;Code Config&lt;/span&gt;</div><div class="line">			         &lt;/li&gt; </div><div class="line">		       &lt;/shiro:hasRole&gt;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="引入redis做集群的session共享"><a href="#引入redis做集群的session共享" class="headerlink" title="引入redis做集群的session共享"></a>引入redis做集群的session共享</h1><ul>
+<li>nginx的负载均衡配置：<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">http &#123;</div><div class="line">    include       mime.types;</div><div class="line">    default_type  application/octet-stream;</div><div class="line">    sendfile        on;</div><div class="line">    keepalive_timeout  65;</div><div class="line">    upstream tomcatserver2 &#123;</div><div class="line">        server 127.0.0.1:8098;</div><div class="line">        server 127.0.0.1:8099;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    server &#123;</div><div class="line">        listen       80;</div><div class="line">        server_name  localhost;</div><div class="line">        location / &#123;</div><div class="line">          proxy_pass http://tomcatserver2; </div><div class="line">	    proxy_redirect default;</div><div class="line">       &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<ol>
+<li><p>系统配置： maven依赖、引入相关bean（RedisSessionConfig 、RedisCacheConfig）、配置属性</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">       &lt;!--redis--&gt;</div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;spring-boot-starter-data-redis&lt;/artifactId&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line">        &lt;!-- redis session --&gt;</div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;org.springframework.session&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;spring-session-data-redis&lt;/artifactId&gt;</div><div class="line">            &lt;version&gt;1.3.1.RELEASE&lt;/version&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line"></div><div class="line">@Configuration</div><div class="line">@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 600)</div><div class="line">public class RedisSessionConfig &#123;</div><div class="line">	</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">spring.redis.host= 127.0.0.1</div><div class="line">spring.redis.port= 6379</div><div class="line">spring.redis.password= huangzs</div><div class="line">spring.redis.timeout= 0</div><div class="line">spring.redis.pool.max-idle=10</div><div class="line">spring.redis.pool.max-wait=3000</div></pre></td></tr></table></figure>
+</li>
+<li><p>注意事项<br>要redis缓存的 对象都要实现Serializable接口，否则会报错</p>
+</li>
+</ol>
+<h1 id="使用redis集成shiro做session管理和权限缓存"><a href="#使用redis集成shiro做session管理和权限缓存" class="headerlink" title="使用redis集成shiro做session管理和权限缓存"></a>使用redis集成shiro做session管理和权限缓存</h1><p>参考博客，含有说明和源码<br><a href="https://blog.csdn.net/liaoguolingxian/article/details/77017225" target="_blank" rel="external">https://blog.csdn.net/liaoguolingxian/article/details/77017225</a></p>
+<ol>
+<li>添加相关的工具类</li>
+</ol>
+<ul>
+<li>ShiroRedisCache implements Cache<k,v> {} 重写了 put get value size等方法</k,v></li>
+<li>ShiroRedisCacheManager extends AbstractCacheManager{} 注入了ShiroRedisCache</li>
+<li>RedisSessionDao 被sessionmanager引用，执行一些对session的管理，比如创建、更新等操作 RedisSessionDao redisSessionDao = new RedisSessionDao(redisTemplate);</li>
+<li>MySessionIdGenerator 也是为了sessionmanager提供一个项目特色的id而已</li>
+</ul>
+<ol>
+<li>修改Shiro-config<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"> @Bean(name = &quot;myShiroRealm&quot;)</div><div class="line"> @DependsOn(value = &#123;&quot;lifecycleBeanPostProcessor&quot;, &quot;ShiroRedisCacheManager&quot;&#125;)</div><div class="line"> public MyShiroRealm myShiroRealm(RedisTemplate redisTemplate) &#123;</div><div class="line">   MyShiroRealm shiroRealm = new MyShiroRealm();</div><div class="line">   shiroRealm.setCacheManager(redisCacheManager(redisTemplate));</div><div class="line">   shiroRealm.setCachingEnabled(true);</div><div class="line">   //认证</div><div class="line">   shiroRealm.setAuthenticationCachingEnabled(false);</div><div class="line">   //授权</div><div class="line">   shiroRealm.setAuthorizationCachingEnabled(false);</div><div class="line">   return shiroRealm;</div><div class="line"> &#125;</div><div class="line"></div><div class="line">@Bean</div><div class="line">public SecurityManager securityManager(RedisTemplate redisTemplate)&#123;</div><div class="line">	DefaultWebSecurityManager securityManager =  new DefaultWebSecurityManager();</div><div class="line">	securityManager.setCacheManager(redisCacheManager(redisTemplate));</div><div class="line">	securityManager.setRealm(myShiroRealm(redisTemplate));</div><div class="line">    securityManager.setSessionManager(sessionManager(redisTemplate));</div><div class="line">	return securityManager;</div><div class="line">&#125;</div><div class="line"></div><div class="line">  @Bean(name = &quot;ShiroRedisCacheManager&quot;)</div><div class="line">  public ShiroRedisCacheManager redisCacheManager(RedisTemplate redisTemplate) &#123;</div><div class="line">    ShiroRedisCacheManager redisCacheManager = new ShiroRedisCacheManager(redisTemplate);</div><div class="line">    //name是key的前缀，可以设置任何值，无影响，可以设置带项目特色的值</div><div class="line">    redisCacheManager.createCache(&quot;shiro_redis&quot;);</div><div class="line">    return redisCacheManager;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">@Bean(name = &quot;lifecycleBeanPostProcessor&quot;)</div><div class="line">  public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() &#123;</div><div class="line">    return new LifecycleBeanPostProcessor();</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  @Bean(name = &quot;sessionManager&quot;)</div><div class="line">  @DependsOn(value = &quot;lifecycleBeanPostProcessor&quot;)</div><div class="line">  public DefaultWebSessionManager sessionManager(RedisTemplate redisTemplate) &#123;</div><div class="line">    DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();</div><div class="line">    RedisSessionDao redisSessionDao = new RedisSessionDao(redisTemplate);</div><div class="line">    //这个name的作用也不大，只是有特色的cookie的名称。</div><div class="line">    redisSessionDao.setSessionIdGenerator(sessionIdGenerator(&quot;starrkCookie&quot;));</div><div class="line">    sessionManager.setSessionDAO(redisSessionDao);</div><div class="line">    sessionManager.setDeleteInvalidSessions(true);</div><div class="line">    SimpleCookie cookie = new SimpleCookie();</div><div class="line">    cookie.setName(&quot;starrkCookie&quot;);</div><div class="line">    sessionManager.setSessionIdCookie(cookie);</div><div class="line">    sessionManager.setSessionIdCookieEnabled(true);</div><div class="line">    return sessionManager;</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  public MySessionIdGenerator sessionIdGenerator(String name) &#123;</div><div class="line">	    return new MySessionIdGenerator(name);</div><div class="line">	  &#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/06/25/SpringBoot老项目改造/" data-title="SpringBoot老项目改造 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/06/26/JPA使用心得/" title="JPA使用心得">
+  <strong>上一篇：</strong><br/>
+  <span>
+  JPA使用心得</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/06/22/SpringCloud网关/"  title="SpringCloud网关Zuul">
+ <strong>下一篇：</strong><br/> 
+ <span>SpringCloud网关Zuul
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/06/25/SpringBoot老项目改造/" data-title="SpringBoot老项目改造" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/06/25/SpringBoot老项目改造/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#集成Shiro"><span class="toc-number">1.</span> <span class="toc-text">集成Shiro</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#ShiroConfig配置"><span class="toc-number">1.1.</span> <span class="toc-text">ShiroConfig配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#集成ehcache缓存"><span class="toc-number">1.2.</span> <span class="toc-text">集成ehcache缓存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#引入shiro标签和路径的访问权限"><span class="toc-number">1.3.</span> <span class="toc-text">引入shiro标签和路径的访问权限</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#引入redis做集群的session共享"><span class="toc-number">2.</span> <span class="toc-text">引入redis做集群的session共享</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#使用redis集成shiro做session管理和权限缓存"><span class="toc-number">3.</span> <span class="toc-text">使用redis集成shiro做session管理和权限缓存</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

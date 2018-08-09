@@ -1,0 +1,467 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>SpringBoot监控系列 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="单个应用程序：Actuator所有的相关应用程序：Spring-boot-admin、Sleuth 需求分析 Actuator提供单个微服务的所有文件配置、注册的Beans、MVC信息、相关服务器健康情况、JVM使用情况、线程情况、被访问的记录信息等 Admin就是对多个微服务进行Actuator的图形化监控 Sleuth监控所有注册的微服务的所有请求的耗时等相关信息，方便排查和服务器性能的优化。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot监控系列">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/07/17/SpringBoot监控系列/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="单个应用程序：Actuator所有的相关应用程序：Spring-boot-admin、Sleuth 需求分析 Actuator提供单个微服务的所有文件配置、注册的Beans、MVC信息、相关服务器健康情况、JVM使用情况、线程情况、被访问的记录信息等 Admin就是对多个微服务进行Actuator的图形化监控 Sleuth监控所有注册的微服务的所有请求的耗时等相关信息，方便排查和服务器性能的优化。">
+<meta property="og:updated_time" content="2018-07-26T08:59:01.492Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringBoot监控系列">
+<meta name="twitter:description" content="单个应用程序：Actuator所有的相关应用程序：Spring-boot-admin、Sleuth 需求分析 Actuator提供单个微服务的所有文件配置、注册的Beans、MVC信息、相关服务器健康情况、JVM使用情况、线程情况、被访问的记录信息等 Admin就是对多个微服务进行Actuator的图形化监控 Sleuth监控所有注册的微服务的所有请求的耗时等相关信息，方便排查和服务器性能的优化。">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/07/17/SpringBoot监控系列/" title="SpringBoot监控系列" itemprop="url">SpringBoot监控系列</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-07-17T09:51:59.521Z" itemprop="datePublished"> 发表于 2018-07-17</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#需求分析"><span class="toc-number">1.</span> <span class="toc-text">需求分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Actuator-监控（不支持1-5-14-Release版本，支持1-5-9-Release）"><span class="toc-number">2.</span> <span class="toc-text">Actuator 监控（不支持1.5.14.Release版本，支持1.5.9.Release）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#功能"><span class="toc-number">2.1.</span> <span class="toc-text">功能</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<p>单个应用程序：Actuator<br>所有的相关应用程序：Spring-boot-admin、Sleuth</p>
+<h1 id="需求分析"><a href="#需求分析" class="headerlink" title="需求分析"></a>需求分析</h1><ol>
+<li>Actuator提供单个微服务的所有文件配置、注册的Beans、MVC信息、相关服务器健康情况、JVM使用情况、线程情况、被访问的记录信息等</li>
+<li>Admin就是对多个微服务进行Actuator的图形化监控</li>
+<li>Sleuth监控所有注册的微服务的所有请求的耗时等相关信息，方便排查和服务器性能的优化。</li>
+</ol>
+<h1 id="Actuator-监控（不支持1-5-14-Release版本，支持1-5-9-Release）"><a href="#Actuator-监控（不支持1-5-14-Release版本，支持1-5-9-Release）" class="headerlink" title="Actuator 监控（不支持1.5.14.Release版本，支持1.5.9.Release）"></a>Actuator 监控（不支持1.5.14.Release版本，支持1.5.9.Release）</h1><p><a href="http://www.cnblogs.com/ityouknow/p/8423590.html" target="_blank" rel="external">http://www.cnblogs.com/ityouknow/p/8423590.html</a></p>
+<h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><ol>
+<li>支持接口调用的方式关闭服务器</li>
+<li><p>查看配置文件中设置的属性内容，以及一些配置属性的默认值。（MVC配置、数据源配置、Redis配置、Eureka配置等等全部）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">http://localhost:8088/monitor/configprops</div><div class="line"></div><div class="line"> &quot;spring.redis-org.springframework.boot.autoconfigure.data.redis.RedisProperties&quot; : &#123;</div><div class="line">    &quot;prefix&quot; : &quot;spring.redis&quot;,</div><div class="line">    &quot;properties&quot; : &#123;</div><div class="line">      &quot;port&quot; : 6379,</div><div class="line">      &quot;host&quot; : &quot;127.0.0.1&quot;,</div><div class="line">      &quot;pool&quot; : &#123;</div><div class="line">        &quot;maxIdle&quot; : 10,</div><div class="line">        &quot;minIdle&quot; : 0,</div><div class="line">        &quot;maxActive&quot; : 8,</div><div class="line">        &quot;maxWait&quot; : 3000</div><div class="line">      &#125;,</div><div class="line">      &quot;sentinel&quot; : null,</div><div class="line">      &quot;cluster&quot; : null,</div><div class="line">      &quot;ssl&quot; : false,</div><div class="line">      &quot;password&quot; : &quot;******&quot;,</div><div class="line">      &quot;timeout&quot; : 0,</div><div class="line">      &quot;url&quot; : null,</div><div class="line">      &quot;database&quot; : 0</div><div class="line">    &#125;</div><div class="line">  &#125;,</div></pre></td></tr></table></figure>
+</li>
+<li><p>MVC相关的信息:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">http://localhost:8088/monitor/mappings</div><div class="line"></div><div class="line"> &quot;&#123;[/code/getCodeGrid.do]&#125;&quot; : &#123;</div><div class="line">    &quot;bean&quot; : &quot;requestMappingHandlerMapping&quot;,</div><div class="line">    &quot;method&quot; : &quot;public java.util.Map&lt;java.lang.String, java.lang.Object&gt; account_huang.action.CodeController.getCodeGrid(account_huang.utils.PageCoral,account_huang.utils.SearchEntity)&quot;</div><div class="line">  &#125;,</div></pre></td></tr></table></figure>
+</li>
+<li><p>Bean的相关信息：是否单例、依赖（引用）哪些类</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">http://localhost:8088/monitor/beans</div><div class="line"></div><div class="line"> &#123;</div><div class="line">    &quot;bean&quot; : &quot;codeController&quot;,</div><div class="line">    &quot;aliases&quot; : [ ],</div><div class="line">    &quot;scope&quot; : &quot;singleton&quot;,</div><div class="line">    &quot;type&quot; : &quot;account_huang.action.CodeController$$EnhancerBySpringCGLIB$$c824f51e&quot;,</div><div class="line">    &quot;resource&quot; : &quot;file [C:/huangzs/workspaceIdea/psm/target/classes/account_huang/action/CodeController.class]&quot;,</div><div class="line">    &quot;dependencies&quot; : [ &quot;codeService&quot; ]</div><div class="line">  &#125;</div><div class="line">``` </div><div class="line">5. 依赖应用程序和相关引用的服务器的健康情况 /health（注册中心eureka、数据db、缓存数据库 redis、远程调用服务器PSM-User、磁盘是否充足、熔断器是否运行正常）等信息</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p><a href="http://localhost:8088/monitor/health" target="_blank" rel="external">http://localhost:8088/monitor/health</a></p>
+<p>{<br>  “description” : “Composite Discovery Client”,<br>  “status” : “UP”,<br>  “discoveryComposite” : {<br>    “description” : “Composite Discovery Client”,<br>    “status” : “UP”,<br>    “discoveryClient” : {<br>      “description” : “Composite Discovery Client”,<br>      “status” : “UP”,<br>      “services” : [ “spring-cloud-psm”, “spring-cloud-psm-user” ]<br>    },<br>    “eureka” : {<br>      “description” : “Remote status from Eureka server”,<br>      “status” : “UP”,<br>      “applications” : {<br>        “SPRING-CLOUD-PSM-USER” : 2,<br>        “SPRING-CLOUD-PSM” : 1<br>      }<br>    }<br>  },<br>  “diskSpace” : {<br>    “status” : “UP”,<br>    “total” : 254320570368,<br>    “free” : 97157308416,<br>    “threshold” : 10485760<br>  },<br>  “redis” : {<br>    “status” : “UP”,<br>    “version” : “3.0.504”<br>  },<br>  “db” : {<br>    “status” : “UP”,<br>    “database” : “MySQL”,<br>    “hello” : 1<br>  },<br>  “hystrix” : {<br>    “status” : “UP”<br>  }<br>}<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">- Server相关的信息</div><div class="line">- JVM使用相关信息</div><div class="line">- 网络请求相关的信息 trace</div><div class="line"></div><div class="line">## 配置</div><div class="line">只依赖Actuator.jar，配置参数即可使用。  </div><div class="line">注意事项,可以美化输出的json数据的格式。</div></pre></td></tr></table></figure></p>
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre><p>management:<br>  security:<br>    enabled: false #关掉安全认证<br>  port: 8088 #管理端口调整成8088<br>  context-path: /monitor #actuator的访问路径<br>endpoints:<br>  shutdown:<br>    enabled: true</p>
+<p>spring:<br>  jackson:<br>    serialization:<br>      indent_output: true</p>
+<p>或者：<br>spring.jackson.serialization.indent_output= true<br>management.security.enabled= false<br>management.port= 8088<br>management.context-path= /monitor<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"></div><div class="line"># Spring Boot Admin监控</div><div class="line">实现一个Admin管理界面，对多个SB项目进行图形化优化的监控功能，基于Actutaor接口</div><div class="line">http://www.cnblogs.com/ityouknow/p/8440455.html</div><div class="line"></div><div class="line"></div><div class="line"># Sleuth</div><div class="line">http://www.ityouknow.com/springcloud/2018/02/02/spring-cloud-sleuth-zipkin.html</div><div class="line"></div><div class="line">作用： 方便监控所有注册的微服务的所有请求的耗时等相关信息，方便排查和服务器性能的优化。</div><div class="line">1. Sleuth是一个单独的服务器，其他程序通过注册sleuth，来实现注册式的监控。</div></pre></td></tr></table></figure></p>
+<p>spring.zipkin.base-url= <a href="http://localhost:9000" target="_blank" rel="external">http://localhost:9000</a><br>spring.sleuth.sampler.percentage= 1.0<br>```</p>
+<ol>
+<li><p>主要是图形化和各种Filter的过滤器，和耗时的report，还有依赖关系图（比如zuul的转发依赖）</p>
+</li>
+<li><p>服务的访问url<br><a href="http://localhost:9000/zipkin/" target="_blank" rel="external">http://localhost:9000/zipkin/</a></p>
+</li>
+<li><p>Sleuth依赖JDK 1.8以上</p>
+</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/07/17/SpringBoot监控系列/" data-title="SpringBoot监控系列 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/07/30/ConcurrentHashMap/" title="ConcurrentHashMap">
+  <strong>上一篇：</strong><br/>
+  <span>
+  ConcurrentHashMap</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/07/15/菜鸟学html学习笔记/"  title="菜鸟学html学习笔记">
+ <strong>下一篇：</strong><br/> 
+ <span>菜鸟学html学习笔记
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/07/17/SpringBoot监控系列/" data-title="SpringBoot监控系列" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/07/17/SpringBoot监控系列/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#需求分析"><span class="toc-number">1.</span> <span class="toc-text">需求分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Actuator-监控（不支持1-5-14-Release版本，支持1-5-9-Release）"><span class="toc-number">2.</span> <span class="toc-text">Actuator 监控（不支持1.5.14.Release版本，支持1.5.9.Release）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#功能"><span class="toc-number">2.1.</span> <span class="toc-text">功能</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

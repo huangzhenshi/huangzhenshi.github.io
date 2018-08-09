@@ -1,0 +1,484 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Mysql读写分离（mysql-proxy的安装和配置) | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="应用场景：最适合多读少写的场景，而且是一主（负责写）多从（负责读，通过proxy分摊查询）  从服务器作为读的优点：可以设置为MYISAM，读取速度快，索引查相对也比Innodb快。还可以做集群分摊读的压力 主服务器负责写：Innodb支持事务和高并发的写，因为是行锁而不是表锁。 数据同步使用 binlog ，从库不需要像主库那样先对 SQL query 进行 SQL parsing 等操作，写入">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql读写分离（mysql-proxy的安装和配置)">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/01/11/mysql集群、读写分离/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="应用场景：最适合多读少写的场景，而且是一主（负责写）多从（负责读，通过proxy分摊查询）  从服务器作为读的优点：可以设置为MYISAM，读取速度快，索引查相对也比Innodb快。还可以做集群分摊读的压力 主服务器负责写：Innodb支持事务和高并发的写，因为是行锁而不是表锁。 数据同步使用 binlog ，从库不需要像主库那样先对 SQL query 进行 SQL parsing 等操作，写入">
+<meta property="og:updated_time" content="2018-01-17T03:51:35.697Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mysql读写分离（mysql-proxy的安装和配置)">
+<meta name="twitter:description" content="应用场景：最适合多读少写的场景，而且是一主（负责写）多从（负责读，通过proxy分摊查询）  从服务器作为读的优点：可以设置为MYISAM，读取速度快，索引查相对也比Innodb快。还可以做集群分摊读的压力 主服务器负责写：Innodb支持事务和高并发的写，因为是行锁而不是表锁。 数据同步使用 binlog ，从库不需要像主库那样先对 SQL query 进行 SQL parsing 等操作，写入">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/01/11/mysql集群、读写分离/" title="Mysql读写分离（mysql-proxy的安装和配置)" itemprop="url">Mysql读写分离（mysql-proxy的安装和配置)</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-01-11T09:50:50.052Z" itemprop="datePublished"> 发表于 2018-01-11</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#应用场景："><span class="toc-number">1.</span> <span class="toc-text">应用场景：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mysql-proxy"><span class="toc-number">2.</span> <span class="toc-text">mysql-proxy</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#实现功能"><span class="toc-number">2.1.</span> <span class="toc-text">实现功能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装配置"><span class="toc-number">2.2.</span> <span class="toc-text">安装配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#192-168-29-129为mysql-proxy的软件所在的机器的IP，可以和mysql在一台服务器上，也可以不在一台服务器上。"><span class="toc-number">2.3.</span> <span class="toc-text">192.168.29.129为mysql-proxy的软件所在的机器的IP，可以和mysql在一台服务器上，也可以不在一台服务器上。</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#proxy-读写分离的配置"><span class="toc-number">3.</span> <span class="toc-text">proxy 读写分离的配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#注意事项"><span class="toc-number">4.</span> <span class="toc-text">注意事项</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#mysql的远程连接"><span class="toc-number">4.1.</span> <span class="toc-text">mysql的远程连接</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#主从复制"><span class="toc-number">5.</span> <span class="toc-text">主从复制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#重点注意事项："><span class="toc-number">5.1.</span> <span class="toc-text">重点注意事项：</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#出现问题"><span class="toc-number">6.</span> <span class="toc-text">出现问题</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="应用场景："><a href="#应用场景：" class="headerlink" title="应用场景："></a>应用场景：</h1><p>最适合多读少写的场景，而且是一主（负责写）多从（负责读，通过proxy分摊查询）</p>
+<ul>
+<li>从服务器作为读的优点：可以设置为MYISAM，读取速度快，索引查相对也比Innodb快。还可以做集群分摊读的压力</li>
+<li>主服务器负责写：Innodb支持事务和高并发的写，因为是行锁而不是表锁。</li>
+<li>数据同步使用 binlog ，从库不需要像主库那样先对 SQL query 进行 SQL parsing 等操作，写入效率高。也不需要支持事务了，因为binlog都是事务控制后的结果了。</li>
+</ul>
+<h1 id="mysql-proxy"><a href="#mysql-proxy" class="headerlink" title="mysql-proxy"></a>mysql-proxy</h1><h2 id="实现功能"><a href="#实现功能" class="headerlink" title="实现功能"></a>实现功能</h2><p>实现mysql的代理，外部通过代理的形式访问mysql</p>
+<h2 id="安装配置"><a href="#安装配置" class="headerlink" title="安装配置"></a>安装配置</h2><ul>
+<li>mysql 和mysql-proxy是2个独立的软件，就算在一个机子上，也需要对本机授权。这和直接远程连接mysql是2个概念。</li>
+</ul>
+<h2 id="192-168-29-129为mysql-proxy的软件所在的机器的IP，可以和mysql在一台服务器上，也可以不在一台服务器上。"><a href="#192-168-29-129为mysql-proxy的软件所在的机器的IP，可以和mysql在一台服务器上，也可以不在一台服务器上。" class="headerlink" title="192.168.29.129为mysql-proxy的软件所在的机器的IP，可以和mysql在一台服务器上，也可以不在一台服务器上。"></a>192.168.29.129为mysql-proxy的软件所在的机器的IP，可以和mysql在一台服务器上，也可以不在一台服务器上。</h2><p>grant all on <em>.</em> to ‘test’@’192.168.29.129’ identified by ‘123456’;<br>flush privileges;</p>
+<ul>
+<li>授权后，外部直接通过默认的4040端口，远程连接mysql 服务器<br>mysql -hmysql-proxyIP -P4040 -u$USER -P密码<br>可以测试 telnet mysql-proxyIP 4040  查看是否防火墙屏蔽了端口。</li>
+</ul>
+<p>安装参考：<br><a href="https://www.cnblogs.com/hjwq/p/6293507.html" target="_blank" rel="external">https://www.cnblogs.com/hjwq/p/6293507.html</a></p>
+<ul>
+<li><p>概括：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">源码安装：</div><div class="line">tar -zxvf mysql-proxy-0.8.5-linux-el6-x86-64bit.tar.gz</div><div class="line"></div><div class="line">cp -r mysql-proxy-0.8.5-linux-el6-x86-64bit /usr/local/mysql-proxy</div><div class="line"></div><div class="line">chmod -R 775 /usr/local/mysql-proxy</div><div class="line">chown -R mysql:mysql /usr/local/mysql-proxy</div><div class="line"></div><div class="line">vim /etc/profile   //打开此文件，在文件尾部加上以下内容</div><div class="line">LUA_PATH=&quot;/usr/local/mysql-proxy/share/doc/mysql-proxy/?.lua&quot;</div><div class="line">export LUA_PATH</div><div class="line">export PATH=$PATH:/usr/local/mysql-proxy/bin     //mysql proxy 环境变量的设置</div><div class="line">保存并退出后执行下面命令</div><div class="line">source /etc/profile  // 使变量立即生效</div></pre></td></tr></table></figure>
+</li>
+<li><p>启动mysql-proxy启动脚本 mysql-proxy.cnf<br>注意：这个配置文件一定不能有尾部空格啊。   配置的username是 mysql授权过的用户名和密码。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[mysql-proxy] </div><div class="line">admin-username=test</div><div class="line">admin-password=123456      </div><div class="line">admin-lua-script=/usr/local/mysql-proxy/share/doc/mysql-proxy/admin-sql.lua</div><div class="line">daemon=true</div><div class="line">keepalive=true</div><div class="line">proxy-backend-addresses=192.168.29.129</div><div class="line">log-file=/usr/local/mysql-proxy/mysql-proxy.log</div><div class="line">log-level=debug</div></pre></td></tr></table></figure>
+</li>
+<li><p>启动mysql-proxy<br>chmod 0660 /etc/mysql-proxy.cnf<br>mysql-proxy –defaults-file=/etc/mysql-proxy.cnf</p>
+</li>
+</ul>
+<h1 id="proxy-读写分离的配置"><a href="#proxy-读写分离的配置" class="headerlink" title="proxy 读写分离的配置"></a>proxy 读写分离的配置</h1><ol>
+<li>分别把主、从服务器给mysql-proxy的 test/123456 赋予权限。<br> 注意：主库和从库给代理服务器创建登录用户并密码应该一致</li>
+</ol>
+<h1 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h1><h2 id="mysql的远程连接"><a href="#mysql的远程连接" class="headerlink" title="mysql的远程连接"></a>mysql的远程连接</h2><p>有问题参考博客:<br><a href="http://blog.csdn.net/freezingxu/article/details/77088506" target="_blank" rel="external">http://blog.csdn.net/freezingxu/article/details/77088506</a></p>
+<p>这和oracle不一样，需要专门的设置和授权。<br>登录主mysql：把test用户（密码123456）授权到192.168.29.129这个IP，享有所有的数据库资源</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">grant all on *.* to &apos;test&apos;@&apos;192.168.29.129&apos; identified by &apos;123456&apos;;</div><div class="line">flush privileges;</div></pre></td></tr></table></figure>
+<ul>
+<li><p>查看授权情况<br>select user,host from mysql.user;</p>
+</li>
+<li><p>查看防火墙情况<br>telnet 192.168.29.129 3306</p>
+</li>
+<li><p>ubutun操作系统的话，需要修改 /etc/mysql/mysql.conf.d/mysqld.cnf 这个配置。<br>注释掉  # bind-address    = 127.0.0.1</p>
+</li>
+</ul>
+<p>然后切换到 192.168.29.129，就可以远程连接到主mysql了<br>mysql -h192.168.29.1 -utest -p123456</p>
+<h1 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h1><p>非常棒的博客：操作成功了<br><a href="https://www.cnblogs.com/superfat/p/5267449.html" target="_blank" rel="external">https://www.cnblogs.com/superfat/p/5267449.html</a></p>
+<h2 id="重点注意事项："><a href="#重点注意事项：" class="headerlink" title="重点注意事项："></a>重点注意事项：</h2><ul>
+<li>配置连通状态<br>设置从服务器读取二进制日志的位置，要从master 读取   show master status;<br>获取到bin，和position，然后写入到从服务器中。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">stop slave;</div><div class="line">CHANGE MASTER TO  MASTER_HOST=&quot;192.168.29.129&quot;,</div><div class="line">MASTER_USER=&quot;slave&quot;,</div><div class="line">MASTER_PASSWORD=&quot;123456&quot;,</div><div class="line">MASTER_LOG_FILE=&quot;mysql-bin.000003&quot;,</div><div class="line">MASTER_LOG_POS=474;</div><div class="line"></div><div class="line">start SLAVE;</div></pre></td></tr></table></figure>
+<p>当从服务器显示： show slave status;<br>SLAVE_IO_RUNNING:YES;<br>SLAVE_SQL_RUNNING:YES;<br>的时候才表示主从连通。</p>
+<ul>
+<li>初始化的时候一定要一样才行，因为不会自动一样，只是有新的事务进来，从服务器就开始同步新的DML</li>
+</ul>
+<ul>
+<li>查看最大IO事务的大小：<br>select @@global.max_allowed_packet/1024/1024 MB;</li>
+</ul>
+<p>设置为1个G<br>stop slave;<br>set global max_allowed_packet =1<em>1024</em>1024*1024;<br>start slave;</p>
+<h1 id="出现问题"><a href="#出现问题" class="headerlink" title="出现问题"></a>出现问题</h1><p>mysql重启后第一次 主从复制成功，第二次主服务器更新，从服务器不更新，但是 show slave status; 显示正常。我ca</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/01/11/mysql集群、读写分离/" data-title="Mysql读写分离（mysql-proxy的安装和配置) | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/01/18/mysql查询优化细节/" title="mysql查询优化细节汇总">
+  <strong>上一篇：</strong><br/>
+  <span>
+  mysql查询优化细节汇总</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/01/11/mysql优化_索引、缓存、分区、分表、执行计划/"  title="mysql优化_索引、缓存、分区、分表、执行计划">
+ <strong>下一篇：</strong><br/> 
+ <span>mysql优化_索引、缓存、分区、分表、执行计划
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/01/11/mysql集群、读写分离/" data-title="Mysql读写分离（mysql-proxy的安装和配置)" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/01/11/mysql集群、读写分离/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#应用场景："><span class="toc-number">1.</span> <span class="toc-text">应用场景：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mysql-proxy"><span class="toc-number">2.</span> <span class="toc-text">mysql-proxy</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#实现功能"><span class="toc-number">2.1.</span> <span class="toc-text">实现功能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装配置"><span class="toc-number">2.2.</span> <span class="toc-text">安装配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#192-168-29-129为mysql-proxy的软件所在的机器的IP，可以和mysql在一台服务器上，也可以不在一台服务器上。"><span class="toc-number">2.3.</span> <span class="toc-text">192.168.29.129为mysql-proxy的软件所在的机器的IP，可以和mysql在一台服务器上，也可以不在一台服务器上。</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#proxy-读写分离的配置"><span class="toc-number">3.</span> <span class="toc-text">proxy 读写分离的配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#注意事项"><span class="toc-number">4.</span> <span class="toc-text">注意事项</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#mysql的远程连接"><span class="toc-number">4.1.</span> <span class="toc-text">mysql的远程连接</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#主从复制"><span class="toc-number">5.</span> <span class="toc-text">主从复制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#重点注意事项："><span class="toc-number">5.1.</span> <span class="toc-text">重点注意事项：</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#出现问题"><span class="toc-number">6.</span> <span class="toc-text">出现问题</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

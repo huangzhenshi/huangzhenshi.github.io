@@ -1,0 +1,449 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Zookeeper分布式锁 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="分布式锁实现含源码，跑通过https://blog.csdn.net/peace1213/article/details/52571445 实现的源码https://github.com/huangzhenshi/DistributedLockZk/tree/master 项目实战 实现方案   数据库锁实现 zk实现 redis实现   zk的实现项目逻辑写2个集群的微服务，循环获取分布式锁，消">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zookeeper分布式锁">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/07/Zookeeper分布式锁/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="分布式锁实现含源码，跑通过https://blog.csdn.net/peace1213/article/details/52571445 实现的源码https://github.com/huangzhenshi/DistributedLockZk/tree/master 项目实战 实现方案   数据库锁实现 zk实现 redis实现   zk的实现项目逻辑写2个集群的微服务，循环获取分布式锁，消">
+<meta property="og:updated_time" content="2018-08-07T09:42:30.440Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Zookeeper分布式锁">
+<meta name="twitter:description" content="分布式锁实现含源码，跑通过https://blog.csdn.net/peace1213/article/details/52571445 实现的源码https://github.com/huangzhenshi/DistributedLockZk/tree/master 项目实战 实现方案   数据库锁实现 zk实现 redis实现   zk的实现项目逻辑写2个集群的微服务，循环获取分布式锁，消">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/08/07/Zookeeper分布式锁/" title="Zookeeper分布式锁" itemprop="url">Zookeeper分布式锁</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-08-07T05:42:27.731Z" itemprop="datePublished"> 发表于 2018-08-07</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#项目实战"><span class="toc-number">1.</span> <span class="toc-text">项目实战</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#注意事项"><span class="toc-number">2.</span> <span class="toc-text">注意事项</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#代码逻辑"><span class="toc-number">3.</span> <span class="toc-text">代码逻辑</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#代码讲解"><span class="toc-number">4.</span> <span class="toc-text">代码讲解</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#核心函数"><span class="toc-number">5.</span> <span class="toc-text">核心函数</span></a></li></ol>
+		
+		</div>
+		
+		<p>分布式锁实现含源码，跑通过<br><a href="https://blog.csdn.net/peace1213/article/details/52571445" target="_blank" rel="external">https://blog.csdn.net/peace1213/article/details/52571445</a></p>
+<p>实现的源码<br><a href="https://github.com/huangzhenshi/DistributedLockZk/tree/master">https://github.com/huangzhenshi/DistributedLockZk/tree/master</a></p>
+<h1 id="项目实战"><a href="#项目实战" class="headerlink" title="项目实战"></a>项目实战</h1><ol>
+<li>实现方案</li>
+</ol>
+<ul>
+<li>数据库锁实现</li>
+<li>zk实现</li>
+<li>redis实现</li>
+</ul>
+<ol>
+<li>zk的实现项目逻辑<br>写2个集群的微服务，循环获取分布式锁，消费相同数据库中的存票余量，来检测分布式锁的实现效果。<br>获取锁的时候输出一段话，做一些模拟的消费操作，然后查询数据库，获取count，然后-1再save到数据库中。最后打印释放锁和释放的时间。<h1 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h1></li>
+<li>每一个线程都应该创建一个单独的zkClient，这样当他释放锁时zk.close()，就会删除掉当前的临时节点</li>
+<li>每个线程就是一个Znode，就有一个单独的zkClient，对他之前的Znode都绑定了一个监听，监听里面有解除当前线程阻塞的CountDownLatch.countdown()<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">ConcurrentTask[] tasks = new ConcurrentTask[5];</div><div class="line">for(int i=0;i&lt;tasks.length;i++)&#123;</div><div class="line">    ConcurrentTask task3 = new ConcurrentTask()&#123;</div><div class="line">        public void run() &#123;</div><div class="line">            DistributedLock lock = null;</div><div class="line">            try &#123;</div><div class="line">                lock = new DistributedLock(&quot;127.0.0.1:2181&quot;,&quot;lock2&quot;);</div><div class="line">                lock.lock();</div><div class="line">                System.out.println(&quot;Thread &quot; + Thread.currentThread().getId() + &quot; running&quot;);</div><div class="line">                Thread.sleep(1000);</div><div class="line">            &#125; catch (Exception e) &#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125; </div><div class="line">            finally &#123;</div><div class="line">                lock.unlock();</div><div class="line">                lock=null;</div><div class="line">            &#125;</div><div class="line">            </div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line">    tasks[i] = task3;</div><div class="line">&#125;</div><div class="line">new ConcurrentTest(tasks);//执行task</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="代码逻辑"><a href="#代码逻辑" class="headerlink" title="代码逻辑"></a>代码逻辑</h1><p>trylock的时候会触发在zk中创建一个唯一的顺序节点，由ZK来保证创建一个不会重复的顺序节点（确保了原子性），并且在排队节点时，在上一个节点上绑定一个Watcher，通过阻塞的方式直到获取到分布式锁。</p>
+<ul>
+<li>每个线程会初始化一个zkClient，并且该zkClient带有一个Watcher</li>
+<li>获取分布式锁的时候会创建一个临时的Znode，并且判断当前节点是否是首节点，是的话，表示获取锁成功，执行业务逻辑，不是的话，给上一个顺序节点绑定一个监听器，当前线程阻塞，这里面还引入了一个countdownLatch，来实现触发器的解禁阻塞的功能。</li>
+<li>解禁之后表示当前线程获取分布式锁，执行业务代码</li>
+<li>方法调用结束后，删除当前节点，关闭zkClient</li>
+<li>实现的分布式锁是严格的按照顺序访问的并发锁</li>
+</ul>
+<h1 id="代码讲解"><a href="#代码讲解" class="headerlink" title="代码讲解"></a>代码讲解</h1><p>使用:先初始化一个锁，然后调用锁（可能会获取到，可能会在排队阻塞，最后获取锁，最后释放锁<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">final DistributedLock lock = new DistributedLock(&quot;127.0.0.1:2181&quot;,&quot;lock&quot;);</div><div class="line">   Runnable task1 = new Runnable()&#123;</div><div class="line">       public void run() &#123;</div><div class="line">           try &#123;</div><div class="line">               lock.lock();</div><div class="line">               System.out.println(&quot;进入锁成功&quot;);</div><div class="line">               Thread.sleep(2000);</div><div class="line">               System.out.println(&quot;===Thread &quot; + Thread.currentThread().getId() + &quot; running&quot;);</div><div class="line">           &#125; catch (Exception e) &#123;</div><div class="line">               e.printStackTrace();</div><div class="line">           &#125; </div><div class="line">           finally &#123;</div><div class="line">               if(lock != null)</div><div class="line">                   lock.unlock();</div><div class="line">           &#125;</div><div class="line">           </div><div class="line">       &#125;</div><div class="line">       </div><div class="line">   &#125;;</div><div class="line">   new Thread(task1).start();</div></pre></td></tr></table></figure></p>
+<h1 id="核心函数"><a href="#核心函数" class="headerlink" title="核心函数"></a>核心函数</h1><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">//构造一个以特定lockName的分布式锁</div><div class="line">public DistributedLock(String config, String lockName)</div><div class="line"></div><div class="line">//这个方法的执行就是获取分布式锁，结果两种，一种是tryLock成功，立马执行业务操作，一种是线程阻塞，直到waitForLock解禁，然后再执行业务操作</div><div class="line">public void lock() --&gt; tryLock（）、waitForLock(waitNode, sessionTimeout);</div><div class="line"></div><div class="line">//释放锁，删除当前节点，关闭zk（其实不用手动删除也可以，因为是临时节点，但是手动删除会更快的触发监听器）</div><div class="line">public void unlock()</div><div class="line"></div><div class="line">//如果获取分布式锁成功则返回true，如果获取失败的话，则会把成员变量里面的waitNode设置为当前node的前一个node</div><div class="line">public boolean tryLock()</div><div class="line"></div><div class="line">//一个线程阻塞的方法，会给lower节点设置监听器，直到监听器触发解禁，当前线程才解除阻塞，获取分布式锁成功</div><div class="line">private boolean waitForLock(String lower, long waitTime)</div></pre></td></tr></table></figure>
+<p>ZKClient的监听函数<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public void process(WatchedEvent event) &#123;</div><div class="line">	System.out.println(&quot;已经触发了&quot; + event.getType() + &quot;事件！&quot;);</div><div class="line">	//建立连接用</div><div class="line">	if(event.getState()==KeeperState.SyncConnected&amp;&amp;event.getType()==EventType.None)&#123;</div><div class="line">		connectedSignal.countDown();</div><div class="line">		return;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">    if(this.latch != null) &#123; </div><div class="line">        this.latch.countDown();  </div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/07/Zookeeper分布式锁/" data-title="Zookeeper分布式锁 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2018/08/06/Zookeeper监听/"  title="Zookeeper监听">
+ <strong>下一篇：</strong><br/> 
+ <span>Zookeeper监听
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/08/07/Zookeeper分布式锁/" data-title="Zookeeper分布式锁" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/07/Zookeeper分布式锁/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#项目实战"><span class="toc-number">1.</span> <span class="toc-text">项目实战</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#注意事项"><span class="toc-number">2.</span> <span class="toc-text">注意事项</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#代码逻辑"><span class="toc-number">3.</span> <span class="toc-text">代码逻辑</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#代码讲解"><span class="toc-number">4.</span> <span class="toc-text">代码讲解</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#核心函数"><span class="toc-number">5.</span> <span class="toc-text">核心函数</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

@@ -1,0 +1,493 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Java事务控制 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="源码demohttps://github.com/huangzhenshi/java_transaction  参考博客系列：https://my.oschina.net/pingpangkuangmo/blog/416038 事务的实现类型： 本地事务模型 Connection conn=jdbcDao.getConnection();PreparedStatement ps=conn.pre">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java事务控制">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/04/28/Java事务控制/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="源码demohttps://github.com/huangzhenshi/java_transaction  参考博客系列：https://my.oschina.net/pingpangkuangmo/blog/416038 事务的实现类型： 本地事务模型 Connection conn=jdbcDao.getConnection();PreparedStatement ps=conn.pre">
+<meta property="og:updated_time" content="2018-05-04T07:48:27.707Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java事务控制">
+<meta name="twitter:description" content="源码demohttps://github.com/huangzhenshi/java_transaction  参考博客系列：https://my.oschina.net/pingpangkuangmo/blog/416038 事务的实现类型： 本地事务模型 Connection conn=jdbcDao.getConnection();PreparedStatement ps=conn.pre">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/04/28/Java事务控制/" title="Java事务控制" itemprop="url">Java事务控制</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-04-28T09:12:29.873Z" itemprop="datePublished"> 发表于 2018-04-28</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#事务的实现类型："><span class="toc-number">1.</span> <span class="toc-text">事务的实现类型：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#事务5大隔离级别"><span class="toc-number">2.</span> <span class="toc-text">事务5大隔离级别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#事务7大传播级别"><span class="toc-number">3.</span> <span class="toc-text">事务7大传播级别</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#require-、-require-new-、Nested-区别"><span class="toc-number">3.1.</span> <span class="toc-text">require 、 require_new 、Nested 区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#readonly属性"><span class="toc-number">3.2.</span> <span class="toc-text">readonly属性</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#申明注解式的配置"><span class="toc-number">4.</span> <span class="toc-text">申明注解式的配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#源码解读"><span class="toc-number">5.</span> <span class="toc-text">源码解读</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#java-分布式事务框架Atomikos-和Jotm"><span class="toc-number">6.</span> <span class="toc-text">java 分布式事务框架Atomikos 和Jotm</span></a></li></ol>
+		
+		</div>
+		
+		<ul>
+<li>源码demo<br><a href="https://github.com/huangzhenshi/java_transaction">https://github.com/huangzhenshi/java_transaction</a></li>
+</ul>
+<p>参考博客系列：<br><a href="https://my.oschina.net/pingpangkuangmo/blog/416038" target="_blank" rel="external">https://my.oschina.net/pingpangkuangmo/blog/416038</a></p>
+<h1 id="事务的实现类型："><a href="#事务的实现类型：" class="headerlink" title="事务的实现类型："></a>事务的实现类型：</h1><ul>
+<li><p>本地事务模型</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">Connection conn=jdbcDao.getConnection();</div><div class="line">PreparedStatement ps=conn.prepareStatement(&quot;insert into user(name,age) value(?,?)&quot;);</div><div class="line">ps.setString(1,user.getName());</div><div class="line">ps.setInt(2,user.getAge());</div><div class="line">ps.execute();</div></pre></td></tr></table></figure>
+</li>
+<li><p>编程式事务模型</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public static void main(String[] args) throws ClassNotFoundException, SQLException  &#123;</div><div class="line">        String URL=&quot;jdbc:mysql://127.0.0.1:3306/ksc_order?useUnicode=true&amp;characterEncoding=utf8&amp;autoReconnect=true&amp;allowMultiQueries=true&quot;;</div><div class="line">        String USER=&quot;root&quot;;</div><div class="line">        String PASSWORD=&quot;123456&quot;;</div><div class="line">        //1.加载驱动程序</div><div class="line">        Class.forName(&quot;com.mysql.jdbc.Driver&quot;);</div><div class="line">        //2.获得数据库链接</div><div class="line">        Connection conn=DriverManager.getConnection(URL, USER, PASSWORD);</div><div class="line">        conn.setAutoCommit(false);</div><div class="line">        try &#123;</div><div class="line">        	   PreparedStatement ps=conn.prepareStatement(&quot;insert into user_t(user_name,password,age) value(?,?,?)&quot;);</div><div class="line">        	   ps.setString(1,&quot;huangzs1138&quot;);</div><div class="line">        	   ps.setString(2,&quot;201805031138&quot;);</div><div class="line">        	   ps.setInt(3,30);</div><div class="line">        	   ps.execute();</div><div class="line">        	   </div><div class="line">        	   PreparedStatement ps2=conn.prepareStatement(&quot;update user_t set password=? where id=?&quot;);</div><div class="line">        	   ps2.setString(1,&quot;huangzs1145&quot;);</div><div class="line">        	   ps2.setInt(2,1);</div><div class="line">        	   ps2.execute();</div><div class="line">        	   </div><div class="line">        	   int[] arr=&#123;1,2,3&#125;;</div><div class="line">        	   int test=arr[5];</div><div class="line">        	&#125; catch (Exception e) &#123;</div><div class="line">        	   e.printStackTrace();</div><div class="line">        	   conn.rollback();</div><div class="line">        	&#125;finally&#123;</div><div class="line">         	   conn.commit();</div><div class="line">        	   conn.close();</div><div class="line">        	&#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>声明式事务模型</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Transactional</div><div class="line">public void save(User user)&#123;</div><div class="line">	jdbcTemplate.update(&quot;insert into user(name,age) value(?,?)&quot;,user.getName(),user.getAge());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="事务5大隔离级别"><a href="#事务5大隔离级别" class="headerlink" title="事务5大隔离级别"></a>事务5大隔离级别</h1><ul>
+<li>ISOLATION_DEFAULT 默认和数据库隔离级别一样</li>
+</ul>
+<ul>
+<li>ISOLATION_READ_UNCOMMITTED 允许脏读取</li>
+</ul>
+<ul>
+<li>ISOLATION_READ_COMMITTED 读取提交后数据，这种事务隔离级别可以避免脏读出现，但是可能会出现不可重复读和幻像读。</li>
+</ul>
+<ul>
+<li>ISOLATION_REPEATABLE_READ 可重复读，可能出现幻读。</li>
+</ul>
+<ul>
+<li>ISOLATION_SERIALIZABLE 最可靠的事务隔离级别</li>
+</ul>
+<h1 id="事务7大传播级别"><a href="#事务7大传播级别" class="headerlink" title="事务7大传播级别"></a>事务7大传播级别</h1><p>模拟A事务PROPAGATION_REQUIRED，调用B事务</p>
+<ul>
+<li><p>PROPAGATION_REQUIRED ，默认的spring事务传播级别。如果上下文中已经存在事务，那么就加入到事务中执行，如果不存在事务则新建。A或者B失败，都会全部回滚。</p>
+</li>
+<li><p>PROPAGATION_REQUIRES_NEW ，每次都会新建一个事务，并且同时将上下文中的事务挂起，执行当前新建事务完成以后，上下文事务恢复再执行。B成功，直接提交；B失败，Invoker A仍然成功，两个独立的事务。</p>
+</li>
+<li><p>PROPAGATION_NESTED 嵌套级别事务。该传播级别特征是，如果上下文中存在事务，则嵌套事务执行，如果不存在事务，则新建事务。涉及到 savepoint概念，B成功A不成功，都不提交，B失败，A会把事务回滚到调用B的savepoint之前，A成功的话，会单独提交A事务中的数据，而不提交B事务的数据。</p>
+</li>
+<li><p>PROPAGATION_SUPPORTS ，从字面意思就知道，supports，支持，该传播级别的特点是，如果上下文存在事务，则支持事务加入事务，如果没有事务，则使用非事务的方式执行。</p>
+</li>
+<li><p>PROPAGATION_NOT_SUPPORTED ，这个也可以从字面得知，not supported ，不支持，当前级别的特点就是上下文中存在事务，则挂起事务，执行当前逻辑，结束后恢复上下文的事务。<br>这个级别有什么好处？可以帮助你将事务极可能的缩小。我们知道一个事务越大，它存在的风险也就越多。所以在处理事务的过程中，要保证尽可能的缩小范围。比如一段代码，是每次逻辑操作都必须调用的，比如循环1000次的某个非核心业务逻辑操作。这样的代码如果包在事务中，势必造成事务太大，导致出现一些难以考虑周全的异常情况。所以这个事务这个级别的传播级别就派上用场了。用当前级别的事务模板抱起来就可以了。</p>
+</li>
+<li><p>PROPAGATION_MANDATORY ， 该级别的事务要求上下文中必须要存在事务，否则就会抛出异常！配置该方式的传播级别是有效的控制上下文调用代码遗漏添加事务控制的保证手段。比如一段代码不能单独被调用执行，但是一旦被调用，就必须有事务包含的情况，就可以使用这个传播级别。</p>
+</li>
+<li><p>PROPAGATION_NEVER ，该事务更严格，上面一个事务传播级别只是不支持而已，有事务就挂起，而PROPAGATION_NEVER传播级别要求上下文中不能存在事务，一旦有事务，就抛出runtime异常，强制停止执行！这个级别上辈子跟事务有仇。</p>
+</li>
+</ul>
+<h2 id="require-、-require-new-、Nested-区别"><a href="#require-、-require-new-、Nested-区别" class="headerlink" title="require 、 require_new 、Nested 区别"></a>require 、 require_new 、Nested 区别</h2><ul>
+<li>两个require 事务调用，融为一体，为一个大的事务。</li>
+<li>require 调用 require_new，分为2个独立的事务，相互不影响</li>
+<li>require 调用 nested，包含的关系，nested为一个savepoint，nested不能影响require的提交</li>
+</ul>
+<h2 id="readonly属性"><a href="#readonly属性" class="headerlink" title="readonly属性"></a>readonly属性</h2><p>不同数据库的支持不同，mysql支持readonly，如果只读方法里面有DML操作，则DML失败且抛出异常。<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">```</div><div class="line"></div><div class="line"># 命名配置式事务控制的配置</div><div class="line">```	&lt;aop:aspectj-autoproxy  proxy-target-class=&quot;true&quot;/&gt;</div><div class="line">    &lt;bean id=&quot;transactionManager&quot;  </div><div class="line">        class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&gt;  </div><div class="line">        &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;  </div><div class="line">    &lt;/bean&gt; </div><div class="line">    </div><div class="line">   &lt;tx:advice id=&quot;advice&quot; transaction-manager=&quot;transactionManager&quot;&gt;</div><div class="line">		&lt;tx:attributes&gt;</div><div class="line">			&lt;tx:method name=&quot;save*&quot; propagation=&quot;REQUIRED&quot; isolation=&quot;READ_COMMITTED&quot;  read-only=&quot;false&quot; /&gt;</div><div class="line">			&lt;tx:method name=&quot;*&quot; propagation=&quot;SUPPORTS&quot;/&gt;</div><div class="line">		&lt;/tx:attributes&gt;</div><div class="line">	&lt;/tx:advice&gt;</div><div class="line">	</div><div class="line">	&lt;aop:config&gt;</div><div class="line">	    &lt;aop:pointcut expression=&quot;execution(* com.test.service.*.*(..))&quot; id=&quot;pointcut&quot;/&gt;</div><div class="line">	    &lt;aop:advisor advice-ref=&quot;advice&quot; pointcut-ref=&quot;pointcut&quot;/&gt;</div><div class="line">	&lt;/aop:config&gt;</div></pre></td></tr></table></figure></p>
+<h1 id="申明注解式的配置"><a href="#申明注解式的配置" class="headerlink" title="申明注解式的配置"></a>申明注解式的配置</h1><figure class="highlight plain"><figcaption><span>proxy-target-class</span></figcaption><table><tr><td class="code"><pre><div class="line">&lt;tx:annotation-driven transaction-manager=&quot;transactionManager&quot;/&gt;</div><div class="line">&lt;bean id=&quot;transactionManager&quot;  </div><div class="line">      class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&gt;  </div><div class="line">      &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;  </div><div class="line">  &lt;/bean&gt;</div></pre></td></tr></table></figure>
+<h1 id="源码解读"><a href="#源码解读" class="headerlink" title="源码解读"></a>源码解读</h1><p>PlatformTransactionManager 最核心接口，有3个关键的方法<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">commit(TransactionStatus status) ;     </div><div class="line">getTransaction(TransactionDefinition definition) ;     </div><div class="line">rollback(TransactionStatus status) ;</div></pre></td></tr></table></figure></p>
+<h1 id="java-分布式事务框架Atomikos-和Jotm"><a href="#java-分布式事务框架Atomikos-和Jotm" class="headerlink" title="java 分布式事务框架Atomikos 和Jotm"></a>java 分布式事务框架Atomikos 和Jotm</h1><p>参考<a href="https://my.oschina.net/pingpangkuangmo/blog/423210" target="_blank" rel="external">https://my.oschina.net/pingpangkuangmo/blog/423210</a><br>两种实现原理：</p>
+<ol>
+<li><p>非XA方式,类似于2个Connection，分别设置为 setAutoCommit为false，然后都提交成功后，在分别都commit</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">Connection connA=dataSourceA.getConnection();</div><div class="line">Connection connB=dataSourceB.getConnection();</div><div class="line"></div><div class="line">Statement statementA=connA.createStatement();</div><div class="line">Statement statementB=connB.createStatement();</div><div class="line"></div><div class="line">String sql=&quot;insert into user(name,age) values(&apos;&quot;+user.getName()+&quot;&apos;,&quot;+user.getAge()+&quot;)&quot;;</div><div class="line"></div><div class="line">try &#123;</div><div class="line">	connA.setAutoCommit(false);</div><div class="line">	connB.setAutoCommit(false);</div><div class="line">	</div><div class="line">	statementA.execute(sql);</div><div class="line">	statementB.execute(sql);</div><div class="line">	</div><div class="line">	//throw new RuntimeException();</div><div class="line"></div><div class="line">	connA.commit();</div><div class="line">	connB.commit();</div><div class="line">&#125; catch (Exception e) &#123;</div><div class="line">	e.printStackTrace();</div><div class="line">	statementA.close();</div><div class="line">	statementB.close();</div><div class="line">	connA.rollback();</div><div class="line">	connB.rollback();</div><div class="line">&#125;finally&#123;</div><div class="line">	connA.close();</div><div class="line">	connB.close();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>XA方式 2PC提交<br>资源管理器 分别start()  end()  prepare()，成功后，TM check所有RS状态，都OK再一起commit</p>
+</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/04/28/Java事务控制/" data-title="Java事务控制 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/04/28/Myeclipse创建maven结构的web项目/" title="Myeclipse 常见maven的web项目常见问题">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Myeclipse 常见maven的web项目常见问题</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/04/25/日志配置/"  title="日志配置">
+ <strong>下一篇：</strong><br/> 
+ <span>日志配置
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/04/28/Java事务控制/" data-title="Java事务控制" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/04/28/Java事务控制/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#事务的实现类型："><span class="toc-number">1.</span> <span class="toc-text">事务的实现类型：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#事务5大隔离级别"><span class="toc-number">2.</span> <span class="toc-text">事务5大隔离级别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#事务7大传播级别"><span class="toc-number">3.</span> <span class="toc-text">事务7大传播级别</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#require-、-require-new-、Nested-区别"><span class="toc-number">3.1.</span> <span class="toc-text">require 、 require_new 、Nested 区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#readonly属性"><span class="toc-number">3.2.</span> <span class="toc-text">readonly属性</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#申明注解式的配置"><span class="toc-number">4.</span> <span class="toc-text">申明注解式的配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#源码解读"><span class="toc-number">5.</span> <span class="toc-text">源码解读</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#java-分布式事务框架Atomikos-和Jotm"><span class="toc-number">6.</span> <span class="toc-text">java 分布式事务框架Atomikos 和Jotm</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

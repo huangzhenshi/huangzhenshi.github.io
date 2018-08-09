@@ -1,0 +1,510 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Solr+Zookeeper | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="一个系列可以实现solr的数据库信息导入http://www.cnblogs.com/blueskyli/p/7100443.htmlhttp://www.cnblogs.com/blueskyli/p/7120847.htmlhttp://www.cnblogs.com/blueskyli/p/7128400.html  solr管理界面 query的详细说明博客https://www.cnb">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Solr+Zookeeper">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/06/Solr+Zookeeper/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="一个系列可以实现solr的数据库信息导入http://www.cnblogs.com/blueskyli/p/7100443.htmlhttp://www.cnblogs.com/blueskyli/p/7120847.htmlhttp://www.cnblogs.com/blueskyli/p/7128400.html  solr管理界面 query的详细说明博客https://www.cnb">
+<meta property="og:updated_time" content="2018-04-25T04:25:28.266Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Solr+Zookeeper">
+<meta name="twitter:description" content="一个系列可以实现solr的数据库信息导入http://www.cnblogs.com/blueskyli/p/7100443.htmlhttp://www.cnblogs.com/blueskyli/p/7120847.htmlhttp://www.cnblogs.com/blueskyli/p/7128400.html  solr管理界面 query的详细说明博客https://www.cnb">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/03/06/Solr+Zookeeper/" title="Solr+Zookeeper" itemprop="url">Solr+Zookeeper</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-03-06T03:02:28.615Z" itemprop="datePublished"> Published 2018-03-06</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#特点"><span class="toc-number">1.</span> <span class="toc-text">特点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#安装和启动"><span class="toc-number">2.</span> <span class="toc-text">安装和启动</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#solr引入tomcat-配连接到数据源的大致过程"><span class="toc-number">3.</span> <span class="toc-text">solr引入tomcat 配连接到数据源的大致过程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#原理"><span class="toc-number">4.</span> <span class="toc-text">原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#solr-cloud模型-zk"><span class="toc-number">5.</span> <span class="toc-text">solr-cloud模型+zk</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#原理："><span class="toc-number">5.1.</span> <span class="toc-text">原理：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#优点"><span class="toc-number">5.2.</span> <span class="toc-text">优点</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Zookeeper"><span class="toc-number">6.</span> <span class="toc-text">Zookeeper</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#solr-cloud-zk-操作"><span class="toc-number">7.</span> <span class="toc-text">solr-cloud +zk 操作</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#线上问题"><span class="toc-number">8.</span> <span class="toc-text">线上问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#solrcloud迁移"><span class="toc-number">9.</span> <span class="toc-text">solrcloud迁移</span></a></li></ol>
+		
+		</div>
+		
+		<ul>
+<li><p>一个系列可以实现solr的数据库信息导入<br><a href="http://www.cnblogs.com/blueskyli/p/7100443.html" target="_blank" rel="external">http://www.cnblogs.com/blueskyli/p/7100443.html</a><br><a href="http://www.cnblogs.com/blueskyli/p/7120847.html" target="_blank" rel="external">http://www.cnblogs.com/blueskyli/p/7120847.html</a><br><a href="http://www.cnblogs.com/blueskyli/p/7128400.html" target="_blank" rel="external">http://www.cnblogs.com/blueskyli/p/7128400.html</a></p>
+</li>
+<li><p>solr管理界面 query的详细说明博客<br><a href="https://www.cnblogs.com/xinfang520/p/7722363.html" target="_blank" rel="external">https://www.cnblogs.com/xinfang520/p/7722363.html</a></p>
+</li>
+<li><p>solr索引和搜索原理说明 666<br><a href="http://www.importnew.com/12707.html" target="_blank" rel="external">http://www.importnew.com/12707.html</a></p>
+</li>
+<li><p>zk的特点<br><a href="http://blog.csdn.net/lxy344x/article/details/51995597" target="_blank" rel="external">http://blog.csdn.net/lxy344x/article/details/51995597</a></p>
+</li>
+<li><p>zk集群和solr-cloud搭建<br><a href="http://blog.csdn.net/makang110/article/details/53032458" target="_blank" rel="external">http://blog.csdn.net/makang110/article/details/53032458</a></p>
+</li>
+<li><p>solr官方url命令API<br><a href="https://lucene.apache.org/solr/guide/6_6/collections-api.html" target="_blank" rel="external">https://lucene.apache.org/solr/guide/6_6/collections-api.html</a></p>
+</li>
+</ul>
+<h1 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h1><ul>
+<li>先进的全文搜索功能。</li>
+<li>XML，JSON和HTTP - 基于开放接口标准。</li>
+<li>高度可扩展和容错。</li>
+<li>同时支持模式和无模式配置。</li>
+<li>分页搜索和过滤。</li>
+<li>支持像英语，德语，中国，日本，法国和许多主要语言</li>
+<li>丰富的文档分析。</li>
+</ul>
+<h1 id="安装和启动"><a href="#安装和启动" class="headerlink" title="安装和启动"></a>安装和启动</h1><ul>
+<li>CSDN 6.6.2 版本，下载后解压，cmd 到bin下  solr start<br><a href="http://download.csdn.net/download/kingstormqueen/10234452" target="_blank" rel="external">http://download.csdn.net/download/kingstormqueen/10234452</a></li>
+<li>进入管理界面<br><a href="http://localhost:8983/solr/" target="_blank" rel="external">http://localhost:8983/solr/</a></li>
+</ul>
+<p>solr create -c jcg  -d basic_configs</p>
+<p>集成tomcat<br><a href="http://localhost:8088/solr/index.html#/" target="_blank" rel="external">http://localhost:8088/solr/index.html#/</a></p>
+<h1 id="solr引入tomcat-配连接到数据源的大致过程"><a href="#solr引入tomcat-配连接到数据源的大致过程" class="headerlink" title="solr引入tomcat 配连接到数据源的大致过程"></a>solr引入tomcat 配连接到数据源的大致过程</h1><ul>
+<li>先配置好solr，挪到tomcat下面之后，加载相应的jar包</li>
+<li>创建好core，配置文件相关，并且在solr操作界面有对应操作</li>
+<li>配置相关的solrconfig，引入dataimport元素和jar包</li>
+<li>后台手动import数据，然后就支持查找了</li>
+</ul>
+<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p><a href="http://blog.csdn.net/softmanfly/article/details/51376886" target="_blank" rel="external">http://blog.csdn.net/softmanfly/article/details/51376886</a><br>build:  导入数据，存储数据，创建索引<br>search: 查询索引、获取结果评分排序、会按照模板渲染出来<br>关键词： solr创建索引的时候会hold住源数据，所以删除源数据之后solr查找还是可以找的出结果，除非在solr里面 update界面 删除掉对应的索引才会同时删除对应的数据</p>
+<h1 id="solr-cloud模型-zk"><a href="#solr-cloud模型-zk" class="headerlink" title="solr-cloud模型+zk"></a>solr-cloud模型+zk</h1><p><a href="http://blog.csdn.net/clj198606061111/article/details/21816985" target="_blank" rel="external">http://blog.csdn.net/clj198606061111/article/details/21816985</a></p>
+<h2 id="原理："><a href="#原理：" class="headerlink" title="原理："></a>原理：</h2><ul>
+<li>每个solr结点都保有一份独立完整的存储索引，只是该索引被切分成N份shard，查询索引的时候是不同shard各自匹配数据。就好比一个班级切分成男、女两个分片，找张三的话，要分别在男人和女人名单上找。找到所有叫张三的人。</li>
+<li>导入文档创建索引的时候，任意一个Replica收到请求会交给该shard的leader，leader再告知各位弟兄和自己一起创建索引（理论上3个创建的一样的索引）</li>
+<li>可以分裂，缓存查询等</li>
+<li>zk扮演的角色：选举leader和</li>
+</ul>
+<h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><ul>
+<li><p>自动容错且修复<br>SolrCloud对索引分片，并对每个分片创建多个Replication。每个 Replication都可以对外提供服务。一个Replication挂掉不会影响索引服务。更强大的是，它还能自动的在其它机器上帮你把失败机器上的索引Replication重建并投入使用。</p>
+</li>
+<li><p>查询时自动负载均衡<br>SolrCloud索引的多个Replication可以分布在多台机器上，均衡查询压力。如果查询压力大，可以通过扩展机器，增加Replication来减缓。虽然有概率所有的查询还是在一个solr里做的，但是概率不高。而且扩展性很好</p>
+</li>
+<li><p>集中式的配置信息<br>使用ZK进行集中配置。启动时可以指定把Solr的相关配置文件上传 Zookeeper，多机器共用。这些ZK中的配置不会再拿到本地缓存，Solr直接读取ZK中的配置信息。配置文件的变动，所有机器都可以感知到。另外，Solr的一些任务也是通过ZK作为媒介发布的。目的是为了容错。接收到任务，但在执行任务时崩溃的机器，在重启后，或者集群选出候选者时，可以再次执行这个未完成的任务。</p>
+</li>
+<li><p>近实时搜索<br>支持软提交，先保存在内存中，定时写入到硬盘中，提升即时搜索的速度</p>
+</li>
+</ul>
+<h1 id="Zookeeper"><a href="#Zookeeper" class="headerlink" title="Zookeeper"></a>Zookeeper</h1><p><a href="http://blog.csdn.net/lxy344x/article/details/51995597" target="_blank" rel="external">http://blog.csdn.net/lxy344x/article/details/51995597</a></p>
+<ol>
+<li><p>配置管理集中管理<br>实现不同solr之间，也就是leader和replica通讯直接从zk中读取，不需要写死谁是它的replica</p>
+</li>
+<li><p>分布式锁<br>一个结点执行失败的话，释放所，给其他结点继续执行该任务，实现高可用。也就是leader的作用。写的时候第一个给leader写</p>
+</li>
+<li><p>集群管理<br>一个结点挂了，移除和尝试重新加入</p>
+</li>
+<li><p>负载均衡<br>把请求分发给不同的服务器</p>
+</li>
+</ol>
+<p>另外zk自己做集群3台或者N+1，也可以实现zk的高可用。</p>
+<h1 id="solr-cloud-zk-操作"><a href="#solr-cloud-zk-操作" class="headerlink" title="solr-cloud +zk 操作"></a>solr-cloud +zk 操作</h1><p><a href="http://blog.csdn.net/makang110/article/details/53032458" target="_blank" rel="external">http://blog.csdn.net/makang110/article/details/53032458</a></p>
+<ul>
+<li>先配置好zk的集群3个，分别启动3个配置好关联关系的zk</li>
+<li>再分别配置solr-tomcat的 catilina.sh 配置进去ZK的IP:Port和shardNum.s</li>
+</ul>
+<h1 id="线上问题"><a href="#线上问题" class="headerlink" title="线上问题"></a>线上问题</h1><ul>
+<li>solr-cloud如何查看机器集群图<br><a href="http://218.30.99.44:8880/solr/#/" target="_blank" rel="external">http://218.30.99.44:8880/solr/#/</a><br>进去之后点击cloud，可以结合zk 查看所有的集群设备。</li>
+</ul>
+<p>replica配置<br><a href="https://www.cnblogs.com/jeniss/p/6076798.html" target="_blank" rel="external">https://www.cnblogs.com/jeniss/p/6076798.html</a></p>
+<h1 id="solrcloud迁移"><a href="#solrcloud迁移" class="headerlink" title="solrcloud迁移"></a>solrcloud迁移</h1><p>成熟的迁移方案<br><a href="https://www.cnblogs.com/Sonet-life/p/6090796.html" target="_blank" rel="external">https://www.cnblogs.com/Sonet-life/p/6090796.html</a></p>
+<ul>
+<li>solr官方url命令API<br><a href="https://lucene.apache.org/solr/guide/6_6/collections-api.html" target="_blank" rel="external">https://lucene.apache.org/solr/guide/6_6/collections-api.html</a></li>
+</ul>
+<p>删除废弃的节点： 可以先通过命令查看下该节点属于core_node几，只要网络能通的话，就能删。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">http://218.30.99.44:8880/solr/admin/collections?action=DELETEREPLICA&amp;collection=course&amp;shard=shard1&amp;replica=core_node7</div></pre></td></tr></table></figure>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/06/Solr+Zookeeper/" data-title="Solr+Zookeeper | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/03/07/SpringIOC原理/" title="Spring IOC原理">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Spring IOC原理</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/03/05/并发编程详细/"  title="并发编程详细">
+ <strong>下一篇：</strong><br/> 
+ <span>并发编程详细
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/03/06/Solr+Zookeeper/" data-title="Solr+Zookeeper" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/06/Solr+Zookeeper/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#特点"><span class="toc-number">1.</span> <span class="toc-text">特点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#安装和启动"><span class="toc-number">2.</span> <span class="toc-text">安装和启动</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#solr引入tomcat-配连接到数据源的大致过程"><span class="toc-number">3.</span> <span class="toc-text">solr引入tomcat 配连接到数据源的大致过程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#原理"><span class="toc-number">4.</span> <span class="toc-text">原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#solr-cloud模型-zk"><span class="toc-number">5.</span> <span class="toc-text">solr-cloud模型+zk</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#原理："><span class="toc-number">5.1.</span> <span class="toc-text">原理：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#优点"><span class="toc-number">5.2.</span> <span class="toc-text">优点</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Zookeeper"><span class="toc-number">6.</span> <span class="toc-text">Zookeeper</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#solr-cloud-zk-操作"><span class="toc-number">7.</span> <span class="toc-text">solr-cloud +zk 操作</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#线上问题"><span class="toc-number">8.</span> <span class="toc-text">线上问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#solrcloud迁移"><span class="toc-number">9.</span> <span class="toc-text">solrcloud迁移</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

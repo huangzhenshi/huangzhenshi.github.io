@@ -1,0 +1,469 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>分布式常见问题 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="CAP理论consistency 强一致性 强一致性：分布式集群中所有节点的写操作具有原子性，一起写成功才反馈成功，可能会导致等待。这样的好处是，任意一个节点做了写操作，那么随后的访问查询，无论查询到哪个节点，得到的结果都是一样的。 最终一致性：在一段时间后，节点间的数据会最终达到一致状态  顺序一致性：先手发送A B请求，在集群中所有节点上A都要先于B  Availability 可用性表示服务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式常见问题">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/26/分布式常见问题/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="CAP理论consistency 强一致性 强一致性：分布式集群中所有节点的写操作具有原子性，一起写成功才反馈成功，可能会导致等待。这样的好处是，任意一个节点做了写操作，那么随后的访问查询，无论查询到哪个节点，得到的结果都是一样的。 最终一致性：在一段时间后，节点间的数据会最终达到一致状态  顺序一致性：先手发送A B请求，在集群中所有节点上A都要先于B  Availability 可用性表示服务">
+<meta property="og:updated_time" content="2018-04-16T08:37:56.151Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="分布式常见问题">
+<meta name="twitter:description" content="CAP理论consistency 强一致性 强一致性：分布式集群中所有节点的写操作具有原子性，一起写成功才反馈成功，可能会导致等待。这样的好处是，任意一个节点做了写操作，那么随后的访问查询，无论查询到哪个节点，得到的结果都是一样的。 最终一致性：在一段时间后，节点间的数据会最终达到一致状态  顺序一致性：先手发送A B请求，在集群中所有节点上A都要先于B  Availability 可用性表示服务">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/03/26/分布式常见问题/" title="分布式常见问题" itemprop="url">分布式常见问题</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-03-26T03:33:04.941Z" itemprop="datePublished"> 发表于 2018-03-26</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#CAP理论"><span class="toc-number">1.</span> <span class="toc-text">CAP理论</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#consistency-强一致性"><span class="toc-number">1.1.</span> <span class="toc-text">consistency 强一致性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Availability-可用性"><span class="toc-number">1.2.</span> <span class="toc-text">Availability 可用性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#partition-tolerance-分区容错"><span class="toc-number">1.3.</span> <span class="toc-text">partition-tolerance 分区容错</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#分析"><span class="toc-number">1.4.</span> <span class="toc-text">分析</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#分布式ID"><span class="toc-number">2.</span> <span class="toc-text">分布式ID</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#秒杀业务"><span class="toc-number">3.</span> <span class="toc-text">秒杀业务</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#浏览器端时间，入口只有活动开启前才能获得"><span class="toc-number">3.1.</span> <span class="toc-text">浏览器端时间，入口只有活动开启前才能获得</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#浏览器端防止重复提交和频繁读取"><span class="toc-number">3.2.</span> <span class="toc-text">浏览器端防止重复提交和频繁读取</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#站点层请求拦截与页面缓存"><span class="toc-number">3.3.</span> <span class="toc-text">站点层请求拦截与页面缓存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#服务器端优化"><span class="toc-number">3.4.</span> <span class="toc-text">服务器端优化</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#分布式事务解决方案"><span class="toc-number">4.</span> <span class="toc-text">分布式事务解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#TCC事务补偿操作"><span class="toc-number">4.1.</span> <span class="toc-text">TCC事务补偿操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#本地消息表"><span class="toc-number">4.2.</span> <span class="toc-text">本地消息表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RocketMQ的事务消息"><span class="toc-number">4.3.</span> <span class="toc-text">RocketMQ的事务消息</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="CAP理论"><a href="#CAP理论" class="headerlink" title="CAP理论"></a>CAP理论</h1><h2 id="consistency-强一致性"><a href="#consistency-强一致性" class="headerlink" title="consistency 强一致性"></a>consistency 强一致性</h2><ul>
+<li>强一致性：分布式集群中所有节点的写操作具有原子性，一起写成功才反馈成功，可能会导致等待。这样的好处是，任意一个节点做了写操作，那么随后的访问查询，无论查询到哪个节点，得到的结果都是一样的。</li>
+<li>最终一致性：在一段时间后，节点间的数据会最终达到一致状态 </li>
+<li>顺序一致性：先手发送A B请求，在集群中所有节点上A都要先于B</li>
+</ul>
+<h2 id="Availability-可用性"><a href="#Availability-可用性" class="headerlink" title="Availability 可用性"></a>Availability 可用性</h2><p>表示服务要么挂了返回失败、要么立马返回执行结果，不会因为网络延迟，等待数据同步而不可用</p>
+<h2 id="partition-tolerance-分区容错"><a href="#partition-tolerance-分区容错" class="headerlink" title="partition-tolerance 分区容错"></a>partition-tolerance 分区容错</h2><p>表示隔离出来的节点（比如网络不好的节点）仍然可以正常运行，不会影响本身和其他节点的运行</p>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>假设一个集群有 A B C 3个节点，现在A节点 和 BC节点之间的网络延迟很严重</p>
+<ul>
+<li><p>如果保证 C A，既保持强一致性，又不会盲目等待，只有把网路信号差的节点A 剔除出去，这样系统仍然可以实现正常运行，但是不满足分区容错，不过现在这是主流的做法</p>
+</li>
+<li><p>如果保证 C P，那么系统只能选择等待，等待A的讯号通畅，这样就无法满足高可用了，挂一个，全瘫了</p>
+</li>
+<li><p>如果报错 A P，就是节点间不必保证一致性，这样会导致 A执行了写操作，但是 BC 不知道，查询的时候只有查A才能获得最新值，查询BC 还是老的值。可能需要人工干预来实现数据最终同步。</p>
+</li>
+</ul>
+<h1 id="分布式ID"><a href="#分布式ID" class="headerlink" title="分布式ID"></a>分布式ID</h1><ul>
+<li>用UUID实现分布式系统中唯一ID，但是缺点就是ID无意义，且字符串太长作为索引使用索引效率低</li>
+<li>利用NodeID+系统时间，例如server118520000，分布式流水号</li>
+<li>利用中间件：redis的分布式ID生成器，或者数据库自增实现</li>
+</ul>
+<p><a href="https://www.zhihu.com/question/54895548/answer/147456159" target="_blank" rel="external">https://www.zhihu.com/question/54895548/answer/147456159</a></p>
+<h1 id="秒杀业务"><a href="#秒杀业务" class="headerlink" title="秒杀业务"></a>秒杀业务</h1><h2 id="浏览器端时间，入口只有活动开启前才能获得"><a href="#浏览器端时间，入口只有活动开启前才能获得" class="headerlink" title="浏览器端时间，入口只有活动开启前才能获得"></a>浏览器端时间，入口只有活动开启前才能获得</h2><ul>
+<li>前台html提交订单的时候做js时间验证或者提交键置灰，可以防止普通小白用户在未开始提交</li>
+<li>进入后台后仍然判断下单请求是否是在秒杀时间开始后才算有效下单</li>
+</ul>
+<h2 id="浏览器端防止重复提交和频繁读取"><a href="#浏览器端防止重复提交和频繁读取" class="headerlink" title="浏览器端防止重复提交和频繁读取"></a>浏览器端防止重复提交和频繁读取</h2><ul>
+<li>每次提交订单后，置灰提交按钮，直到ajax返回了结果之后再回复抢购按钮</li>
+<li>查询订单的时候，直接读取redis缓存的结果，而不是查询数据库，没做一次查询再未返回查询结果前，置灰查询按钮</li>
+</ul>
+<h2 id="站点层请求拦截与页面缓存"><a href="#站点层请求拦截与页面缓存" class="headerlink" title="站点层请求拦截与页面缓存"></a>站点层请求拦截与页面缓存</h2><p>即使伪造url请求，但是做N秒内查询的页面缓存，可以过滤一些重复的请求</p>
+<h2 id="服务器端优化"><a href="#服务器端优化" class="headerlink" title="服务器端优化"></a>服务器端优化</h2><p>redis + 消息队列</p>
+<ul>
+<li>redis预先缓存秒杀商品的库存数量</li>
+<li>判断count&gt;0，则count –，把请求放入消息队列当中，等待异步回传的订单处理结果，处理成功则通知用户下单成功，异步处理失败则告知失败。如果Consumer是集群的话，可能需要数据库加锁来实现数据安全。并发的执行不冲突的操作，到了涉及线程安全的时候，加锁操作。</li>
+<li>如果count&lt;0， 则直接返回用户，下单失败</li>
+</ul>
+<h1 id="分布式事务解决方案"><a href="#分布式事务解决方案" class="headerlink" title="分布式事务解决方案"></a>分布式事务解决方案</h1><h2 id="TCC事务补偿操作"><a href="#TCC事务补偿操作" class="headerlink" title="TCC事务补偿操作"></a>TCC事务补偿操作</h2><p>类似于乐观锁策略:A服务器调用B服务器的写操作，checkB是否正确执行，失败则重试或者回滚A事务</p>
+<h2 id="本地消息表"><a href="#本地消息表" class="headerlink" title="本地消息表"></a>本地消息表</h2><p>A 、B 两个服务器的数据库 各有一个消息表， A 调用B操作会插入一条消息数据，B成功执行后，会修改A数据库中消息的状态, A 会定期的扫描消息表是否被确认过，如果未确认则做补偿事务回滚</p>
+<h2 id="RocketMQ的事务消息"><a href="#RocketMQ的事务消息" class="headerlink" title="RocketMQ的事务消息"></a>RocketMQ的事务消息</h2>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/26/分布式常见问题/" data-title="分布式常见问题 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/03/27/SpringBoot入门/" title="SpringBoot入门">
+  <strong>上一篇：</strong><br/>
+  <span>
+  SpringBoot入门</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/03/26/设计模式之Spring/"  title="设计模式之Spring">
+ <strong>下一篇：</strong><br/> 
+ <span>设计模式之Spring
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/03/26/分布式常见问题/" data-title="分布式常见问题" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/26/分布式常见问题/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#CAP理论"><span class="toc-number">1.</span> <span class="toc-text">CAP理论</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#consistency-强一致性"><span class="toc-number">1.1.</span> <span class="toc-text">consistency 强一致性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Availability-可用性"><span class="toc-number">1.2.</span> <span class="toc-text">Availability 可用性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#partition-tolerance-分区容错"><span class="toc-number">1.3.</span> <span class="toc-text">partition-tolerance 分区容错</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#分析"><span class="toc-number">1.4.</span> <span class="toc-text">分析</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#分布式ID"><span class="toc-number">2.</span> <span class="toc-text">分布式ID</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#秒杀业务"><span class="toc-number">3.</span> <span class="toc-text">秒杀业务</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#浏览器端时间，入口只有活动开启前才能获得"><span class="toc-number">3.1.</span> <span class="toc-text">浏览器端时间，入口只有活动开启前才能获得</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#浏览器端防止重复提交和频繁读取"><span class="toc-number">3.2.</span> <span class="toc-text">浏览器端防止重复提交和频繁读取</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#站点层请求拦截与页面缓存"><span class="toc-number">3.3.</span> <span class="toc-text">站点层请求拦截与页面缓存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#服务器端优化"><span class="toc-number">3.4.</span> <span class="toc-text">服务器端优化</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#分布式事务解决方案"><span class="toc-number">4.</span> <span class="toc-text">分布式事务解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#TCC事务补偿操作"><span class="toc-number">4.1.</span> <span class="toc-text">TCC事务补偿操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#本地消息表"><span class="toc-number">4.2.</span> <span class="toc-text">本地消息表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RocketMQ的事务消息"><span class="toc-number">4.3.</span> <span class="toc-text">RocketMQ的事务消息</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

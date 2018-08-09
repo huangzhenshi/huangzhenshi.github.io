@@ -1,0 +1,503 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>排序算法实战高级 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="手写一套经典的所有排序算法源码https://github.com/huangzhenshi/ClassicSort/tree/master 游标因子的设置 选择排序需要一个游标，int index=0，标志该轮比较当中，最大值所在的下标位置 插入排序需要一个游标，int index=j，如果后面元素比前面元素小，则交换之后游标向前游动 希尔排序需要一个游标，类似于插入排序，只是游标左游的长度为d">
+<meta property="og:type" content="article">
+<meta property="og:title" content="排序算法实战高级">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/09/排序算法实战高级/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="手写一套经典的所有排序算法源码https://github.com/huangzhenshi/ClassicSort/tree/master 游标因子的设置 选择排序需要一个游标，int index=0，标志该轮比较当中，最大值所在的下标位置 插入排序需要一个游标，int index=j，如果后面元素比前面元素小，则交换之后游标向前游动 希尔排序需要一个游标，类似于插入排序，只是游标左游的长度为d">
+<meta property="og:updated_time" content="2018-03-18T13:56:19.905Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="排序算法实战高级">
+<meta name="twitter:description" content="手写一套经典的所有排序算法源码https://github.com/huangzhenshi/ClassicSort/tree/master 游标因子的设置 选择排序需要一个游标，int index=0，标志该轮比较当中，最大值所在的下标位置 插入排序需要一个游标，int index=j，如果后面元素比前面元素小，则交换之后游标向前游动 希尔排序需要一个游标，类似于插入排序，只是游标左游的长度为d">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/03/09/排序算法实战高级/" title="排序算法实战高级" itemprop="url">排序算法实战高级</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-03-09T06:19:25.926Z" itemprop="datePublished"> 发表于 2018-03-09</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#游标因子的设置"><span class="toc-number">1.</span> <span class="toc-text">游标因子的设置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#排序原理"><span class="toc-number">2.</span> <span class="toc-text">排序原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#复杂度"><span class="toc-number">3.</span> <span class="toc-text">复杂度</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#空间复杂度："><span class="toc-number">3.1.</span> <span class="toc-text">空间复杂度：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#时间复杂度"><span class="toc-number">3.2.</span> <span class="toc-text">时间复杂度</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#算法实现的注意事项"><span class="toc-number">4.</span> <span class="toc-text">算法实现的注意事项</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#插入排序代码实现"><span class="toc-number">4.1.</span> <span class="toc-text">插入排序代码实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#希尔排序代码实现"><span class="toc-number">4.2.</span> <span class="toc-text">希尔排序代码实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#快排的代码实现"><span class="toc-number">4.3.</span> <span class="toc-text">快排的代码实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#堆排序的代码实现"><span class="toc-number">4.4.</span> <span class="toc-text">堆排序的代码实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#归并排序的代码实现"><span class="toc-number">4.5.</span> <span class="toc-text">归并排序的代码实现</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#优先队列"><span class="toc-number">5.</span> <span class="toc-text">优先队列</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#代码"><span class="toc-number">6.</span> <span class="toc-text">代码</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#选择排序"><span class="toc-number">6.1.</span> <span class="toc-text">选择排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#插入排序"><span class="toc-number">6.2.</span> <span class="toc-text">插入排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Shell"><span class="toc-number">6.3.</span> <span class="toc-text">Shell</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Quick"><span class="toc-number">6.4.</span> <span class="toc-text">Quick</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#heap"><span class="toc-number">6.5.</span> <span class="toc-text">heap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Merge"><span class="toc-number">6.6.</span> <span class="toc-text">Merge</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<p>手写一套经典的所有排序算法源码<br><a href="https://github.com/huangzhenshi/ClassicSort/tree/master">https://github.com/huangzhenshi/ClassicSort/tree/master</a></p>
+<h1 id="游标因子的设置"><a href="#游标因子的设置" class="headerlink" title="游标因子的设置"></a>游标因子的设置</h1><ul>
+<li>选择排序需要一个游标，int index=0，标志该轮比较当中，最大值所在的下标位置</li>
+<li>插入排序需要一个游标，int index=j，如果后面元素比前面元素小，则交换之后游标向前游动</li>
+<li>希尔排序需要一个游标，类似于插入排序，只是游标左游的长度为d</li>
+<li>快速排序需要两个游标，除了 low  high这种原始标志位，还需要head标识前置哨兵目前所在的位置和tail标识数组后置哨兵所在的位置（last哨兵后面的都比arr[index]大)</li>
+<li>堆排序需要一个游标，来标志末位元素的位置</li>
+<li>归并排序需要三个游标，除了 low mid high ，还需要 i j k，来实现比较拷贝</li>
+</ul>
+<h1 id="排序原理"><a href="#排序原理" class="headerlink" title="排序原理"></a>排序原理</h1><ul>
+<li>选择：遍历比较数组最大值，通过游标标记，最后和末位交换。2个for循环和index解决问题。</li>
+<li>冒泡：遍历比较最大值，不停交换最大值一直到末位，2个for循环解决问题。</li>
+<li>插入：维护一个递增的数组，通过一个游标，和最大的数比，比最大的大就break；否则游标和比较对象都左移</li>
+<li><p>希尔：3层for循环+while，插入排序的改进版本，跨度插入排序形成基本有序数组再插入排</p>
+</li>
+<li><p>快排：每次首位元素通过交换找到它在该数组段中的位置，再递归，引入low high head tail关键标记位。基于这种思路，可以解决无序数组中中位数，和无需数组求中位数的算法，随机第一个元素切分数组，缩小范围的方式来定位查找目标。</p>
+</li>
+<li><p>归并(分治)：精华是拆分问题，把数组拆分成2个小数组最后在递归性的从小问题解决到最大的问题，第二个核心在于2个连续的有序数组的merge方法。利用一个辅助数组。</p>
+</li>
+</ul>
+<h1 id="复杂度"><a href="#复杂度" class="headerlink" title="复杂度"></a>复杂度</h1><h2 id="空间复杂度："><a href="#空间复杂度：" class="headerlink" title="空间复杂度："></a>空间复杂度：</h2><ul>
+<li>一般的排序都是平均的空间复杂度都是O（1），只需要支付 exchange(int start,int end,int[] arr)时的成本，最佳就是本来有序O（0）</li>
+<li>归并排序依赖一个辅助的数据，空间复杂度为 O（N）</li>
+<li>快排的依赖是递归，O(logN）</li>
+</ul>
+<h2 id="时间复杂度"><a href="#时间复杂度" class="headerlink" title="时间复杂度"></a>时间复杂度</h2><ol>
+<li>快排</li>
+</ol>
+<ul>
+<li>最佳的时间复杂度 NlogN，最差 N平方，平均NlogN</li>
+<li>最佳是每次都是中位，递归长度减半，logN次均分，最差是数组正序或者逆序</li>
+<li>解决最差情况：哨兵排之前做一次随机取值，再交换的处理。</li>
+<li>改进方法2：N&lt;47时用插入，提速</li>
+</ul>
+<h1 id="算法实现的注意事项"><a href="#算法实现的注意事项" class="headerlink" title="算法实现的注意事项"></a>算法实现的注意事项</h1><ul>
+<li>选择、冒泡、插入两个for循环，所以时间复杂度为N平方</li>
+<li>希尔排序：4层for循环2个因素基本上</li>
+<li>快排：递归套一层while循环判断tail和head是否碰头</li>
+</ul>
+<h2 id="插入排序代码实现"><a href="#插入排序代码实现" class="headerlink" title="插入排序代码实现"></a>插入排序代码实现</h2><ul>
+<li>两层for循环（或者一个for循环+while)</li>
+<li>需要一个关键游标 index，每次左移的时候，比较对象也要一起移动</li>
+<li>比较大小的时候，大于则break；小于则交换且游标和比较对象一起左移</li>
+</ul>
+<h2 id="希尔排序代码实现"><a href="#希尔排序代码实现" class="headerlink" title="希尔排序代码实现"></a>希尔排序代码实现</h2><ul>
+<li>四层for循环，2层用于快排、1层用于i=0 i<d i++,还有获得d的时候递归gap="">0</d></li>
+<li>需要两个关键游标 d和index</li>
+</ul>
+<h2 id="快排的代码实现"><a href="#快排的代码实现" class="headerlink" title="快排的代码实现"></a>快排的代码实现</h2><ul>
+<li>一个locate，一个while</li>
+<li>2个游标：head、tail；2个判断 high&lt;=low return，while(tail&gt;head)</li>
+</ul>
+<h2 id="堆排序的代码实现"><a href="#堆排序的代码实现" class="headerlink" title="堆排序的代码实现"></a>堆排序的代码实现</h2><ul>
+<li>写MaxPQ，size，sink()，swim()</li>
+<li>构建有序堆（N/2开始依次sink())</li>
+<li>for循环，交换末位，setSize(–tail)，sink(1)</li>
+</ul>
+<h2 id="归并排序的代码实现"><a href="#归并排序的代码实现" class="headerlink" title="归并排序的代码实现"></a>归并排序的代码实现</h2><ul>
+<li>拆分问题，start&lt;end时，求mid，拆分2个问题，merge</li>
+<li>归并方法：3个游标、一个辅助数据、3层while一层for，写入又写会arr1数组当中</li>
+</ul>
+<h1 id="优先队列"><a href="#优先队列" class="headerlink" title="优先队列"></a>优先队列</h1><ul>
+<li>解决的问题:构建一个有序堆，堆顶的元素最大，且重新插入一个元素，或者删除堆顶元素，堆重构的代价并不大。用于堆排序，或者查找最值的业务场景中</li>
+<li>N指的是list.size（）-1，数组首位为null</li>
+<li>swim() ，有序堆从末位追加一个元素，调用swim()方法，重建堆有序,用于已经堆有序的堆中添加新元素</li>
+<li>构建优先队列的时候要控制size，因为最后排序的时候涉及到堆顶和数组末位交换位置实现排序功能</li>
+<li>sink()的时候首先要判断是否有2个子节点，然后取最大的一个和父节点比较，不然会出错</li>
+</ul>
+<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><h2 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">for(int i=0;i&lt;length;i++)&#123;</div><div class="line">	int max=0;</div><div class="line">	for(int j=1;j&lt;length-i;j++)&#123;</div><div class="line">		if(arr[max]&lt;arr[j])&#123;</div><div class="line">			max=j;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	Util.exchange(max, length-i-1, arr);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">for(int i=1;i&lt;length;i++)&#123;</div><div class="line">	int index=i;</div><div class="line">	for(int j=i-1;j&gt;=0;j--)&#123;</div><div class="line">		if(arr[index]&gt;arr[j]) break;</div><div class="line">		Util.exchange(index, j, arr);</div><div class="line">		index--;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="Shell"><a href="#Shell" class="headerlink" title="Shell"></a>Shell</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public static void shellSortByGap(int gap, int[] arr)&#123;</div><div class="line">		int length=arr.length;</div><div class="line">		for(int i=0;i&lt;gap;i++)&#123;</div><div class="line">			for(int j=i+gap;j&lt;length;j=j+gap)&#123;</div><div class="line">				int index=j;</div><div class="line">				while(index&gt;i)&#123;</div><div class="line">					if(arr[index]&gt;arr[index-gap]) break;</div><div class="line">					if(arr[index]&lt;arr[index-gap])&#123;</div><div class="line">						Util.exchange(index-gap, index, arr);</div><div class="line">						index-=gap;</div><div class="line">					&#125;</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;	</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<h2 id="Quick"><a href="#Quick" class="headerlink" title="Quick"></a>Quick</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public static void locate(int start,int end,int[] arr)&#123;</div><div class="line">		if(start&gt;=end) return;</div><div class="line">		</div><div class="line">		int index=start;</div><div class="line">		int last=end;</div><div class="line">		while(last&gt;index)&#123;</div><div class="line">			if(arr[index]&gt;arr[index+1])&#123;</div><div class="line">				Util.exchange(index, index+1, arr);</div><div class="line">				index++;</div><div class="line">			&#125;else if(arr[index]&lt;arr[index+1])&#123;</div><div class="line">				Util.exchange(index+1, last, arr);</div><div class="line">				last--;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		locate(start,index-1,arr);</div><div class="line">		locate(index+1,end,arr);</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<h2 id="heap"><a href="#heap" class="headerlink" title="heap"></a>heap</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public void sink(int k)&#123;</div><div class="line">	//check是否有子节点</div><div class="line">	while(2*k&lt;=size)&#123;</div><div class="line">		int bigSonNode=2*k;</div><div class="line">		//如果有右子节点且右子节点大于左子节点则 最大子节点指向右子节点</div><div class="line">		if((2*k+1&lt;size)&amp;&amp;list.get(2*k)&lt;list.get(2*k+1))&#123;</div><div class="line">			bigSonNode=2*k+1;</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		//比较左子节点，如果小于，就交换</div><div class="line">		if(list.get(k)&lt;list.get(bigSonNode))&#123;</div><div class="line">			Util.exchangeList(k, bigSonNode, list);</div><div class="line">			k=bigSonNode;</div><div class="line">			//检查是否存在右子树，如果右且大于父节点就交换</div><div class="line">		  &#125;else&#123;</div><div class="line">			  break;</div><div class="line">		  &#125;</div><div class="line">		</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//通过从N/2开始往堆顶进行sink()操作构建堆有序</div><div class="line">public static void buildHeap(MaxPQ pq)&#123;</div><div class="line">	int N=pq.list.size()-1;</div><div class="line">	for(int i=N/2;i&gt;0;i--)&#123;</div><div class="line">		pq.sink(i);</div><div class="line">	&#125;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">public static void HeapSort(MaxPQ pq)&#123;</div><div class="line">	List&lt;Integer&gt; list=pq.getList();</div><div class="line">	int size=list.size();</div><div class="line">	int tail=size-1;</div><div class="line">	for(int i=1;i&lt;size;i++)&#123;</div><div class="line">		Util.exchangeList(1, tail, list);</div><div class="line">		pq.setSize(--tail);</div><div class="line">		pq.sink(1);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="Merge"><a href="#Merge" class="headerlink" title="Merge"></a>Merge</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">//对一个数组按照下标进行归并排序</div><div class="line">//归并排序的精华所在：问题拆分，把一个大问题拆分为N个性质一样但更简单的小问题</div><div class="line">public static void mergeSort(int[] arr,int start,int end)&#123;</div><div class="line">	//这也是递归的终结，当数组拆分到只有1个元素的时候，必然是有序的，否则就继续拆分</div><div class="line">	if(start&lt;end)&#123;</div><div class="line">		//拆分大问题为两个小问题</div><div class="line">		int mid=(start+end)/2;</div><div class="line">		mergeSort(arr,start,mid);</div><div class="line">		mergeSort(arr,mid+1,end);</div><div class="line">		//小问题解决完之后，最后父问题</div><div class="line">		merge(arr,start,mid,end);</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//有两个数组，一个数源数组arr1，一个是工具数组是长度一样但是都是null的arr2</div><div class="line">//arr1数组中有2个连续且有序的数组 arr11 和 arr12</div><div class="line"></div><div class="line">//low是arr11的start，mid是arr11的end，mid+1是arr12的start，high是arr12的end</div><div class="line">//设置了3个游标，i为arr11的游标，j为arr12的游标，k为arr2的游标</div><div class="line"></div><div class="line">//merge的思路是当arr11和arr12中从起始位置开始比较，最小的写到arr2中，一直到有一个掏空了</div><div class="line">//假如是arr11先掏空，那么顺序把arr12中的元素顺序写入到arr2中；反之把arr11中剩余元素写入到arr2中</div><div class="line">//最后再把工具数组里的数据按照low high位置写回到arr1中，这样可以arr1可以继续比较了</div><div class="line">public static int[] arr2=new int[20];</div><div class="line">public static void merge(int[] arr1,int low,int mid,int high)&#123;</div><div class="line">	int i=low,k=low,j=mid+1;</div><div class="line">	//当arr11和arr12中从起始位置开始比较，最小的写到arr2中，对应下标移动，一直到有一个掏空了为止</div><div class="line">	while(i&lt;=mid&amp;&amp;j&lt;=high)&#123;</div><div class="line">		if(arr1[i]&lt;arr1[j])&#123;</div><div class="line">			arr2[k++]=arr1[i++];</div><div class="line">		&#125;else &#123;</div><div class="line">			arr2[k++]=arr1[j++];&#125;</div><div class="line">	&#125;</div><div class="line">	//如果是arr12先被掏空，则arr11中剩余元素写入到arr2中,这里可以优化</div><div class="line">	while(i&lt;=mid)&#123;</div><div class="line">		arr2[k++]=arr1[i++];</div><div class="line">	&#125;</div><div class="line">	//如果是arr11先被掏空，则arr12中剩余元素写入到arr2中，这里可以优化</div><div class="line">	while(j&lt;=high)&#123;</div><div class="line">		arr2[k++]=arr1[j++];</div><div class="line">	&#125;</div><div class="line">	//arr2排序结束写回到arr1中相应位置</div><div class="line">	for (i = low; i &lt;= high; i++) &#123;</div><div class="line">           arr1[i] = arr2[i];</div><div class="line">       &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/09/排序算法实战高级/" data-title="排序算法实战高级 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/03/18/类加载机制/" title="类加载机制">
+  <strong>上一篇：</strong><br/>
+  <span>
+  类加载机制</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/03/08/TCP IP协议/"  title="TCP/IP协议">
+ <strong>下一篇：</strong><br/> 
+ <span>TCP/IP协议
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/03/09/排序算法实战高级/" data-title="排序算法实战高级" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/09/排序算法实战高级/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#游标因子的设置"><span class="toc-number">1.</span> <span class="toc-text">游标因子的设置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#排序原理"><span class="toc-number">2.</span> <span class="toc-text">排序原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#复杂度"><span class="toc-number">3.</span> <span class="toc-text">复杂度</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#空间复杂度："><span class="toc-number">3.1.</span> <span class="toc-text">空间复杂度：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#时间复杂度"><span class="toc-number">3.2.</span> <span class="toc-text">时间复杂度</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#算法实现的注意事项"><span class="toc-number">4.</span> <span class="toc-text">算法实现的注意事项</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#插入排序代码实现"><span class="toc-number">4.1.</span> <span class="toc-text">插入排序代码实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#希尔排序代码实现"><span class="toc-number">4.2.</span> <span class="toc-text">希尔排序代码实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#快排的代码实现"><span class="toc-number">4.3.</span> <span class="toc-text">快排的代码实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#堆排序的代码实现"><span class="toc-number">4.4.</span> <span class="toc-text">堆排序的代码实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#归并排序的代码实现"><span class="toc-number">4.5.</span> <span class="toc-text">归并排序的代码实现</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#优先队列"><span class="toc-number">5.</span> <span class="toc-text">优先队列</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#代码"><span class="toc-number">6.</span> <span class="toc-text">代码</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#选择排序"><span class="toc-number">6.1.</span> <span class="toc-text">选择排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#插入排序"><span class="toc-number">6.2.</span> <span class="toc-text">插入排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Shell"><span class="toc-number">6.3.</span> <span class="toc-text">Shell</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Quick"><span class="toc-number">6.4.</span> <span class="toc-text">Quick</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#heap"><span class="toc-number">6.5.</span> <span class="toc-text">heap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Merge"><span class="toc-number">6.6.</span> <span class="toc-text">Merge</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

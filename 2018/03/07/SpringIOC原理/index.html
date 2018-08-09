@@ -1,0 +1,529 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Spring IOC原理 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="参考示例源代码:https://github.com/huangzhenshi/SpringFreamworkDemo/tree/master https://zhuanlan.zhihu.com/p/29344811 基本原理：基本原理其实就是通过反射解析类及其类的各种信息，包括构造器、方法及其参数，属性。   然后将其封装成bean定义信息类、constructor信息类、method信息类、">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring IOC原理">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/07/SpringIOC原理/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="参考示例源代码:https://github.com/huangzhenshi/SpringFreamworkDemo/tree/master https://zhuanlan.zhihu.com/p/29344811 基本原理：基本原理其实就是通过反射解析类及其类的各种信息，包括构造器、方法及其参数，属性。   然后将其封装成bean定义信息类、constructor信息类、method信息类、">
+<meta property="og:updated_time" content="2018-04-10T03:26:43.025Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring IOC原理">
+<meta name="twitter:description" content="参考示例源代码:https://github.com/huangzhenshi/SpringFreamworkDemo/tree/master https://zhuanlan.zhihu.com/p/29344811 基本原理：基本原理其实就是通过反射解析类及其类的各种信息，包括构造器、方法及其参数，属性。   然后将其封装成bean定义信息类、constructor信息类、method信息类、">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/03/07/SpringIOC原理/" title="Spring IOC原理" itemprop="url">Spring IOC原理</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-03-07T09:48:49.580Z" itemprop="datePublished"> 发表于 2018-03-07</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考示例源代码"><span class="toc-number">1.</span> <span class="toc-text">参考示例源代码:</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#基本原理："><span class="toc-number">2.</span> <span class="toc-text">基本原理：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring-中核心类和接口"><span class="toc-number">3.</span> <span class="toc-text">Spring 中核心类和接口</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#BeanFactory-interface"><span class="toc-number">3.1.</span> <span class="toc-text">BeanFactory interface</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BeanDefinition"><span class="toc-number">3.2.</span> <span class="toc-text">BeanDefinition</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XmlBeanFactory"><span class="toc-number">3.3.</span> <span class="toc-text">XmlBeanFactory</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DefaultSingletonBeanRegistry"><span class="toc-number">3.4.</span> <span class="toc-text">DefaultSingletonBeanRegistry</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HierarchicalBeanFactory"><span class="toc-number">3.5.</span> <span class="toc-text">HierarchicalBeanFactory</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ApplicationContext"><span class="toc-number">3.6.</span> <span class="toc-text">ApplicationContext</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WebApplicationContext"><span class="toc-number">3.7.</span> <span class="toc-text">WebApplicationContext</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#web容器启动原理："><span class="toc-number">4.</span> <span class="toc-text">web容器启动原理：</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#具体过程"><span class="toc-number">4.1.</span> <span class="toc-text">具体过程</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#通过BeanFactory生产类的流程"><span class="toc-number">5.</span> <span class="toc-text">通过BeanFactory生产类的流程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Tomcat中Spring的bean的创建过程"><span class="toc-number">6.</span> <span class="toc-text">Tomcat中Spring的bean的创建过程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring的Bean生命周期"><span class="toc-number">7.</span> <span class="toc-text">Spring的Bean生命周期</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Bean-本身的方法"><span class="toc-number">7.1.</span> <span class="toc-text">Bean 本身的方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Bean级生命周期接口方法"><span class="toc-number">7.2.</span> <span class="toc-text">Bean级生命周期接口方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#容器级生命周期接口方法"><span class="toc-number">7.3.</span> <span class="toc-text">容器级生命周期接口方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#BeanPostProcessor，在每一个bean调用init方法执行前和执行后执行"><span class="toc-number">7.3.1.</span> <span class="toc-text">BeanPostProcessor，在每一个bean调用init方法执行前和执行后执行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#超级InstantiationAwareBeanPostProcessor接口，分别在实例化、设置属性值、初始化3个过程当中都干预bean的生命周期，甚至可以阻住bean的属性值设置是否执行"><span class="toc-number">7.3.2.</span> <span class="toc-text">超级InstantiationAwareBeanPostProcessor接口，分别在实例化、设置属性值、初始化3个过程当中都干预bean的生命周期，甚至可以阻住bean的属性值设置是否执行</span></a></li></ol></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="参考示例源代码"><a href="#参考示例源代码" class="headerlink" title="参考示例源代码:"></a>参考示例源代码:</h1><p><a href="https://github.com/huangzhenshi/SpringFreamworkDemo/tree/master">https://github.com/huangzhenshi/SpringFreamworkDemo/tree/master</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/29344811" target="_blank" rel="external">https://zhuanlan.zhihu.com/p/29344811</a></p>
+<h1 id="基本原理："><a href="#基本原理：" class="headerlink" title="基本原理："></a>基本原理：</h1><p>基本原理其实就是通过反射解析类及其类的各种信息，包括构造器、方法及其参数，属性。  </p>
+<p>然后将其封装成bean定义信息类、constructor信息类、method信息类、property信息类，最终放在一个map里，也就是所谓的container，池等等，其实就是个map</p>
+<p>当你写好配置文件，启动项目后，框架会先按照你的配置文件找到那个要scan的包，然后解析包里面的所有类，找到所有含有@bean，@service等注解的类，利用反射解析它们，包括解析构造器，方法，属性等等，然后封装成各种信息类放到一个map里。每当你需要一个bean的时候，框架就会从container找是不是有这个类的定义啊？如果找到则通过构造器new出来（这就是控制反转，不用你new,框架帮你new），再在这个类找是不是有要注入的属性或者方法，比如标有@autowired的属性，如果有则还是到container找对应的解析类，new出对象，并通过之前解析出来的信息类找到setter方法，然后用该方法注入对象（这就是依赖注入）。如果其中有一个类container里没找到，则抛出异常，比如常见的spring无法找到该类定义，无法wire的异常。还有就是嵌套bean则用了一下递归，container会放到servletcontext里面，每次reQuest从servletcontext找这个container即可，不用多次解析类定义。如果bean的scope是singleton，则会重用这个bean不再重新创建，将这个bean放到一个map里，每次用都先从这个map里面找。如果scope是session，则该bean会放到session里面。</p>
+<h1 id="Spring-中核心类和接口"><a href="#Spring-中核心类和接口" class="headerlink" title="Spring 中核心类和接口"></a>Spring 中核心类和接口</h1><h2 id="BeanFactory-interface"><a href="#BeanFactory-interface" class="headerlink" title="BeanFactory interface"></a>BeanFactory interface</h2><p>顶层接口，也是实现工厂方式的抽象工厂,默认懒加载</p>
+<ul>
+<li>getBean()</li>
+<li>containsBean()</li>
+<li>isSingleton\isPrototype()<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">Car car = (Car) bf.getBean(&quot;car&quot;);</div><div class="line">Car car2 = bf.getBean(&quot;car&quot;,Car.class);</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="BeanDefinition"><a href="#BeanDefinition" class="headerlink" title="BeanDefinition"></a>BeanDefinition</h2><p>web容器会把所有的bean都注册到BeanDefinitionRegistry当中</p>
+<ul>
+<li>bean本身的相关信息 getBeanClassName() isLazyInit() getPropertyValues() isSingleton()</li>
+<li>父类相关信息 getParentName()</li>
+<li>依赖类信息 getDependsOn()</li>
+<li>加载器相关信息 getFactoryBeanName() </li>
+</ul>
+<h2 id="XmlBeanFactory"><a href="#XmlBeanFactory" class="headerlink" title="XmlBeanFactory"></a>XmlBeanFactory</h2><p>常用的一个工厂实现类，读取spring.xml里面配置的bean</p>
+<h2 id="DefaultSingletonBeanRegistry"><a href="#DefaultSingletonBeanRegistry" class="headerlink" title="DefaultSingletonBeanRegistry"></a>DefaultSingletonBeanRegistry</h2><p>ConcurrentHashMap 存储各种注册的类的缓存池 类名/类基本信息Object  K/V<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">	&lt;bean id=&quot;car&quot; class=&quot;com.test.entity.Car&quot;&gt;</div><div class="line">		 &lt;property name=&quot;brand&quot; value=&quot;奥迪&quot;&gt;&lt;/property&gt;</div><div class="line">	  	 &lt;property name=&quot;color&quot; value=&quot;黑色&quot;&gt;&lt;/property&gt;</div><div class="line">	  	 &lt;property name=&quot;maxSpeed&quot; value=&quot;200&quot;&gt;&lt;/property&gt;</div><div class="line">    &lt;/bean&gt;</div><div class="line">this.singotonObjects--&gt; car=com.test.entity.Car@5b02985</div></pre></td></tr></table></figure></p>
+<h2 id="HierarchicalBeanFactory"><a href="#HierarchicalBeanFactory" class="headerlink" title="HierarchicalBeanFactory"></a>HierarchicalBeanFactory</h2><p>建立父子级别容器的扩展类，MVC就是依赖这个工厂实现的</p>
+<h2 id="ApplicationContext"><a href="#ApplicationContext" class="headerlink" title="ApplicationContext"></a>ApplicationContext</h2><p>继承自 HierarchicalBeanFactory，除了继承了 父子容器 和创建bean还扩展了很多功能</p>
+<ul>
+<li>ApplicationEventPublisher：让容器拥有发布应用上下文事件的功能，包括容器启动事件、关闭事件等。实现了 ApplicationListener 事件监听接口的 Bean 可以接收到容器事件 ， 并对事件进行响应处理 </li>
+<li>LifeCycle：该接口实现生命周期管理</li>
+<li>ResourcePatternResolver： 正则表达式 读取配置文件信息 application*.xml<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">        ApplicationContext ctx = new ClassPathXmlApplicationContext(&quot;classpath:application-datasource.xml&quot;);        </div><div class="line">        int count=ctx.getBeanDefinitionCount();//这里获取的是注册表中的数量不是实例化类的数量</div><div class="line">        ctx.getBean(&quot;car&quot;);</div><div class="line">        ctx.getBean(&quot;dataSource&quot;);</div><div class="line"></div><div class="line"></div><div class="line">public interface ApplicationContext extends EnvironmentCapable, ListableBeanFactory, HierarchicalBeanFactory,</div><div class="line">		MessageSource, ApplicationEventPublisher, ResourcePatternResolver &#123;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="WebApplicationContext"><a href="#WebApplicationContext" class="headerlink" title="WebApplicationContext"></a>WebApplicationContext</h2><p>实现web容器和spring的整合，web启动时ServletContext有两种方式获取到WebApplicationContext<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">org.springframework.web.context.ContextLoaderServlet；</div><div class="line">org.springframework.web.context.ContextLoaderListener</div><div class="line">	</div><div class="line">	ServletContext getServletContext();</div></pre></td></tr></table></figure></p>
+<h1 id="web容器启动原理："><a href="#web容器启动原理：" class="headerlink" title="web容器启动原理："></a>web容器启动原理：</h1><ul>
+<li>tomcat启动触发web.xml,web容器提供SevletContext</li>
+<li>会根据ContextLoaderListener监听，或者ContextLoaderSevlet初始化WebApplicationContext</li>
+<li>读取指定路径下的bean配置文件，加载初始化所有的配置的或者注解的Bean存储到DefaultSingletonBeanRegistry缓存起来。</li>
+<li>再扫描web.xml的serlvet元素，比如MVC的DispatcherServlet，也会重复类似的过程，但是是在Spring的子容器IOC容器当中，父容器配置的元素对子容器可见。</li>
+</ul>
+<h2 id="具体过程"><a href="#具体过程" class="headerlink" title="具体过程"></a>具体过程</h2><ul>
+<li><p>web.xml 的ContextLoaderListener最先执行，监听tomcat的容器启动，启动之后调用初始化方法,初始化一个 WebApplicationContext</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public void contextInitialized(ServletContextEvent event) &#123;</div><div class="line">	this.contextLoader = createContextLoader();</div><div class="line">	if (this.contextLoader == null) &#123;</div><div class="line">		this.contextLoader = this;</div><div class="line">	&#125;</div><div class="line">	this.contextLoader.initWebApplicationContext(event.getServletContext());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>再通过配置的参数取读取配置文件  </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"> &lt;listener&gt;</div><div class="line">	&lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;</div><div class="line">&lt;/listener&gt;</div><div class="line">&lt;context-param&gt;</div><div class="line">	&lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;</div><div class="line">	&lt;param-value&gt;</div><div class="line">		classpath*:application-datasource.xml</div><div class="line">	&lt;/param-value&gt;</div><div class="line">&lt;/context-param&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>再读取web.xml里面的servelt元素，初始化类似MVC的子容器,子容器初始化的过程是先拷贝一份父容器，也就是spring容器当中的类的信息，再读取MVC的配置文件，读取只属于MVC的子类，所以MVC里面的类对Spring容器不可见 </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;servlet&gt;</div><div class="line">  &lt;servlet-name&gt;springmvc&lt;/servlet-name&gt;</div><div class="line">  &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;</div><div class="line">  &lt;init-param&gt;</div><div class="line">    &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;</div><div class="line">    &lt;param-value&gt;classpath*:application-mvc.xml&lt;/param-value&gt;</div><div class="line">  &lt;/init-param&gt;</div><div class="line">  &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;</div><div class="line">&lt;/servlet&gt;</div><div class="line"></div><div class="line">&lt;servlet-mapping&gt;</div><div class="line">  &lt;servlet-name&gt;springmvc&lt;/servlet-name&gt;</div><div class="line">  &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;</div><div class="line">&lt;/servlet-mapping&gt;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="通过BeanFactory生产类的流程"><a href="#通过BeanFactory生产类的流程" class="headerlink" title="通过BeanFactory生产类的流程"></a>通过BeanFactory生产类的流程</h1><p>通过Resource指定配置文件的位置，并且启动IOC容器，但是不会实例化配置或者扫描的bean，只有在第一次调用getBean的时候，会初始化这个单例的对象并且存储在DefaultSingletonBeanRegistry的singletonObjects = new ConcurrentHashMap<string, object="">(64)中<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"> ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();</div><div class="line">        Resource res = resolver.getResource(&quot;classpath:beans.xml&quot;); </div><div class="line">        BeanFactory bf = new XmlBeanFactory(res);</div><div class="line">        System.out.println(&quot;init BeanFactory.&quot;);</div><div class="line">        Car car = bf.getBean(&quot;car&quot;,Car.class);</div><div class="line"></div><div class="line"></div><div class="line">this.registeredSingletons.add(beanName);</div></pre></td></tr></table></figure></string,></p>
+<h1 id="Tomcat中Spring的bean的创建过程"><a href="#Tomcat中Spring的bean的创建过程" class="headerlink" title="Tomcat中Spring的bean的创建过程"></a>Tomcat中Spring的bean的创建过程</h1><p>web容器的操作：</p>
+<ul>
+<li>web容器启动的时候会读取到配置文件的地址context-param</li>
+<li>ResourceLoader读取配置文件–&gt;生成Resource对象</li>
+<li>BeanDefinitionReader读取Resource，生成各种BeanDefinition，并存储在BeanDefinitionRegistry中</li>
+</ul>
+<p>Spring执行操作：</p>
+<ul>
+<li>Spring读取BeanDefinitionRegistry中的BeanDefinition，先对bean进行加工处理,最后如果是单例的话，存在DeaSinBeanRegi里面的hashmap中</li>
+</ul>
+<h1 id="Spring的Bean生命周期"><a href="#Spring的Bean生命周期" class="headerlink" title="Spring的Bean生命周期"></a>Spring的Bean生命周期</h1><p>生命周期概论:</p>
+<ol>
+<li>简单的bean的生命周期就是 调用构造函数创建实例 – &gt;设置属性（如果在xml里面有设置的话) –&gt; 执行init方法（如果有配置) –&gt; destroy（如果容器关闭时)</li>
+<li>再此基础之上，可以让bean实现一些接口，来干预bean的实例化，比如设置beanName，BeanFactory，afterPropertiesSet、destroy等方法</li>
+<li>最后还可以在容器级别上实现 构造函数、设置属性值、初始化 这3个过程当中的全局性所有bean的干预方法</li>
+</ol>
+<h2 id="Bean-本身的方法"><a href="#Bean-本身的方法" class="headerlink" title="Bean 本身的方法"></a>Bean 本身的方法</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class SimpleBean &#123;</div><div class="line">	private String name;</div><div class="line"></div><div class="line">	public String getName() &#123;</div><div class="line">		return name;</div><div class="line">	&#125;</div><div class="line">	public void setName(String name) &#123;</div><div class="line">		System.out.println(&quot;设置属性&quot;+name);</div><div class="line">		this.name = name;</div><div class="line">	&#125;</div><div class="line">	SimpleBean()&#123;</div><div class="line">		System.out.println(&quot;执行构造函数&quot;);</div><div class="line">	&#125;</div><div class="line">	public void init()&#123;</div><div class="line">		System.out.println(&quot;init&quot;);</div><div class="line">	&#125;</div><div class="line">	public void destroyBean()&#123;</div><div class="line">		System.out.println(&quot;destorying&quot;);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>结果<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">执行构造函数</div><div class="line">设置属性Simple</div><div class="line">init</div><div class="line">destorying</div></pre></td></tr></table></figure></p>
+<p>配置和启动<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"> &lt;bean id=&quot;simple&quot; class=&quot;com.test.domain.SimpleBean&quot; init-method=&quot;init&quot; destroy-method=&quot;destroyBean&quot;&gt;</div><div class="line">&lt;property name=&quot;name&quot; value=&quot;Simple&quot;&gt;&lt;/property&gt;</div><div class="line"> &lt;/bean&gt;</div><div class="line"></div><div class="line"></div><div class="line">     ApplicationContext ctx = new ClassPathXmlApplicationContext(&quot;classpath:beans.xml&quot;);        </div><div class="line">     SimpleBean test=ctx.getBean(&quot;simple&quot;,SimpleBean.class);</div><div class="line">     ((ClassPathXmlApplicationContext)ctx).close();</div></pre></td></tr></table></figure></p>
+<h2 id="Bean级生命周期接口方法"><a href="#Bean级生命周期接口方法" class="headerlink" title="Bean级生命周期接口方法"></a>Bean级生命周期接口方法</h2><ul>
+<li><p>BeanNameAware，bean设置完属性值后执行</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Override</div><div class="line">public void setBeanName(String name) &#123;</div><div class="line">	System.out.println(&quot;setBeanName&quot;);		</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>BeanFactoryAware，setBeanName执行完后执行</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Override</div><div class="line">public void setBeanFactory(BeanFactory beanFactory) throws BeansException &#123;</div><div class="line">	System.out.println(&quot;setBeanFactory&quot;);		</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>InitializingBean，初始化方法调用之前执行</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Override</div><div class="line">public void afterPropertiesSet() throws Exception &#123;</div><div class="line">	System.out.println(&quot;afterPropertiesSet&quot;);</div><div class="line">	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>DisposableBean，容器要销毁之前执行，但是优先于 bean的destroy-method之前执行</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Override</div><div class="line">public void destroy() throws Exception &#123;</div><div class="line">	System.out.println(&quot;destory&quot;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>普通bean的执行顺序结果<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">执行构造函数</div><div class="line">设置属性Spring</div><div class="line">setBeanName</div><div class="line">setBeanFactory</div><div class="line">afterPropertiesSet</div><div class="line">destory</div><div class="line">destorying</div></pre></td></tr></table></figure></p>
+<h2 id="容器级生命周期接口方法"><a href="#容器级生命周期接口方法" class="headerlink" title="容器级生命周期接口方法"></a>容器级生命周期接口方法</h2><p>容器级别的处理器，在创建所有的bean的时候都会调用</p>
+<h3 id="BeanPostProcessor，在每一个bean调用init方法执行前和执行后执行"><a href="#BeanPostProcessor，在每一个bean调用init方法执行前和执行后执行" class="headerlink" title="BeanPostProcessor，在每一个bean调用init方法执行前和执行后执行"></a>BeanPostProcessor，在每一个bean调用init方法执行前和执行后执行</h3><ul>
+<li><p>执行结果顺序</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"> 执行构造函数</div><div class="line">设置属性Spring</div><div class="line">setBeanName</div><div class="line">setBeanFactory</div><div class="line"></div><div class="line">postProcessBeforeInitialization</div><div class="line">afterPropertiesSet</div><div class="line">init</div><div class="line">postProcessAfterInitialization</div><div class="line"></div><div class="line">destory</div><div class="line">destorying</div></pre></td></tr></table></figure>
+</li>
+<li><p>接口代码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class Processor implements BeanPostProcessor&#123;</div><div class="line">	@Override</div><div class="line">	public Object postProcessBeforeInitialization(Object bean, String beanName)</div><div class="line">			throws BeansException &#123;</div><div class="line">		System.out.println(&quot;postProcessBeforeInitialization&quot;);</div><div class="line">		return bean;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	public Object postProcessAfterInitialization(Object bean, String beanName)</div><div class="line">			throws BeansException &#123;</div><div class="line">		System.out.println(&quot;postProcessAfterInitialization&quot;);</div><div class="line">		return bean;</div><div class="line">	&#125;	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="超级InstantiationAwareBeanPostProcessor接口，分别在实例化、设置属性值、初始化3个过程当中都干预bean的生命周期，甚至可以阻住bean的属性值设置是否执行"><a href="#超级InstantiationAwareBeanPostProcessor接口，分别在实例化、设置属性值、初始化3个过程当中都干预bean的生命周期，甚至可以阻住bean的属性值设置是否执行" class="headerlink" title="超级InstantiationAwareBeanPostProcessor接口，分别在实例化、设置属性值、初始化3个过程当中都干预bean的生命周期，甚至可以阻住bean的属性值设置是否执行"></a>超级InstantiationAwareBeanPostProcessor接口，分别在实例化、设置属性值、初始化3个过程当中都干预bean的生命周期，甚至可以阻住bean的属性值设置是否执行</h3><ul>
+<li><p>执行结果</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"># 实例化干预</div><div class="line">实例化bean之前调用,即调用bean类构造函数之前调用 com.test.domain.SpringTest</div><div class="line">执行构造函数</div><div class="line">postProcessAfterInstantiation 返回boolean,bean实例化后调用,并且返回false则不会注入属性</div><div class="line"></div><div class="line"># 属性值设置干预</div><div class="line">postProcessPropertyValues,在属性注入之前调用...... beanName = test 属性名集合 : [bean property &apos;name&apos;]</div><div class="line">设置属性Spring</div><div class="line"></div><div class="line">setBeanName</div><div class="line">setBeanFactory</div><div class="line"></div><div class="line"># 初始化设置干预</div><div class="line">postProcessBeforeInitialization</div><div class="line">afterPropertiesSet</div><div class="line">init</div><div class="line">postProcessAfterInitialization</div><div class="line"></div><div class="line">destory</div><div class="line">destorying</div></pre></td></tr></table></figure>
+</li>
+<li><p>接口代码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class InstanceBeanPostProcessor implements InstantiationAwareBeanPostProcessor &#123;</div><div class="line">	@Override</div><div class="line">	public Object postProcessBeforeInitialization(Object bean, String beanName)</div><div class="line">			throws BeansException &#123;</div><div class="line">		System.out.println(&quot;postProcessBeforeInitialization&quot;);</div><div class="line">		return bean;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	public Object postProcessAfterInitialization(Object bean, String beanName)</div><div class="line">			throws BeansException &#123;</div><div class="line">		System.out.println(&quot;postProcessAfterInitialization&quot;);</div><div class="line">		return bean;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	public Object postProcessBeforeInstantiation(Class&lt;?&gt; beanClass,</div><div class="line">			String beanName) throws BeansException &#123;</div><div class="line">		System.out.println(&quot;实例化bean之前调用,即调用bean类构造函数之前调用 &quot; + beanClass.getName());</div><div class="line">		return null;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	public boolean postProcessAfterInstantiation(Object bean, String beanName)</div><div class="line">			throws BeansException &#123;</div><div class="line">		System.out.println(&quot;返回boolean,bean实例化后调用,并且返回false则不会注入属性&quot;);</div><div class="line">		return true;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	public PropertyValues postProcessPropertyValues(PropertyValues pvs,</div><div class="line">			PropertyDescriptor[] pds, Object bean, String beanName)</div><div class="line">			throws BeansException &#123;</div><div class="line">		   System.out.println(&quot;postProcessPropertyValues,在属性注入之前调用...... beanName = &quot; + beanName + &quot; 属性名集合 : &quot; </div><div class="line">			+ Arrays.toString(pvs.getPropertyValues()));</div><div class="line">		return pvs;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/07/SpringIOC原理/" data-title="Spring IOC原理 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/03/07/Spring AOP原理/" title="Spring AOP原理">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Spring AOP原理</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/03/05/并发编程详细/"  title="并发编程详细">
+ <strong>下一篇：</strong><br/> 
+ <span>并发编程详细
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/03/07/SpringIOC原理/" data-title="Spring IOC原理" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/07/SpringIOC原理/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考示例源代码"><span class="toc-number">1.</span> <span class="toc-text">参考示例源代码:</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#基本原理："><span class="toc-number">2.</span> <span class="toc-text">基本原理：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring-中核心类和接口"><span class="toc-number">3.</span> <span class="toc-text">Spring 中核心类和接口</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#BeanFactory-interface"><span class="toc-number">3.1.</span> <span class="toc-text">BeanFactory interface</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BeanDefinition"><span class="toc-number">3.2.</span> <span class="toc-text">BeanDefinition</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XmlBeanFactory"><span class="toc-number">3.3.</span> <span class="toc-text">XmlBeanFactory</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DefaultSingletonBeanRegistry"><span class="toc-number">3.4.</span> <span class="toc-text">DefaultSingletonBeanRegistry</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HierarchicalBeanFactory"><span class="toc-number">3.5.</span> <span class="toc-text">HierarchicalBeanFactory</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ApplicationContext"><span class="toc-number">3.6.</span> <span class="toc-text">ApplicationContext</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WebApplicationContext"><span class="toc-number">3.7.</span> <span class="toc-text">WebApplicationContext</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#web容器启动原理："><span class="toc-number">4.</span> <span class="toc-text">web容器启动原理：</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#具体过程"><span class="toc-number">4.1.</span> <span class="toc-text">具体过程</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#通过BeanFactory生产类的流程"><span class="toc-number">5.</span> <span class="toc-text">通过BeanFactory生产类的流程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Tomcat中Spring的bean的创建过程"><span class="toc-number">6.</span> <span class="toc-text">Tomcat中Spring的bean的创建过程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring的Bean生命周期"><span class="toc-number">7.</span> <span class="toc-text">Spring的Bean生命周期</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Bean-本身的方法"><span class="toc-number">7.1.</span> <span class="toc-text">Bean 本身的方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Bean级生命周期接口方法"><span class="toc-number">7.2.</span> <span class="toc-text">Bean级生命周期接口方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#容器级生命周期接口方法"><span class="toc-number">7.3.</span> <span class="toc-text">容器级生命周期接口方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#BeanPostProcessor，在每一个bean调用init方法执行前和执行后执行"><span class="toc-number">7.3.1.</span> <span class="toc-text">BeanPostProcessor，在每一个bean调用init方法执行前和执行后执行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#超级InstantiationAwareBeanPostProcessor接口，分别在实例化、设置属性值、初始化3个过程当中都干预bean的生命周期，甚至可以阻住bean的属性值设置是否执行"><span class="toc-number">7.3.2.</span> <span class="toc-text">超级InstantiationAwareBeanPostProcessor接口，分别在实例化、设置属性值、初始化3个过程当中都干预bean的生命周期，甚至可以阻住bean的属性值设置是否执行</span></a></li></ol></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

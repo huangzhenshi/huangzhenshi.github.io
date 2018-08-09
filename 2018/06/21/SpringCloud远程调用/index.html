@@ -1,0 +1,498 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>SpringCloud远程调用 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="远程调用的方式1.Eureka+Feign（集成了robbion）http://www.ityouknow.com/springcloud/2017/05/12/eureka-provider-constomer.html 2.Eureka+restTemplate通过restTemplate.getForObject(“http://SERVICE-AB/info“, String.class)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringCloud远程调用">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/06/21/SpringCloud远程调用/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="远程调用的方式1.Eureka+Feign（集成了robbion）http://www.ityouknow.com/springcloud/2017/05/12/eureka-provider-constomer.html 2.Eureka+restTemplate通过restTemplate.getForObject(“http://SERVICE-AB/info“, String.class)">
+<meta property="og:updated_time" content="2018-07-06T03:08:41.250Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringCloud远程调用">
+<meta name="twitter:description" content="远程调用的方式1.Eureka+Feign（集成了robbion）http://www.ityouknow.com/springcloud/2017/05/12/eureka-provider-constomer.html 2.Eureka+restTemplate通过restTemplate.getForObject(“http://SERVICE-AB/info“, String.class)">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/06/21/SpringCloud远程调用/" title="SpringCloud远程调用" itemprop="url">SpringCloud远程调用</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-06-21T06:39:29.266Z" itemprop="datePublished"> 发表于 2018-06-21</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#远程调用的方式"><span class="toc-number">1.</span> <span class="toc-text">远程调用的方式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SpringCloud远程调用和dubbo比的特点："><span class="toc-number">2.</span> <span class="toc-text">SpringCloud远程调用和dubbo比的特点：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#服务方配置"><span class="toc-number">3.</span> <span class="toc-text">服务方配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#调用方配置"><span class="toc-number">4.</span> <span class="toc-text">调用方配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#熔断器hystrix"><span class="toc-number">5.</span> <span class="toc-text">熔断器hystrix</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#负载均衡"><span class="toc-number">6.</span> <span class="toc-text">负载均衡</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#常用策略（共种）"><span class="toc-number">6.1.</span> <span class="toc-text">常用策略（共种）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置方法（必须在调用方的程序中配置，服务提供方直接通过相同的applicationName就可以实现集群了）"><span class="toc-number">6.2.</span> <span class="toc-text">配置方法（必须在调用方的程序中配置，服务提供方直接通过相同的applicationName就可以实现集群了）</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="远程调用的方式"><a href="#远程调用的方式" class="headerlink" title="远程调用的方式"></a>远程调用的方式</h1><p>1.Eureka+Feign（集成了robbion）<br><a href="http://www.ityouknow.com/springcloud/2017/05/12/eureka-provider-constomer.html" target="_blank" rel="external">http://www.ityouknow.com/springcloud/2017/05/12/eureka-provider-constomer.html</a></p>
+<p>2.Eureka+restTemplate<br>通过restTemplate.getForObject(“<a href="http://SERVICE-AB/info" target="_blank" rel="external">http://SERVICE-AB/info</a>“, String.class); 来实现远程调用<br><a href="https://blog.csdn.net/small_to_large/article/details/77836672" target="_blank" rel="external">https://blog.csdn.net/small_to_large/article/details/77836672</a></p>
+<h1 id="SpringCloud远程调用和dubbo比的特点："><a href="#SpringCloud远程调用和dubbo比的特点：" class="headerlink" title="SpringCloud远程调用和dubbo比的特点："></a>SpringCloud远程调用和dubbo比的特点：</h1><p>1.优点</p>
+<ul>
+<li>少配置，引入jar包和极少的配置实现远程调用</li>
+<li>用java的eureka替代zookeeper实现注册发现</li>
+<li>引入多个provider的话（需要spring.application.name参数一样），默认轮询做负载均衡</li>
+</ul>
+<h1 id="服务方配置"><a href="#服务方配置" class="headerlink" title="服务方配置"></a>服务方配置</h1><ol>
+<li><p>引入eureka的依赖jar包</p>
+</li>
+<li><p>启动类@EnableDiscoveryClient 添加允许发现既可以对外提供服务</p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@EnableDiscoveryClient</div><div class="line">@SpringBootApplication</div><div class="line">public class PsmUserApplication &#123;</div><div class="line">	public static void main(String[] args) &#123;</div><div class="line">		SpringApplication.run(PsmUserApplication.class, args);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ol>
+<li><p>配置spring.application.name参数和eureka.client.serviceUrl.defaultZone参数</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">eureka.client.serviceUrl.defaultZone= http://localhost:8761/eureka/</div><div class="line">spring.application.name=spring-cloud-psm-user</div></pre></td></tr></table></figure>
+</li>
+<li><p>Controller里面开放接口，和设置参数</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Controller</div><div class="line">public class UserController &#123;</div><div class="line">	@Resource</div><div class="line">	private UserServiceInterface userService;</div><div class="line">	</div><div class="line">	@RequestMapping(&quot;/findByUsername&quot;)</div><div class="line">	@ResponseBody</div><div class="line">	public User findByUsername(@RequestParam String username)&#123;</div><div class="line">		return userService.findByUsername(username);	</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="调用方配置"><a href="#调用方配置" class="headerlink" title="调用方配置"></a>调用方配置</h1><ol>
+<li><p>配置eureka的依赖、spring-cloud-starter-feign jar包依赖</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">	&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</div><div class="line">	&lt;artifactId&gt;spring-cloud-starter-eureka&lt;/artifactId&gt;</div><div class="line">&lt;/dependency&gt;</div><div class="line"></div><div class="line">&lt;dependency&gt;</div><div class="line">	&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</div><div class="line">	&lt;artifactId&gt;spring-cloud-starter-feign&lt;/artifactId&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>启动类配置@EnableDiscoveryClient 和@EnableFeignClients </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@SpringBootApplication</div><div class="line">@EnableDiscoveryClient</div><div class="line">@EnableFeignClients</div><div class="line">public class PsmApplication &#123;</div><div class="line">	public static void main(String[] args) &#123;</div><div class="line">		SpringApplication.run(PsmApplication.class, args);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>写接口，并在注解上指定调用的RPC的应用程序名 spring.application.name<br>注意这个bean不需要Controller注解，会被Spring识别，一定要添加@RequestParam否则会接收不到参数</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">import account_huang.entity.User;</div><div class="line"></div><div class="line">@FeignClient(name= &quot;spring-cloud-psm-user&quot;)</div><div class="line">public interface UserServiceRemote &#123;</div><div class="line">	@RequestMapping(value = &quot;/findByUsername&quot;)</div><div class="line">	 User findByUsername(@RequestParam(value = &quot;username&quot;) String username);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>调用,直接注入类.方法即可</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Resource</div><div class="line">private UserServiceRemote userServiceRemote;</div><div class="line">protected AuthenticationInfo doGetAuthenticationInfo() &#123;</div><div class="line">    String username = (String)token.getPrincipal();</div><div class="line">    User user=userServiceRemote.findByUsername(username);</div><div class="line"></div><div class="line">    if(user == null)&#123;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line">    return info;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="熔断器hystrix"><a href="#熔断器hystrix" class="headerlink" title="熔断器hystrix"></a>熔断器hystrix</h1><p><a href="http://www.ityouknow.com/springcloud/2017/05/16/springcloud-hystrix.html" target="_blank" rel="external">http://www.ityouknow.com/springcloud/2017/05/16/springcloud-hystrix.html</a></p>
+<ol>
+<li>熔断作用<br>实现简单的配置且不需要额外的依赖可以实现的功能：</li>
+</ol>
+<ul>
+<li>当方法调用失败次数达到一定规则（一般是远程调用），会触发熔断，按照熔断类的方法执行</li>
+<li>如果错误类恢复之后，熔断会自动发现且重新正常运行<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">feign.hystrix.enabled=true</div><div class="line"></div><div class="line">@FeignClient(name= &quot;spring-cloud-producer&quot;,fallback = HelloRemoteHystrix.class)</div><div class="line">public interface HelloRemote &#123;</div><div class="line">    @RequestMapping(value = &quot;/hello&quot;)</div><div class="line">    public String hello(@RequestParam(value = &quot;name&quot;) String name);</div><div class="line">&#125;</div><div class="line"></div><div class="line">@Component</div><div class="line">public class HelloRemoteHystrix implements HelloRemote&#123;</div><div class="line">    @Override</div><div class="line">    public String hello(@RequestParam(value = &quot;name&quot;) String name) &#123;</div><div class="line">        return &quot;hello&quot; +name+&quot;, this messge send failed &quot;;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<ol>
+<li>图形化熔断界面 Hystrix-dashboard Turbine<br>Hystrix-dashboard 提供单个应用的熔断report，turbine提供多个应用的熔断监控界面</li>
+</ol>
+<h1 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h1><h2 id="常用策略（共种）"><a href="#常用策略（共种）" class="headerlink" title="常用策略（共种）"></a>常用策略（共种）</h2><ul>
+<li>RoundRobinRule</li>
+<li>RandomRule</li>
+<li>RetryRule</li>
+</ul>
+<h2 id="配置方法（必须在调用方的程序中配置，服务提供方直接通过相同的applicationName就可以实现集群了）"><a href="#配置方法（必须在调用方的程序中配置，服务提供方直接通过相同的applicationName就可以实现集群了）" class="headerlink" title="配置方法（必须在调用方的程序中配置，服务提供方直接通过相同的applicationName就可以实现集群了）"></a>配置方法（必须在调用方的程序中配置，服务提供方直接通过相同的applicationName就可以实现集群了）</h2><ol>
+<li><p>通过Feign方法远程调用的话，直接在Spring当中配置策略即可</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&#123;Application-Name&#125;.ribbon.NFLoadBalancerRuleClassName=com.netflix.loadbalancer.RandomRule</div><div class="line"></div><div class="line">比如：</div><div class="line">spring-cloud-psm-user.ribbon.NFLoadBalancerRuleClassName=com.netflix.loadbalancer.RandomRule</div></pre></td></tr></table></figure>
+</li>
+<li><p>通过手动Ribbon配置<br>源码参考这个<br><a href="https://www.kancloud.cn/fymod/springcloud/536930" target="_blank" rel="external">https://www.kancloud.cn/fymod/springcloud/536930</a><br>类型和使用参考这个<br><a href="https://blog.csdn.net/rickiyeat/article/details/64918756" target="_blank" rel="external">https://blog.csdn.net/rickiyeat/article/details/64918756</a></p>
+</li>
+</ol>
+<ul>
+<li><p>需要在启动类里面返回一个IRule的接口实现类</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@SpringBootApplication</div><div class="line">@EnableDiscoveryClient</div><div class="line">public class SpringcloudRibbonApplication &#123;</div><div class="line">	public static void main(String[] args) &#123;</div><div class="line">		SpringApplication.run(SpringcloudRibbonApplication.class, args);</div><div class="line">	&#125;</div><div class="line">	@Bean</div><div class="line">    @LoadBalanced</div><div class="line">    RestTemplate restTemplate() &#123;</div><div class="line">        return new RestTemplate();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Bean</div><div class="line">    public IRule ribbonRule() &#123;</div><div class="line">        return new RandomRule();//这里配置策略，和配置文件对应</div><div class="line">    &#125;</div><div class="line">	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>通过默认注入的estTemplate实现远程调用（SERVICE-1是注册的服务方的applicationName）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Service</div><div class="line">public class HelloService &#123;</div><div class="line">    @Autowired</div><div class="line">    RestTemplate restTemplate;</div><div class="line"></div><div class="line">    public String hiService(String name) &#123;</div><div class="line">        return restTemplate.getForObject(&quot;http://SERVICE-1/hi?name=&quot;+name,String.class);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/06/21/SpringCloud远程调用/" data-title="SpringCloud远程调用 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/06/22/SpringCloud网关/" title="SpringCloud网关Zuul">
+  <strong>上一篇：</strong><br/>
+  <span>
+  SpringCloud网关Zuul</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/06/21/SpringCloud开篇/"  title="SpringCloud开篇">
+ <strong>下一篇：</strong><br/> 
+ <span>SpringCloud开篇
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/06/21/SpringCloud远程调用/" data-title="SpringCloud远程调用" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/06/21/SpringCloud远程调用/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#远程调用的方式"><span class="toc-number">1.</span> <span class="toc-text">远程调用的方式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SpringCloud远程调用和dubbo比的特点："><span class="toc-number">2.</span> <span class="toc-text">SpringCloud远程调用和dubbo比的特点：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#服务方配置"><span class="toc-number">3.</span> <span class="toc-text">服务方配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#调用方配置"><span class="toc-number">4.</span> <span class="toc-text">调用方配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#熔断器hystrix"><span class="toc-number">5.</span> <span class="toc-text">熔断器hystrix</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#负载均衡"><span class="toc-number">6.</span> <span class="toc-text">负载均衡</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#常用策略（共种）"><span class="toc-number">6.1.</span> <span class="toc-text">常用策略（共种）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置方法（必须在调用方的程序中配置，服务提供方直接通过相同的applicationName就可以实现集群了）"><span class="toc-number">6.2.</span> <span class="toc-text">配置方法（必须在调用方的程序中配置，服务提供方直接通过相同的applicationName就可以实现集群了）</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

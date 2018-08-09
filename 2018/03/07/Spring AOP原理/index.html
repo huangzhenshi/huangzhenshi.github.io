@@ -1,0 +1,480 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Spring AOP原理 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="参考示例源代码:https://github.com/huangzhenshi/SpringFreamworkDemo/tree/master https://zhuanlan.zhihu.com/p/29483023  JDK动态代理(运行时编译) CGLib字节码加强(运行时编译) AspectJ(编译时增强的AOP框架) Spring代理模式的运用场景: 操作日志、事务控制、异常处理（AOP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring AOP原理">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/07/Spring AOP原理/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="参考示例源代码:https://github.com/huangzhenshi/SpringFreamworkDemo/tree/master https://zhuanlan.zhihu.com/p/29483023  JDK动态代理(运行时编译) CGLib字节码加强(运行时编译) AspectJ(编译时增强的AOP框架) Spring代理模式的运用场景: 操作日志、事务控制、异常处理（AOP">
+<meta property="og:updated_time" content="2018-04-10T03:26:13.882Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring AOP原理">
+<meta name="twitter:description" content="参考示例源代码:https://github.com/huangzhenshi/SpringFreamworkDemo/tree/master https://zhuanlan.zhihu.com/p/29483023  JDK动态代理(运行时编译) CGLib字节码加强(运行时编译) AspectJ(编译时增强的AOP框架) Spring代理模式的运用场景: 操作日志、事务控制、异常处理（AOP">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/03/07/Spring AOP原理/" title="Spring AOP原理" itemprop="url">Spring AOP原理</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-03-07T09:51:34.451Z" itemprop="datePublished"> 发表于 2018-03-07</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考示例源代码"><span class="toc-number">1.</span> <span class="toc-text">参考示例源代码:</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JDK动态代理模式-VS-CGLIB"><span class="toc-number">2.</span> <span class="toc-text">JDK动态代理模式 VS CGLIB</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring-AOP会根据配置动态选择"><span class="toc-number">3.</span> <span class="toc-text">Spring AOP会根据配置动态选择</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#使用"><span class="toc-number">4.</span> <span class="toc-text">使用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JDK动态代理实现"><span class="toc-number">5.</span> <span class="toc-text">JDK动态代理实现</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CGLib实现"><span class="toc-number">6.</span> <span class="toc-text">CGLib实现</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#自定义注解的使用"><span class="toc-number">7.</span> <span class="toc-text">自定义注解的使用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Aspect"><span class="toc-number">8.</span> <span class="toc-text">Aspect</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="参考示例源代码"><a href="#参考示例源代码" class="headerlink" title="参考示例源代码:"></a>参考示例源代码:</h1><p><a href="https://github.com/huangzhenshi/SpringFreamworkDemo/tree/master">https://github.com/huangzhenshi/SpringFreamworkDemo/tree/master</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/29483023" target="_blank" rel="external">https://zhuanlan.zhihu.com/p/29483023</a></p>
+<ul>
+<li>JDK动态代理(运行时编译)</li>
+<li>CGLib字节码加强(运行时编译)</li>
+<li>AspectJ(编译时增强的AOP框架)</li>
+<li>Spring代理模式的运用场景: 操作日志、事务控制、异常处理（AOP ThrowsAdvice）、权限认证、缓存</li>
+</ul>
+<h1 id="JDK动态代理模式-VS-CGLIB"><a href="#JDK动态代理模式-VS-CGLIB" class="headerlink" title="JDK动态代理模式 VS CGLIB"></a>JDK动态代理模式 VS CGLIB</h1><ul>
+<li>JDK动态代理 反射原理的类依赖其接口，代理接口的实现方法</li>
+<li>CGLIB，字节码增强技术，根据代理类实现一个增强的子类采用方法拦截的技术拦截所有父类方法的调用，并顺势织入横切逻辑</li>
+</ul>
+<h1 id="Spring-AOP会根据配置动态选择"><a href="#Spring-AOP会根据配置动态选择" class="headerlink" title="Spring AOP会根据配置动态选择"></a>Spring AOP会根据配置动态选择</h1><p>proxy-target-class=true，全部都用CGLIB，false则接口类用反射，非接口类用CGLIB</p>
+<h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><ul>
+<li>Pointcut（切点）：指定在哪些类的哪些方法上织入横切逻辑</li>
+<li>Advice（增强）：描述横切逻辑和方法的具体织入点（方法前、方法后、方法的两端等）</li>
+<li>Advisor（切面）：将Pointcut和Advice两者组装起来。有了Advisor的信息，Spring就可以利用JDK或CGLib的动态代理技术采用统一的方式为目标Bean创建织入切面的代理对象了</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;aop:config expose-proxy=&quot;true&quot; proxy-target-class=&quot;true&quot;&gt;</div><div class="line">       &lt;aop:pointcut id=&quot;txPointcut&quot; expression=&quot;execution(* com.test.service..*.*(..))&quot;/&gt;</div><div class="line">       &lt;aop:advisor pointcut-ref=&quot;txPointcut&quot; advice-ref=&quot;txAdvice&quot;/&gt;</div><div class="line">   &lt;/aop:config&gt;</div></pre></td></tr></table></figure>
+<h1 id="JDK动态代理实现"><a href="#JDK动态代理实现" class="headerlink" title="JDK动态代理实现"></a>JDK动态代理实现</h1><p><a href="https://www.cnblogs.com/MOBIN/p/5597215.html" target="_blank" rel="external">https://www.cnblogs.com/MOBIN/p/5597215.html</a><br>通过实现InvocationHandler接口的invoke方法，来实现代理编程</p>
+<ol>
+<li>被代理类通过反射获取被代理类的接口和ClassLoader</li>
+<li>获取接口代理类</li>
+<li>根据接口代理类获取接口的构造函数</li>
+<li>根据构造函数引入被代理类，最终获取代理类<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">//获取动态代理类</div><div class="line">Class proxyClazz = Proxy.getProxyClass(Hello.class.getClassLoader(),Hello.class.getInterfaces());</div><div class="line"></div><div class="line">//获得代理类的构造函数，并传入参数类型InvocationHandler.class</div><div class="line">Constructor constructor = proxyClazz.getConstructor(InvocationHandler.class);</div><div class="line"></div><div class="line">//通过构造函数来创建动态代理对象，将自定义的InvocationHandler实例传入</div><div class="line">IHello iHello = (IHello) constructor.newInstance(new HWInvocationHandler(new Hello()));</div><div class="line"></div><div class="line">//通过代理对象调用目标方法</div><div class="line">iHello.sayHello();</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>通过实现InvocationHandler接口的invoke方法，来实现代理编程<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class HWInvocationHandler implements InvocationHandler&#123;</div><div class="line">    //目标对象</div><div class="line">    private Object target;</div><div class="line">    public HWInvocationHandler(Object target)&#123;</div><div class="line">        this.target = target;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable &#123;</div><div class="line">        System.out.println(&quot;------插入前置通知代码-------------&quot;);</div><div class="line">        //执行相应的目标方法</div><div class="line">        Object rs = method.invoke(target,args);</div><div class="line">        System.out.println(&quot;------插入后置处理代码-------------&quot;);</div><div class="line">        return rs;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="CGLib实现"><a href="#CGLib实现" class="headerlink" title="CGLib实现"></a>CGLib实现</h1><ul>
+<li>通过实现MethodInterceptor的intercept方法，来对所有的代理类进行代理操作。</li>
+<li>具体涉及到继承的增强类子类Enhancer类。并设置子类的方法调用触发器<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class CglibProxy implements MethodInterceptor &#123;</div><div class="line">    // 被代理对象</div><div class="line">    Object targetObject;</div><div class="line"></div><div class="line">    //参数为被代理类，返回结果为代理类</div><div class="line">    public Object getProxyObject(Object object) &#123;</div><div class="line">        this.targetObject = object;</div><div class="line">        //增强器，动态代码生成器</div><div class="line">        Enhancer enhancer=new Enhancer();</div><div class="line">        //回调方法</div><div class="line">        enhancer.setCallback(this);</div><div class="line">        //设置生成类的父类类型</div><div class="line">        enhancer.setSuperclass(targetObject.getClass());</div><div class="line">        //动态生成字节码并返回代理对象</div><div class="line">        return enhancer.create();</div><div class="line">    &#125;</div><div class="line">    // 拦截方法</div><div class="line">    public Object intercept(Object object, Method method, Object[] args, MethodProxy methodProxy) throws Throwable &#123;</div><div class="line">    	System.out.println(&quot;方法调用前&quot;);</div><div class="line">        // 调用方法</div><div class="line">        Object result = methodProxy.invoke(targetObject, args);</div><div class="line">        System.out.println(&quot;方法调用后&quot;);</div><div class="line">        return result;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="自定义注解的使用"><a href="#自定义注解的使用" class="headerlink" title="自定义注解的使用"></a>自定义注解的使用</h1><p><a href="https://www.jianshu.com/p/7dcd59bdbb0a" target="_blank" rel="external">https://www.jianshu.com/p/7dcd59bdbb0a</a></p>
+<ul>
+<li>通过元注解给注解做修饰</li>
+<li>在对应的地方使用注解（可以是类上加注解、方法上加注解、属性上加注解)</li>
+<li>通过反射获取到目标（类、方法、属性），并调用 <em>*</em>.getAnnotation()，从而获取注解类</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Target(&#123;ElementType.METHOD, ElementType.FIELD&#125;)</div><div class="line">@Retention(RetentionPolicy.RUNTIME)</div><div class="line">public @interface MyMessage &#123;</div><div class="line">	  	String name() default &quot;sam&quot;;</div><div class="line">	    int num() default 0;</div><div class="line">	    String desc();</div><div class="line">&#125;</div><div class="line"></div><div class="line">public class AnnotationTest &#123;</div><div class="line">	@MyMessage(num = 10, desc = &quot;参数a&quot;)</div><div class="line">    private static int a;</div><div class="line"></div><div class="line"></div><div class="line">    @MyMessage(name = &quot;Sam test&quot;, desc = &quot;测试方法test&quot;)</div><div class="line">    public void test() &#123;</div><div class="line">        System.out.println(&quot;test&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public static void main(String[] args) throws Throwable&#123;</div><div class="line">            //加载annotationTest.class类</div><div class="line">            Class clazz = Class.forName(&quot;com.test.aop.自定义注解.AnnotationTest&quot;);</div><div class="line">            //获取属性</div><div class="line">            Field[] fields = clazz.getDeclaredFields();</div><div class="line">            //遍历属性</div><div class="line">            for (Field field : fields) &#123;</div><div class="line">                MyMessage myMessage = field.getAnnotation(MyMessage.class);</div><div class="line">                System.out.println(&quot;name:&quot; + myMessage.name() + &quot;  num:&quot; + myMessage.num() + &quot;  desc:&quot; + myMessage.desc());</div><div class="line">            &#125;</div><div class="line">            //获取类中的方法</div><div class="line">            Method[] methods = clazz.getMethods();</div><div class="line">            //遍历方法</div><div class="line">            for (Method method : methods) &#123;</div><div class="line">                //判断方法是否带有MyMessage注解</div><div class="line">                if (method.isAnnotationPresent(MyMessage.class)) &#123;</div><div class="line">                    // 获取所有注解 method.getDeclaredAnnotations();</div><div class="line">                    // 获取MyMessage注解</div><div class="line">                    MyMessage myMessage = method.getAnnotation(MyMessage.class);</div><div class="line">                    System.out.println(&quot;name:&quot; + myMessage.name() + &quot;  num:&quot; + myMessage.num() + &quot;  desc:&quot; + myMessage.desc());</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h1 id="Aspect"><a href="#Aspect" class="headerlink" title="Aspect"></a>Aspect</h1><p><a href="https://www.cnblogs.com/magicalSam/p/7161942.html" target="_blank" rel="external">https://www.cnblogs.com/magicalSam/p/7161942.html</a><br>原理：通过自定义注解+Aspect技术实现AOP代理</p>
+<ul>
+<li>通过@Aspect注解使该类成为切面类</li>
+<li>通过@Pointcut 指定切入点 ，这里指定的切入点为MyLog注解类型，也就是被@MyLog注解修饰的方法，进入该切入点。</li>
+<li>@Before 前置通知：在某连接点之前执行的通知，但这个通知不能阻止连接点之前的执行流程（除非它抛出一个异常）。</li>
+<li>@Around 环绕通知：可以实现方法执行前后操作，需要在方法内执行point.proceed(); 并返回结果。</li>
+<li>@AfterReturning 后置通知：在某连接点正常完成后执行的通知：例如，一个方法没有抛出任何异常，正常返回。</li>
+<li>@AfterThrowing 异常通知：在方法抛出异常退出时执行的通知。</li>
+<li>@After 后置通知：在某连接点正常完成后执行的通知：例如，一个方法没有抛出任何异常，正常返回</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Aspect </div><div class="line">@Component</div><div class="line">public class MyLogAspect &#123;</div><div class="line">	 //切入点</div><div class="line">    @Pointcut(value = &quot;@annotation(com.test.aop.aspectj.MyLog)&quot;)</div><div class="line">    private void pointcut() &#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line">     //pointcut() 设置切点，也就是aspect绑定Mylog注解的一个纽带</div><div class="line">     //@annotation(myLog) 注入当前的mylog，这样才可以正常的mylog.requestUrl了</div><div class="line">     @Around(value = &quot;pointcut()&amp;&amp; @annotation(myLog)&quot;)</div><div class="line">     public Object around(ProceedingJoinPoint point, MyLog myLog) &#123;</div><div class="line"></div><div class="line">         System.out.println(&quot;++++执行了around方法++++&quot;);</div><div class="line">         //拦截的类名</div><div class="line">         Class clazz = point.getTarget().getClass();</div><div class="line">         //拦截的方法</div><div class="line">         Method method = ((MethodSignature) point.getSignature()).getMethod();</div><div class="line"></div><div class="line">         System.out.println(&quot;执行了 类:&quot; + clazz + &quot; 方法:&quot; + method + &quot; 自定义请求地址:&quot;+myLog.requestUrl());</div><div class="line"></div><div class="line">         try &#123;</div><div class="line">        	 Object result=point.proceed();</div><div class="line">        	 System.out.println(&quot;++++执行了around方法结束++++&quot;);</div><div class="line">             return  result;//执行程序</div><div class="line">         &#125; catch (Throwable throwable) &#123;</div><div class="line">             throwable.printStackTrace();</div><div class="line">             return throwable.getMessage();</div><div class="line">         &#125;</div><div class="line">     &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/07/Spring AOP原理/" data-title="Spring AOP原理 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/03/08/SpringMVC原理/" title="SpringMVC原理">
+  <strong>上一篇：</strong><br/>
+  <span>
+  SpringMVC原理</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/03/07/SpringIOC原理/"  title="Spring IOC原理">
+ <strong>下一篇：</strong><br/> 
+ <span>Spring IOC原理
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/03/07/Spring AOP原理/" data-title="Spring AOP原理" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/07/Spring AOP原理/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考示例源代码"><span class="toc-number">1.</span> <span class="toc-text">参考示例源代码:</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JDK动态代理模式-VS-CGLIB"><span class="toc-number">2.</span> <span class="toc-text">JDK动态代理模式 VS CGLIB</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring-AOP会根据配置动态选择"><span class="toc-number">3.</span> <span class="toc-text">Spring AOP会根据配置动态选择</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#使用"><span class="toc-number">4.</span> <span class="toc-text">使用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JDK动态代理实现"><span class="toc-number">5.</span> <span class="toc-text">JDK动态代理实现</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CGLib实现"><span class="toc-number">6.</span> <span class="toc-text">CGLib实现</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#自定义注解的使用"><span class="toc-number">7.</span> <span class="toc-text">自定义注解的使用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Aspect"><span class="toc-number">8.</span> <span class="toc-text">Aspect</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

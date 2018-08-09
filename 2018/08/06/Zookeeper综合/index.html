@@ -1,0 +1,530 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Zookeeper综合 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="参考资料超级详细的一篇博客，整合了ZK的各个特性https://segmentfault.com/a/1190000014479433 zk的入门级官网材料http://ifeve.com/zookeeper-talk-quick-start/ zk的配置文件详细说明（包括集群配置）https://blog.csdn.net/u014394255/article/details/53980656">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zookeeper综合">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/06/Zookeeper综合/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="参考资料超级详细的一篇博客，整合了ZK的各个特性https://segmentfault.com/a/1190000014479433 zk的入门级官网材料http://ifeve.com/zookeeper-talk-quick-start/ zk的配置文件详细说明（包括集群配置）https://blog.csdn.net/u014394255/article/details/53980656">
+<meta property="og:updated_time" content="2018-08-08T09:04:09.856Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Zookeeper综合">
+<meta name="twitter:description" content="参考资料超级详细的一篇博客，整合了ZK的各个特性https://segmentfault.com/a/1190000014479433 zk的入门级官网材料http://ifeve.com/zookeeper-talk-quick-start/ zk的配置文件详细说明（包括集群配置）https://blog.csdn.net/u014394255/article/details/53980656">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/08/06/Zookeeper综合/" title="Zookeeper综合" itemprop="url">Zookeeper综合</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-08-06T05:41:21.744Z" itemprop="datePublished"> 发表于 2018-08-06</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#zk的特点"><span class="toc-number">2.</span> <span class="toc-text">zk的特点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实战核心功能"><span class="toc-number">3.</span> <span class="toc-text">实战核心功能</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#运用场景说明"><span class="toc-number">4.</span> <span class="toc-text">运用场景说明</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Zookeeper通知机制"><span class="toc-number">5.</span> <span class="toc-text">Zookeeper通知机制</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ZK的数据存储机制（内存-快照-事务日志）"><span class="toc-number">6.</span> <span class="toc-text">ZK的数据存储机制（内存+快照+事务日志）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#安装和配置"><span class="toc-number">7.</span> <span class="toc-text">安装和配置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#单节点配置zoo-cfg"><span class="toc-number">7.1.</span> <span class="toc-text">单节点配置zoo.cfg</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#集群配置zoo-cfg"><span class="toc-number">7.2.</span> <span class="toc-text">集群配置zoo.cfg</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#常见命令和启动"><span class="toc-number">7.3.</span> <span class="toc-text">常见命令和启动</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#zk客户端命令操作"><span class="toc-number">8.</span> <span class="toc-text">zk客户端命令操作</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JavaAPI操作zk"><span class="toc-number">9.</span> <span class="toc-text">JavaAPI操作zk</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Znode的特性"><span class="toc-number">10.</span> <span class="toc-text">Znode的特性</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#分布式队列的实现"><span class="toc-number">11.</span> <span class="toc-text">分布式队列的实现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#同步队列的实现"><span class="toc-number">11.1.</span> <span class="toc-text">同步队列的实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FIFO队列的实现"><span class="toc-number">11.2.</span> <span class="toc-text">FIFO队列的实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FIFO代码分析"><span class="toc-number">11.3.</span> <span class="toc-text">FIFO代码分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#核心方法"><span class="toc-number">11.4.</span> <span class="toc-text">核心方法</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p>超级详细的一篇博客，整合了ZK的各个特性<br><a href="https://segmentfault.com/a/1190000014479433" target="_blank" rel="external">https://segmentfault.com/a/1190000014479433</a></p>
+<p>zk的入门级官网材料<br><a href="http://ifeve.com/zookeeper-talk-quick-start/" target="_blank" rel="external">http://ifeve.com/zookeeper-talk-quick-start/</a></p>
+<p>zk的配置文件详细说明（包括集群配置）<br><a href="https://blog.csdn.net/u014394255/article/details/53980656" target="_blank" rel="external">https://blog.csdn.net/u014394255/article/details/53980656</a></p>
+<p>ibm官方中文教程，教你如何实现队列、选举和共享锁（含代码示例）<br><a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-zookeeper/" target="_blank" rel="external">https://www.ibm.com/developerworks/cn/opensource/os-cn-zookeeper/</a></p>
+<h1 id="zk的特点"><a href="#zk的特点" class="headerlink" title="zk的特点"></a>zk的特点</h1><ol>
+<li>内存存储数据，效率高。采取内存读取和日志加快照的方式，保证高速读写又能持久化。</li>
+<li>节点命名唯一</li>
+<li>监听机制</li>
+</ol>
+<h1 id="实战核心功能"><a href="#实战核心功能" class="headerlink" title="实战核心功能"></a>实战核心功能</h1><ol>
+<li>注册中心和高可用的实现（Dubbo中的实现原理、Solr_Cloud中的实现）</li>
+<li>分布式锁的实现</li>
+<li>队列的实现（同步队列和FIFO队列）</li>
+<li>ZK的集群管理和选举功能</li>
+<li>集群和高可用的实现</li>
+</ol>
+<h1 id="运用场景说明"><a href="#运用场景说明" class="headerlink" title="运用场景说明"></a>运用场景说明</h1><ol>
+<li>zookeeper在dubbo中的作用（Dubbo也可以选Redis作为注册中心)<br><a href="https://blog.csdn.net/hdu09075340/article/details/71123605" target="_blank" rel="external">https://blog.csdn.net/hdu09075340/article/details/71123605</a><br>创建根节点为dubbo，二级节点为暴露的接口名、三级节点为providers和consumers、四级节点为具体真正工作的provider和consumer。</li>
+</ol>
+<ul>
+<li>consumer通过zk的路径节点找到对应provider，从而实现RPC调用</li>
+<li>如果provider发生变动，会被zk监听到，zk会通知到各个consumers</li>
+</ul>
+<ol>
+<li><p>配置中心的实现<br>多个ZKClient对某个特定的ZNode绑定监听，如果ZNode的内容发送变化（也就是配置发生变化），调用各自watcher的process方法</p>
+</li>
+<li><p>ZK的集群管理和选举的功能</p>
+</li>
+</ol>
+<ul>
+<li>选主：<br>启动一个ZKClinet对某节点下注册的所有ServerNode，排序选最小的一个作为Master，在该Master上绑定一个监听，当该Master挂了的时候会触发监听，重新选Master，实现了集群中一定有一个Master节点的功能</li>
+<li>Master管理：<br>对非Master节点都绑定监听，如果发生变化，修改或者宕机了，都会触发监听。对根目录节点绑定监听，如果创建了新的节点，也就是引入了新的机器，也触发策略。</li>
+</ul>
+<h1 id="Zookeeper通知机制"><a href="#Zookeeper通知机制" class="headerlink" title="Zookeeper通知机制"></a>Zookeeper通知机制</h1><p>客户端注册监听它关心的目录节点，当目录节点发生变化（数据改变、被删除、子目录节点增加删除）时，zookeeper会通知客户端。</p>
+<h1 id="ZK的数据存储机制（内存-快照-事务日志）"><a href="#ZK的数据存储机制（内存-快照-事务日志）" class="headerlink" title="ZK的数据存储机制（内存+快照+事务日志）"></a>ZK的数据存储机制（内存+快照+事务日志）</h1><p><a href="https://www.jianshu.com/p/8fba732af0cd" target="_blank" rel="external">https://www.jianshu.com/p/8fba732af0cd</a></p>
+<ol>
+<li><p>DataTree<br>DataTree是内存数据存储的核心，是一个树结构，代表了内存中一份完整的数据。DataTree不包含任何与网络、客户端连接及请求处理相关的业务逻辑，是一个独立的组件。</p>
+</li>
+<li><p>DataNode<br>DataNode是数据存储的最小单元，其内部除了保存了结点的数据内容、ACL列表、节点状态之外，还记录了父节点的引用和子节点列表两个属性，其也提供了对子节点列表进行操作的接口。</p>
+</li>
+<li><p>ZKDatabase<br>Zookeeper的内存数据库，管理Zookeeper的所有会话、DataTree存储和事务日志。ZKDatabase会定时向磁盘dump快照数据，同时在Zookeeper启动时，会通过磁盘的事务日志和快照文件恢复成一个完整的内存数据库。</p>
+</li>
+</ol>
+<h1 id="安装和配置"><a href="#安装和配置" class="headerlink" title="安装和配置"></a>安装和配置</h1><h2 id="单节点配置zoo-cfg"><a href="#单节点配置zoo-cfg" class="headerlink" title="单节点配置zoo.cfg"></a>单节点配置zoo.cfg</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"># 心跳时间2s</div><div class="line">tickTime=2000</div><div class="line"></div><div class="line">#Zookeeper 保存数据的目录，默认情况下，Zookeeper 将写数据的日志文件也保存在这个目录里</div><div class="line">dataDir=/tmp/zookeeper</div><div class="line"></div><div class="line">#ZK的日志路径，默认是log4j.properties，可以配置的</div><div class="line">#在conf/log4j.properties</div><div class="line">dataLogDir=/Users/apple/zookeeper/logs    </div><div class="line"></div><div class="line">#客户端连接 Zookeeper 服务器的端口</div><div class="line">clientPort=2181</div></pre></td></tr></table></figure>
+<h2 id="集群配置zoo-cfg"><a href="#集群配置zoo-cfg" class="headerlink" title="集群配置zoo.cfg"></a>集群配置zoo.cfg</h2><ol>
+<li>注意3个端口作用不同：</li>
+</ol>
+<ul>
+<li>clientPort是ZK和使用的客户端之间通讯的端口</li>
+<li>集群中本机IP:Master通讯端口:Master通讯失败发起Follower重新选举的通讯端口</li>
+</ul>
+<ol>
+<li>在上面配置的dataDir目录下创建myid文件，填写这个节点上的id号，就是server.A=B：C：D配置的A那个号码 <figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">#zk集群配置的时候，和zk集群服务器连接通讯的最长时间为5个心跳时间，而不是和用户的连接时间 </div><div class="line">initLimit=5</div><div class="line"></div><div class="line">#Leader 与 Follower 之间发送消息，请求和应答时间长度，最长不能超过多少个 tickTime 的时间长度</div><div class="line">syncLimit=5</div><div class="line"></div><div class="line">#server.A=B：C：D</div><div class="line">#其中 A 是一个数字，表示这个是第几号服务器</div><div class="line">#B 是这个服务器的 ip 地址</div><div class="line">#C 表示的是这个服务器与集群中的 Leader 服务器交换信息的端口(上面的端口Y)</div><div class="line">#D 表示的是万一集群中的 Leader 服务器挂了，需要一个端口来重新进行选举，选出一个新的 Leader，而这个端口就是用来执行选举时服务器相互通信的端口(上面的端口Z)。如果是伪集群的配置方式，由于 B 都是一样，所以不同的 Zookeeper 实例通信端口号不能一样，所以要给它们分配不同的端口号</div><div class="line">server.1=192.168.238.133:2888:3888  </div><div class="line">server.2=192.168.238.133:2889:3889  </div><div class="line">server.3=192.168.238.133:2890:3890</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="常见命令和启动"><a href="#常见命令和启动" class="headerlink" title="常见命令和启动"></a>常见命令和启动</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">bin/zkServer.sh start</div><div class="line">bin/zkServer.sh stop</div><div class="line">bin/zkServer.sh status</div><div class="line"></div><div class="line">zkServer.sh     ： ZooKeeper服务器的启动、停止和重启脚本；</div><div class="line">zkCli.sh        ： ZooKeeper的简易客户端；</div><div class="line">zkEnv.sh        ： 设置ZooKeeper的环境变量；</div><div class="line">zkCleanup.sh    ： 清理ZooKeeper历史数据，包括事务日志文件和快照数据文件</div></pre></td></tr></table></figure>
+<h1 id="zk客户端命令操作"><a href="#zk客户端命令操作" class="headerlink" title="zk客户端命令操作"></a>zk客户端命令操作</h1><p>先启动zkcli<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"># 创建/testInput节点，设置值为inputData</div><div class="line">create /testInput “inputData”</div><div class="line"># 获取/testInput中的值</div><div class="line">get /testInput</div><div class="line"></div><div class="line">    stat path [watch]</div><div class="line">    set path data [version]</div><div class="line">    ls path [watch]</div><div class="line">    delquota [-n|-b] path</div><div class="line">    ls2 path [watch]</div><div class="line">    setAcl path acl</div><div class="line">    setquota -n|-b val path</div><div class="line">    history</div><div class="line">    redo cmdno</div><div class="line">    printwatches on|off</div><div class="line">    delete path [version]</div><div class="line">    sync path</div><div class="line">    listquota path</div><div class="line">    rmr path</div><div class="line">    get path [watch]</div><div class="line">    create [-s] [-e] path data acl</div><div class="line">    addauth scheme auth</div><div class="line">    quit</div><div class="line">    getAcl path</div><div class="line">    close</div><div class="line">    connect host:port</div></pre></td></tr></table></figure></p>
+<h1 id="JavaAPI操作zk"><a href="#JavaAPI操作zk" class="headerlink" title="JavaAPI操作zk"></a>JavaAPI操作zk</h1><ul>
+<li>依赖zookeeper-3.4.5.jar包</li>
+<li>创建、修改、读取、删除节点等操作</li>
+<li>对zk进行初始化和设置监听器</li>
+<li>Node节点支持4种状态：PERSISTENT（持久化）、PERSISTENT_SEQUENTIAL（持久化并序号自增）、EPHEMERAL（临时，当前session有效）、EPHEMERAL_SEQUENTIAL（临时，当前session有效，序号自增） <figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class ZooKeeperClient &#123;</div><div class="line">    //同步互斥变量，用来阻塞等待ZooKeeper连接完成之后再进行ZooKeeper的操作命令</div><div class="line">    private static CountDownLatch connectedSemaphore = new CountDownLatch( 1 );</div><div class="line">    public static void main(String[] args) throws Exception &#123;</div><div class="line">    	</div><div class="line">        // 创建一个与服务器的连接</div><div class="line">        ZooKeeper zk = new ZooKeeper(&quot;127.0.0.1:2181&quot;,3000, new Watcher()&#123;//这个是服务器连接完成回调的监听器</div><div class="line">            // 监控所有被触发的事件</div><div class="line">            public void process(WatchedEvent event) &#123;</div><div class="line">                System.out.println(&quot;已经触发了&quot; + event.getType() + &quot;事件！&quot;);</div><div class="line">                if ( Event.KeeperState.SyncConnected == event.getState() ) &#123;</div><div class="line">                    //连接完成的同步事件，互斥变量取消，下面的阻塞停止，程序继续执行</div><div class="line">                    connectedSemaphore.countDown();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">        </div><div class="line">        //如果和ZooKeeper服务器的TCP连接还没完全建立，就阻塞等待</div><div class="line">        connectedSemaphore.await();</div><div class="line">        // 创建一个目录节点</div><div class="line">        zk.create(&quot;/testRootPath&quot;, &quot;testRootData&quot;.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.PERSISTENT);</div><div class="line">        // 创建一个子目录节点</div><div class="line">        zk.create(&quot;/testRootPath/testChildPathOne&quot;, &quot;testChildDataOne&quot;.getBytes(),ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.PERSISTENT);</div><div class="line">        System.out.println(new String(zk.getData(&quot;/testRootPath&quot;,false,null)));</div><div class="line">        // 取出子目录节点列表</div><div class="line">        System.out.println(zk.getChildren(&quot;/testRootPath&quot;,true));</div><div class="line">        // 修改子目录节点数据</div><div class="line">        zk.setData(&quot;/testRootPath/testChildPathOne&quot;,&quot;modifyChildDataOne&quot;.getBytes(),-1);</div><div class="line">        System.out.println(&quot;目录节点状态：[&quot;+zk.exists(&quot;/testRootPath&quot;,true)+&quot;]&quot;);</div><div class="line">        // 创建另外一个子目录节点</div><div class="line">        zk.create(&quot;/testRootPath/testChildPathTwo&quot;, &quot;testChildDataTwo&quot;.getBytes(),ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.PERSISTENT);</div><div class="line">        System.out.println(new String(zk.getData(&quot;/testRootPath/testChildPathTwo&quot;,true,null)));</div><div class="line">        // 删除子目录节点</div><div class="line">        zk.delete(&quot;/testRootPath/testChildPathTwo&quot;,-1);</div><div class="line">        zk.delete(&quot;/testRootPath/testChildPathOne&quot;,-1);</div><div class="line">        // 删除父目录节点</div><div class="line">        zk.delete(&quot;/testRootPath&quot;,-1);</div><div class="line">        // 关闭连接</div><div class="line">        zk.close();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="Znode的特性"><a href="#Znode的特性" class="headerlink" title="Znode的特性"></a>Znode的特性</h1><ol>
+<li>每个子目录项如 NameService 都被称作为 znode，这个 znode 是被它所在的路径唯一标识，如 Server1 这个 znode 的标识为 /NameService/Server1</li>
+<li>znode 可以有子节点目录，并且每个 znode 可以存储数据，注意 EPHEMERAL 类型的目录节点不能有子节点目录</li>
+<li>znode 是有版本的，每个 znode 中存储的数据可以有多个版本，也就是一个访问路径中可以存储多份数据</li>
+<li>znode 可以是临时节点，一旦创建这个 znode 的客户端与服务器失去联系，这个 znode 也将自动删除，Zookeeper 的客户端和服务器通信采用长连接方式，每个客户端和服务器通过心跳来保持连接，这个连接状态称为 session，如果 znode 是临时节点，这个 session 失效，znode 也就删除了</li>
+<li>znode 的目录名可以自动编号，如 App1 已经存在，再创建的话，将会自动命名为 App2</li>
+<li>znode 可以被监控，包括这个目录节点中存储的数据的修改，子节点目录的变化等，一旦变化可以通知设置监控的客户端，这个是 Zookeeper 的核心特性，Zookeeper 的很多功能都是基于这个特性实现的，后面在典型的应用场景中会有实例介绍</li>
+</ol>
+<h1 id="分布式队列的实现"><a href="#分布式队列的实现" class="headerlink" title="分布式队列的实现"></a>分布式队列的实现</h1><p>参考博客含源码<br><a href="https://blog.csdn.net/evankaka/article/details/70806752" target="_blank" rel="external">https://blog.csdn.net/evankaka/article/details/70806752</a></p>
+<p>还有这篇高并发网的<br><a href="http://ifeve.com/zookeeper%EF%BC%8Dcurator/" target="_blank" rel="external">http://ifeve.com/zookeeper%EF%BC%8Dcurator/</a></p>
+<h2 id="同步队列的实现"><a href="#同步队列的实现" class="headerlink" title="同步队列的实现"></a>同步队列的实现</h2><p>zkClient对根节点进行watcher，当根节点新增了数据的时候会触发监听，计算size()后，再重新绑定监听，知道size()达到某个值，触发同步操作</p>
+<h2 id="FIFO队列的实现"><a href="#FIFO队列的实现" class="headerlink" title="FIFO队列的实现"></a>FIFO队列的实现</h2><ol>
+<li><p>生产产品:来自不同进程的线程，往zk的同一个路径下面添加永久性的顺序节点，并且填充内容。需要check上限，防止内存爆了。因为zk自身维护节点的唯一性，所以高并发的时候，也不会产生2个一样的节点</p>
+</li>
+<li><p>消费产品：来自不同进程的线程，读取zk对应路径的所有节点，排序后，消费序号最小的节点，删除的时候再判断一下是否删除成功，删除失败就递归继续删除。这样即使高并发的时候也不会重复删除相同的节点。</p>
+</li>
+</ol>
+<h2 id="FIFO代码分析"><a href="#FIFO代码分析" class="headerlink" title="FIFO代码分析"></a>FIFO代码分析</h2><ol>
+<li>核心类：</li>
+</ol>
+<ul>
+<li>SendObject （id，content），记得要序列化才能存储</li>
+<li><p>ProducerThread,带有queue参数，run方法里面 queue.offer</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public ProducerThread(DistributedSimpleQueue&lt;SendObject&gt; queue) &#123;</div><div class="line">	this.queue = queue;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public void run() &#123;</div><div class="line">		for (int i = 0; i &lt; 10000; i++) &#123;</div><div class="line">			try &#123;</div><div class="line">				Thread.sleep((int) (Math.random() * 5000));// 随机睡眠一下</div><div class="line">				SendObject sendObject = new SendObject(String.valueOf(i), &quot;content&quot; + i);</div><div class="line">				queue.offer(sendObject);</div><div class="line">				System.out.println(&quot;发送一条消息成功：&quot; + sendObject);</div><div class="line">			&#125; catch (Exception e) &#123;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>ConsumerThread,类似生产线程</p>
+<h2 id="核心方法"><a href="#核心方法" class="headerlink" title="核心方法"></a>核心方法</h2></li>
+</ul>
+<ol>
+<li><p>poll()</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public T pollHuang()&#123;</div><div class="line">		List&lt;String&gt; list = zkClient.getChildren(root);</div><div class="line">		if (list.size() == 0) &#123;</div><div class="line">			return null;</div><div class="line">		&#125;</div><div class="line">		//将队列按照由小到大的顺序排序</div><div class="line">		Collections.sort(list, new Comparator&lt;String&gt;() &#123;</div><div class="line">			public int compare(String lhs, String rhs) &#123;</div><div class="line">				return getNodeNumber(lhs, Node_NAME).compareTo(getNodeNumber(rhs, Node_NAME));</div><div class="line">			&#125;</div><div class="line">		&#125;);</div><div class="line">		</div><div class="line">		String nodeFullPath = root.concat(&quot;/&quot;).concat(list.get(0));</div><div class="line">		T node = (T) zkClient.readData(nodeFullPath);</div><div class="line">		//判断是否删除成功，避免高并发的时候，同时删除，即使删除失败也返回相同的值</div><div class="line">		if(zkClient.delete(nodeFullPath))&#123;</div><div class="line">			return node;</div><div class="line">		&#125;else&#123;</div><div class="line">			pollHuang();</div><div class="line">		&#125;</div><div class="line">		return null;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>offer(E elemet）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">  public boolean offer(T element) throws Exception&#123;</div><div class="line">	if(zkClient.getChildren(root).size()&gt;=MAX_SIZE)&#123;</div><div class="line">		return false;</div><div class="line">	&#125;</div><div class="line">	//构建数据节点的完整路径</div><div class="line">	String nodeFullPath = root .concat( &quot;/&quot; ).concat( Node_NAME );</div><div class="line">    try &#123;</div><div class="line">    	//创建持久的节点，写入数据</div><div class="line">        zkClient.createPersistentSequential(nodeFullPath , element);</div><div class="line">    &#125;catch (ZkNoNodeException e) &#123;</div><div class="line">    	zkClient.createPersistent(root);</div><div class="line">    	offer(element);</div><div class="line">    &#125; catch (Exception e) &#123;</div><div class="line">        throw ExceptionUtil.convertToRuntimeException(e);</div><div class="line">    &#125;</div><div class="line">    return true;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/06/Zookeeper综合/" data-title="Zookeeper综合 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/08/06/Zookeeper监听/" title="Zookeeper监听">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Zookeeper监听</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/08/06/提升进度管理/"  title="提升进度管理">
+ <strong>下一篇：</strong><br/> 
+ <span>提升进度管理
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/08/06/Zookeeper综合/" data-title="Zookeeper综合" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/06/Zookeeper综合/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#zk的特点"><span class="toc-number">2.</span> <span class="toc-text">zk的特点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实战核心功能"><span class="toc-number">3.</span> <span class="toc-text">实战核心功能</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#运用场景说明"><span class="toc-number">4.</span> <span class="toc-text">运用场景说明</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Zookeeper通知机制"><span class="toc-number">5.</span> <span class="toc-text">Zookeeper通知机制</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ZK的数据存储机制（内存-快照-事务日志）"><span class="toc-number">6.</span> <span class="toc-text">ZK的数据存储机制（内存+快照+事务日志）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#安装和配置"><span class="toc-number">7.</span> <span class="toc-text">安装和配置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#单节点配置zoo-cfg"><span class="toc-number">7.1.</span> <span class="toc-text">单节点配置zoo.cfg</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#集群配置zoo-cfg"><span class="toc-number">7.2.</span> <span class="toc-text">集群配置zoo.cfg</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#常见命令和启动"><span class="toc-number">7.3.</span> <span class="toc-text">常见命令和启动</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#zk客户端命令操作"><span class="toc-number">8.</span> <span class="toc-text">zk客户端命令操作</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JavaAPI操作zk"><span class="toc-number">9.</span> <span class="toc-text">JavaAPI操作zk</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Znode的特性"><span class="toc-number">10.</span> <span class="toc-text">Znode的特性</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#分布式队列的实现"><span class="toc-number">11.</span> <span class="toc-text">分布式队列的实现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#同步队列的实现"><span class="toc-number">11.1.</span> <span class="toc-text">同步队列的实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FIFO队列的实现"><span class="toc-number">11.2.</span> <span class="toc-text">FIFO队列的实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FIFO代码分析"><span class="toc-number">11.3.</span> <span class="toc-text">FIFO代码分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#核心方法"><span class="toc-number">11.4.</span> <span class="toc-text">核心方法</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

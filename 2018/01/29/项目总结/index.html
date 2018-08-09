@@ -1,0 +1,541 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>项目总结 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="业务功能：服务医疗器械销售团队做产品使用培训。同时附加功能，医疗行业大牛的直播授课解答、手术直播等医疗相关的直播，还有PDF、帖子等文字图片相关内容、合作医院的信息和名医等信息的展示。 程序功能：前端网站展示，后端网站管理程序独立分开。另外还可以分为PC端展示、Mobile端网站展示和微信公众号推送等服务。  前端负责展示网站：   搜索引擎关键字搜索（ActiveMQ实现后端程序DML课件后同步">
+<meta property="og:type" content="article">
+<meta property="og:title" content="项目总结">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/01/29/项目总结/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="业务功能：服务医疗器械销售团队做产品使用培训。同时附加功能，医疗行业大牛的直播授课解答、手术直播等医疗相关的直播，还有PDF、帖子等文字图片相关内容、合作医院的信息和名医等信息的展示。 程序功能：前端网站展示，后端网站管理程序独立分开。另外还可以分为PC端展示、Mobile端网站展示和微信公众号推送等服务。  前端负责展示网站：   搜索引擎关键字搜索（ActiveMQ实现后端程序DML课件后同步">
+<meta property="og:updated_time" content="2018-03-07T04:22:15.217Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="项目总结">
+<meta name="twitter:description" content="业务功能：服务医疗器械销售团队做产品使用培训。同时附加功能，医疗行业大牛的直播授课解答、手术直播等医疗相关的直播，还有PDF、帖子等文字图片相关内容、合作医院的信息和名医等信息的展示。 程序功能：前端网站展示，后端网站管理程序独立分开。另外还可以分为PC端展示、Mobile端网站展示和微信公众号推送等服务。  前端负责展示网站：   搜索引擎关键字搜索（ActiveMQ实现后端程序DML课件后同步">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/01/29/项目总结/" title="项目总结" itemprop="url">项目总结</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-01-29T07:36:48.846Z" itemprop="datePublished"> 发表于 2018-01-29</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#业务功能："><span class="toc-number">1.</span> <span class="toc-text">业务功能：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#程序功能："><span class="toc-number">2.</span> <span class="toc-text">程序功能：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#项目值得学习的地方"><span class="toc-number">3.</span> <span class="toc-text">项目值得学习的地方</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#邮件功能"><span class="toc-number">3.1.</span> <span class="toc-text">邮件功能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#微信公众号相关功能"><span class="toc-number">3.2.</span> <span class="toc-text">微信公众号相关功能</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#项目可以升级的地方"><span class="toc-number">4.</span> <span class="toc-text">项目可以升级的地方</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#工作内容"><span class="toc-number">5.</span> <span class="toc-text">工作内容</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#网站front-end项目架构"><span class="toc-number">6.</span> <span class="toc-text">网站front-end项目架构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#后端框架："><span class="toc-number">6.1.</span> <span class="toc-text">后端框架：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#前端框架"><span class="toc-number">6.2.</span> <span class="toc-text">前端框架:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#nginx相关"><span class="toc-number">6.3.</span> <span class="toc-text">nginx相关</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#全文检索分布式"><span class="toc-number">6.4.</span> <span class="toc-text">全文检索分布式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#其他"><span class="toc-number">6.5.</span> <span class="toc-text">其他</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#简化配置"><span class="toc-number">6.6.</span> <span class="toc-text">简化配置</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#后端项目架构"><span class="toc-number">7.</span> <span class="toc-text">后端项目架构</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="业务功能："><a href="#业务功能：" class="headerlink" title="业务功能："></a>业务功能：</h1><p>服务医疗器械销售团队做产品使用培训。同时附加功能，医疗行业大牛的直播授课解答、手术直播等医疗相关的直播，还有PDF、帖子等文字图片相关内容、合作医院的信息和名医等信息的展示。</p>
+<h1 id="程序功能："><a href="#程序功能：" class="headerlink" title="程序功能："></a>程序功能：</h1><p>前端网站展示，后端网站管理程序独立分开。另外还可以分为PC端展示、Mobile端网站展示和微信公众号推送等服务。</p>
+<ol>
+<li>前端负责展示网站：</li>
+</ol>
+<ul>
+<li>搜索引擎关键字搜索（ActiveMQ实现后端程序DML课件后同步搜索结果)</li>
+<li>JSP动态展示相关内容</li>
+<li>直播视频厂商ifream引入、接口调用和回调</li>
+<li>微信公众号的绑定、消息通知、简单的跳转导航等功能</li>
+<li>论坛发帖和留言功能（ueditor）开源的</li>
+<li>nginx 反向代理、</li>
+</ul>
+<ol>
+<li>后端程序管理网站：</li>
+</ol>
+<ul>
+<li>内容的编辑管理、展示的设置</li>
+<li>https安全</li>
+<li>权限管理</li>
+<li>浏览量统计展示等相关</li>
+</ul>
+<ol>
+<li>运维模块：</li>
+</ol>
+<ul>
+<li>数据库的压缩备份 mysql xtrabackup</li>
+<li>邮件功能每日更新网站运营数据</li>
+<li>部署上线脚本 maven和tomcat启动脚本 </li>
+<li>JNDI数据源</li>
+</ul>
+<h1 id="项目值得学习的地方"><a href="#项目值得学习的地方" class="headerlink" title="项目值得学习的地方"></a>项目值得学习的地方</h1><ul>
+<li>solr-cloud + zookeeper</li>
+<li>JPA的优化，抽象实体类的BaseEntity</li>
+<li>权限控制（spring security 和 数据库sql控制)</li>
+<li>彻底吃透邮件功能(Done)</li>
+<li>hibernate 和mybatis的一对多功能</li>
+</ul>
+<h2 id="邮件功能"><a href="#邮件功能" class="headerlink" title="邮件功能"></a>邮件功能</h2><p>数据库服务器，启动定时任务：每天、每周一、每月1号晚上会通过shell脚本获取到新增用户数量，然后通过mailx服务邮件的形式发送到客户的邮箱，并且会插入到stastics表中去。<br>流程：</p>
+<ul>
+<li>清空老的数据文本</li>
+<li>查询以追加的形式获取到数据库的新增用户数量和总数量</li>
+<li>直接更新stastics这张表</li>
+<li>发送数据到配置文件当中的邮箱群里</li>
+</ul>
+<p>大致流程就是：注册一个可以开通SMPT服务的邮箱，比如网易163邮箱，然后在linux上安装mailx服务，配置发件邮箱人，然后mailx 发送相关的标题，内容，附件、正文等信息。</p>
+<h2 id="微信公众号相关功能"><a href="#微信公众号相关功能" class="headerlink" title="微信公众号相关功能"></a>微信公众号相关功能</h2><p>功能：</p>
+<ul>
+<li>活动报名成功、开始提醒、活动评价、活动根据订阅栏目的主动推送</li>
+<li>用户微信绑定</li>
+<li>栏目订阅和推送</li>
+<li>网站手机端跳转<br>先要在对应的公众号管理网站，获取到对应的appID 和appsecret，来和应用程序交互的账号密码。<br>上传特定的template到微信管理后台，参数（openID、消息数据比如用户信息活动信息、templateID发送推送消息，还可以监控返回值是否发送成功，反复发送</li>
+</ul>
+<h1 id="项目可以升级的地方"><a href="#项目可以升级的地方" class="headerlink" title="项目可以升级的地方"></a>项目可以升级的地方</h1><ul>
+<li>操作日志记录功能</li>
+<li>缓存功能</li>
+<li>GC日志开启，和分析，以及JDK垃圾回收器和内存分配优化</li>
+</ul>
+<h1 id="工作内容"><a href="#工作内容" class="headerlink" title="工作内容"></a>工作内容</h1><ul>
+<li>日常维护（包括微信端公众号的功能维护）</li>
+<li>新功能的开发（新模块PCB基层医疗、新的直播商：展示直播的引入包含网页嵌入、K值认证、参加统计）</li>
+<li>服务器的维护和迁移（操作系统的版本、分区情况以及各种软件的重新配置），维护包括CPU和内存的性能监控、和更新病毒库和杀毒</li>
+<li>项目结构优化：spring mvc扫描配置优化、GC日志开启和垃圾回收器类型优化</li>
+<li>培训新人</li>
+</ul>
+<h1 id="网站front-end项目架构"><a href="#网站front-end项目架构" class="headerlink" title="网站front-end项目架构"></a>网站front-end项目架构</h1><h2 id="后端框架："><a href="#后端框架：" class="headerlink" title="后端框架："></a>后端框架：</h2><ul>
+<li>Spring(Bean管理和事务控制) 、MVC</li>
+<li>Mybatis：改进后引入mybatis-template、pagehelper、xml热加载</li>
+<li>JPA (简化了简单的新增、修改和简单查询、分页查询的功能)</li>
+</ul>
+<h2 id="前端框架"><a href="#前端框架" class="headerlink" title="前端框架:"></a>前端框架:</h2><ul>
+<li>jquery、jstl</li>
+<li>BootStrap做table和表单控件、和页面的布局</li>
+<li>site-mesh做通用模板渲染，xml配置filter，然后通过请求url来匹配不同的模板</li>
+</ul>
+<h2 id="nginx相关"><a href="#nginx相关" class="headerlink" title="nginx相关"></a>nginx相关</h2><ul>
+<li>upstream引入集群，支持千人以上同时观看直播活动的功能</li>
+<li>动静分离，把图片资源、PDF资源放在特定的路径下，实现快速获取</li>
+<li>反向代理：前端和后端公用域名，监听不同的端口。</li>
+<li>实现测试环境的内网可访问、svn的控制。因为只有1台物理IP对外</li>
+<li>redis实现session共享</li>
+</ul>
+<h2 id="全文检索分布式"><a href="#全文检索分布式" class="headerlink" title="全文检索分布式"></a>全文检索分布式</h2><ul>
+<li>web请求通过nginx按照不同的权重分配到6个solr里（其中90的权重低，93服务器5个solr权重高）</li>
+<li>请求到了solr，solr会反馈到zookeeper中去读取配置，我们每个core做了3个shard，每个shard各做了一个主备</li>
+<li>zk会分配请求任务然后返回搜索结果给报告的solr，solr收到数据渲染界面</li>
+<li>其中zk本身做了3台机器的集群（高可用且防脑裂）</li>
+<li>实现3个shard每个分片各有一个主备，实现高可用的同时又可以快速的查询和更新索引</li>
+</ul>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><ul>
+<li>activeMQ：实现后台发布新的课件的时候，通知前端slor更新搜索索引</li>
+<li>直播视频的引入：ifram嵌入第三方视频直播方、调用接口交互实现k值认证和与会信息的数据获取</li>
+<li>定时任务：quarz，定时扫描活动，微信、短信通知相应的客户</li>
+<li>微信公众号管理：订阅和绑定，获取关注公众号用户的openId推送活动通知和评价、以及订阅相关栏目功能</li>
+<li>linux crontab实现网站运营用户变化数据，mailx服务发送邮件到公司邮箱；脚本化发布测试环境和生产环境</li>
+<li>maven、svn</li>
+<li>mysql（Xtractbackup、慢查询日志)</li>
+</ul>
+<h2 id="简化配置"><a href="#简化配置" class="headerlink" title="简化配置"></a>简化配置</h2><ul>
+<li>loombok简化 set get方法和log功能、bean代码清爽</li>
+<li>JNDI数据源，方便在测试环境、生产环境下发布，一次配置，就不需要改动特别是数据库的IP地址</li>
+<li>tomcat部署脚本先copy老的配置文件，再解压替换配置文件，方便开发人员修改不需要在生产环境下开启的功能的配置，避免犯错</li>
+</ul>
+<h1 id="后端项目架构"><a href="#后端项目架构" class="headerlink" title="后端项目架构"></a>后端项目架构</h1><p>Spring 、MVC、hibernateTemplate、ehcache(做sql级别的缓存)、sitemesh</p>
+<p>##安全和权限管理</p>
+<ul>
+<li>配置ssl实现https访问的功能</li>
+<li>4台虚拟云主机，网站应用程序所在云主机有对外可访问IP，其他3台物理server只在4台云主机内可以访问</li>
+<li>spring-security实现大的角色的管理</li>
+<li>数据库控制对应用户的modality授权、区域管理，展示归属该用户的数据</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/01/29/项目总结/" data-title="项目总结 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/02/05/Spring&MVC框架/" title="Spring&amp;MVC框架">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Spring&amp;MVC框架</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/01/19/初级java入门/"  title="初级java入门">
+ <strong>下一篇：</strong><br/> 
+ <span>初级java入门
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/01/29/项目总结/" data-title="项目总结" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/01/29/项目总结/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#业务功能："><span class="toc-number">1.</span> <span class="toc-text">业务功能：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#程序功能："><span class="toc-number">2.</span> <span class="toc-text">程序功能：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#项目值得学习的地方"><span class="toc-number">3.</span> <span class="toc-text">项目值得学习的地方</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#邮件功能"><span class="toc-number">3.1.</span> <span class="toc-text">邮件功能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#微信公众号相关功能"><span class="toc-number">3.2.</span> <span class="toc-text">微信公众号相关功能</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#项目可以升级的地方"><span class="toc-number">4.</span> <span class="toc-text">项目可以升级的地方</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#工作内容"><span class="toc-number">5.</span> <span class="toc-text">工作内容</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#网站front-end项目架构"><span class="toc-number">6.</span> <span class="toc-text">网站front-end项目架构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#后端框架："><span class="toc-number">6.1.</span> <span class="toc-text">后端框架：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#前端框架"><span class="toc-number">6.2.</span> <span class="toc-text">前端框架:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#nginx相关"><span class="toc-number">6.3.</span> <span class="toc-text">nginx相关</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#全文检索分布式"><span class="toc-number">6.4.</span> <span class="toc-text">全文检索分布式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#其他"><span class="toc-number">6.5.</span> <span class="toc-text">其他</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#简化配置"><span class="toc-number">6.6.</span> <span class="toc-text">简化配置</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#后端项目架构"><span class="toc-number">7.</span> <span class="toc-text">后端项目架构</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

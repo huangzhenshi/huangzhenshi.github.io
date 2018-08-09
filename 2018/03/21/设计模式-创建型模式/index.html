@@ -1,0 +1,489 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>设计模式-创建型模式 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="参考源码：https://github.com/huangzhenshi/DesignPattern 单例模式实现在系统中，最多只有1个这个类，比如datasourse这样的类，从而节省系统资源。通过private构造方法避免new对象，并且只提供一个getInstance的方法、和设置静态成员变量的方法，来控制只有1个实例。  懒汉式（不安全，有概率生成多个)：在需要的时候去生成初始化一个静态的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式-创建型模式">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/21/设计模式-创建型模式/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="参考源码：https://github.com/huangzhenshi/DesignPattern 单例模式实现在系统中，最多只有1个这个类，比如datasourse这样的类，从而节省系统资源。通过private构造方法避免new对象，并且只提供一个getInstance的方法、和设置静态成员变量的方法，来控制只有1个实例。  懒汉式（不安全，有概率生成多个)：在需要的时候去生成初始化一个静态的">
+<meta property="og:updated_time" content="2018-03-21T07:09:03.545Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="设计模式-创建型模式">
+<meta name="twitter:description" content="参考源码：https://github.com/huangzhenshi/DesignPattern 单例模式实现在系统中，最多只有1个这个类，比如datasourse这样的类，从而节省系统资源。通过private构造方法避免new对象，并且只提供一个getInstance的方法、和设置静态成员变量的方法，来控制只有1个实例。  懒汉式（不安全，有概率生成多个)：在需要的时候去生成初始化一个静态的">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/03/21/设计模式-创建型模式/" title="设计模式-创建型模式" itemprop="url">设计模式-创建型模式</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-03-21T03:17:35.532Z" itemprop="datePublished"> 发表于 2018-03-21</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#单例模式"><span class="toc-number">1.</span> <span class="toc-text">单例模式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#工厂模式"><span class="toc-number">2.</span> <span class="toc-text">工厂模式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#原型模式"><span class="toc-number">3.</span> <span class="toc-text">原型模式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#相同对象的浅复制"><span class="toc-number">3.1.</span> <span class="toc-text">相同对象的浅复制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#相似对象的浅复制"><span class="toc-number">3.2.</span> <span class="toc-text">相似对象的浅复制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#验证浅复制"><span class="toc-number">3.3.</span> <span class="toc-text">验证浅复制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#深复制"><span class="toc-number">3.4.</span> <span class="toc-text">深复制</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#建造者模式"><span class="toc-number">4.</span> <span class="toc-text">建造者模式</span></a></li></ol>
+		
+		</div>
+		
+		<p>参考源码：<br><a href="https://github.com/huangzhenshi/DesignPattern">https://github.com/huangzhenshi/DesignPattern</a></p>
+<h1 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h1><p>实现在系统中，最多只有1个这个类，比如datasourse这样的类，从而节省系统资源。<br>通过private构造方法避免new对象，并且只提供一个getInstance的方法、和设置静态成员变量的方法，来控制只有1个实例。</p>
+<ul>
+<li><p>懒汉式（不安全，有概率生成多个)：在需要的时候去生成初始化一个静态的成员变量</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class LazySingleton &#123;</div><div class="line">    private LazySingleton() &#123;</div><div class="line">        System.out.println(&quot;Singleton()&quot;);</div><div class="line">    &#125;</div><div class="line">    private static LazySingleton instance = null;</div><div class="line"></div><div class="line">    public static LazySingleton getInstance() &#123;</div><div class="line">        if (null == instance) &#123;</div><div class="line">           instance = new LazySingleton();</div><div class="line">        &#125;        </div><div class="line">        return instance;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>饿汉式（类的初始化期就生成一个实例，保证线程安全)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">private static HungerSinleton instance = new HungerSinleton();</div><div class="line"> public static HungerSinleton getInstance() &#123;</div><div class="line">    return instance;</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>双重锁式:节省不必要的内存的同时确保了只有一个</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public static SyncSingleton getInstance() &#123;</div><div class="line">        if (null == instance) &#123;</div><div class="line">            synchronized(SyncSingleton.class) &#123;</div><div class="line">                if (null == instance) &#123;</div><div class="line">                    instance = new SyncSingleton();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        return instance;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="工厂模式"><a href="#工厂模式" class="headerlink" title="工厂模式"></a>工厂模式</h1><p>为了解决创建对象不直接new，而是通过工厂类来获取，优点如下：</p>
+<ol>
+<li>类的获取就实现了解耦，以后要换类，直接改工厂，就完事了。</li>
+<li>对类做封装，比如通用构造参数的添加，可以在工厂里做了</li>
+<li>隐藏类的全名</li>
+<li>在创建对象的时候做一些通用的事情（比如输出日志)</li>
+</ol>
+<ul>
+<li><p>简单工厂模式：通过类名字符串，写死获取对应的对象。这样可扩展性很差。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class Factory &#123;</div><div class="line">    public ProductI create(String productName) &#123;</div><div class="line">        switch (productName) &#123;</div><div class="line">            case &quot;A&quot;:</div><div class="line">                return new ProductA();</div><div class="line">            case &quot;B&quot;:</div><div class="line">                return new ProductB();</div><div class="line">            default:</div><div class="line">                return null;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>工厂方法模式<br>简单模式所有的产品都依赖工厂类的一个方法，修改之后可能导致其他产品出问题。工厂方法模式就是工厂类作为接口，每个不同的产品由不同的实现工厂类去生产，这样要新增修改、删除某个产品，其他的产品丝毫不受影响</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public interface FactoryI &#123;</div><div class="line">    // 工厂的目的是为了生产产品</div><div class="line">    public ProductI create();</div><div class="line">&#125;</div><div class="line"></div><div class="line">public class FactoryA implements FactoryI &#123;</div><div class="line">    @Override</div><div class="line">    public ProductI create() &#123;</div><div class="line">        return new ProductA();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public class FactoryB implements FactoryI &#123;</div><div class="line">    @Override</div><div class="line">    public ProductI create() &#123;</div><div class="line">        return new ProductB();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public class Client &#123;</div><div class="line">    public static void main(String[] args) &#123;</div><div class="line">        FactoryI factoryA = new FactoryA();</div><div class="line">        ProductI productA = factoryA.create();</div><div class="line">        productA.productName();</div><div class="line">        //</div><div class="line">        FactoryI factoryB = new FactoryB();</div><div class="line">        ProductI productB = factoryB.create();</div><div class="line">        productB.productName();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>抽象工厂模式<br>就是在工程方法模式里面生产配套相关的多个产品啊。<br>比如PC厂商接口，下面有Dell厂商、HP厂商、IBM厂商，Dell实现工厂类生产Dell笔记本、台式机、键盘、鼠标等产品。</p>
+</li>
+</ul>
+<h1 id="原型模式"><a href="#原型模式" class="headerlink" title="原型模式"></a>原型模式</h1><p><a href="http://blog.csdn.net/jason0539/article/details/23158081" target="_blank" rel="external">http://blog.csdn.net/jason0539/article/details/23158081</a></p>
+<ul>
+<li><p>性能提升<br>使用原型模式创建对象比直接new一个对象在性能上要好的多，因为Object类的clone方法是一个本地方法，它直接操作内存中的二进制流，特别是复制大对象时，性能的差别非常明显。</p>
+</li>
+<li><p>简化创建<br>使用原型模式的另一个好处是简化对象的创建，实现类似模板功能，比如某对象创建后进行一些列加工成为了模板典型的对象，其他人直接clone()这个模板即可，简化了创建后各种加工配置等操作。  </p>
+</li>
+</ul>
+<p>注意事项：</p>
+<ol>
+<li>一般原型对象都是抽象类，不希望Client直接去创建它，而是通过他的子类间接的去创建它</li>
+<li>Cloneable接口是个空接口，所以clone()可以叫任何名字，核心是里面的super.clone()；</li>
+<li>非基本类型和String类型的成员变量，默认都是浅复制，每个拷贝的成员变量都是指向同一个堆内存，除非进行深复制 </li>
+<li>突破构造函数的束缚，会突破单例模式的束缚</li>
+</ol>
+<h2 id="相同对象的浅复制"><a href="#相同对象的浅复制" class="headerlink" title="相同对象的浅复制"></a>相同对象的浅复制</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public abstract  class Prototype implements Cloneable &#123; </div><div class="line">	public Prototype clone()&#123;    </div><div class="line">        Prototype prototype = null;    </div><div class="line">        try&#123;    </div><div class="line">            prototype = (Prototype)super.clone();    </div><div class="line">        &#125;catch(CloneNotSupportedException e)&#123;    </div><div class="line">            e.printStackTrace();    </div><div class="line">        &#125;    </div><div class="line">        return prototype;     </div><div class="line">    &#125;    </div><div class="line">&#125; </div><div class="line"></div><div class="line">public class ConcretePrototype  extends Prototype&#123;    </div><div class="line">    public void show()&#123;    </div><div class="line">        System.out.println(&quot;原型模式实现类&quot;);    </div><div class="line">    &#125;    </div><div class="line">&#125;  </div><div class="line"></div><div class="line">public class Client &#123;</div><div class="line">	  public static void main(String[] args)&#123;    </div><div class="line">	        ConcretePrototype cp = new ConcretePrototype();  </div><div class="line">	        for(int i=0; i&lt; 10; i++)&#123;    </div><div class="line">	            ConcretePrototype clonecp = (ConcretePrototype)cp.clone();    </div><div class="line">	            clonecp.show();   </div><div class="line">	        &#125;    </div><div class="line">	    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="相似对象的浅复制"><a href="#相似对象的浅复制" class="headerlink" title="相似对象的浅复制"></a>相似对象的浅复制</h2><p>把不一样的方法做成抽象方法，让不同的子类按照各自的逻辑去重写，这样公用相同的方法，也支持不一样<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public abstract  class Prototype implements Cloneable &#123;</div><div class="line">	public Prototype clone()&#123;    </div><div class="line">        Prototype prototype = null;    </div><div class="line">        try&#123;    </div><div class="line">            prototype = (Prototype)super.clone();    </div><div class="line">        &#125;catch(CloneNotSupportedException e)&#123;    </div><div class="line">            e.printStackTrace();    </div><div class="line">        &#125;    </div><div class="line">        return prototype;     </div><div class="line">    &#125;  </div><div class="line">	public void doCommon()&#123;</div><div class="line">		System.out.println(&quot;Prototype doing Common&quot;);</div><div class="line">	&#125;</div><div class="line">	public abstract void doSpecial();</div><div class="line">&#125; </div><div class="line"></div><div class="line">public class ConcretePrototypeA  extends Prototype&#123;   </div><div class="line">	@Override</div><div class="line">	public void doSpecial() &#123;</div><div class="line">		System.out.println(&quot;ConcretePrototypeA doing Special&quot;);  </div><div class="line">		</div><div class="line">	&#125;    </div><div class="line">&#125;  </div><div class="line"></div><div class="line">public class ConcretePrototypeB  extends Prototype&#123;   </div><div class="line">	@Override</div><div class="line">	public void doSpecial() &#123;</div><div class="line">		System.out.println(&quot;ConcretePrototypeB doing Special&quot;);  </div><div class="line">		</div><div class="line">	&#125;    </div><div class="line">&#125; </div><div class="line"></div><div class="line">public class Client &#123;</div><div class="line">	  public static void main(String[] args)&#123;    </div><div class="line">	        ConcretePrototypeA cpa = new ConcretePrototypeA(); </div><div class="line">	        cpa.doSpecial();</div><div class="line">	        cpa.doCommon();</div><div class="line">	        </div><div class="line">	        ConcretePrototypeB cpb = new ConcretePrototypeB(); </div><div class="line">	        cpb.doSpecial();</div><div class="line">	        cpb.doCommon();</div><div class="line">	    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="验证浅复制"><a href="#验证浅复制" class="headerlink" title="验证浅复制"></a>验证浅复制</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public abstract  class Prototype implements Cloneable &#123; </div><div class="line">	private List&lt;String&gt; list=new ArrayList();</div><div class="line">	public List&lt;String&gt; getList() &#123;</div><div class="line">		return list;</div><div class="line">	&#125;</div><div class="line">	public void setList(List&lt;String&gt; list) &#123;</div><div class="line">		this.list = list;</div><div class="line">	&#125;</div><div class="line">	public Prototype clone()&#123;    </div><div class="line">        Prototype prototype = null;    </div><div class="line">        try&#123;    </div><div class="line">            prototype = (Prototype)super.clone();    </div><div class="line">        &#125;catch(CloneNotSupportedException e)&#123;    </div><div class="line">            e.printStackTrace();    </div><div class="line">        &#125;    </div><div class="line">        return prototype;     </div><div class="line">    &#125;    </div><div class="line">&#125;  </div><div class="line"></div><div class="line">public class Client &#123;</div><div class="line">	  public static void main(String[] args)&#123;    </div><div class="line">	        ConcretePrototype cp = new ConcretePrototype(); </div><div class="line">	        cp.getList().add(&quot;huangzhenshi&quot;);</div><div class="line">	        System.out.println(cp.getList().get(0));</div><div class="line">            ConcretePrototype clonecp = (ConcretePrototype)cp.clone(); </div><div class="line">            System.out.println(clonecp.getList().size());</div><div class="line"></div><div class="line">            //对原型实现类对象的成员变量list进行修改</div><div class="line">            cp.getList().add(&quot;huangxiaozhen&quot;);</div><div class="line">            //结果拷贝类的成员变量list的size也发生了改变，输出是2</div><div class="line">            System.out.println(clonecp.getList().size());</div><div class="line">	    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="深复制"><a href="#深复制" class="headerlink" title="深复制"></a>深复制</h2><p>结果操作原型类的成员变量list的时候，拷贝类的成员变量不会收到影响<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class Prototype implements Cloneable &#123;    </div><div class="line">    protected ArrayList list = new ArrayList();    </div><div class="line">    public Prototype clone()&#123;    </div><div class="line">        Prototype prototype = null;    </div><div class="line">        try&#123;    </div><div class="line">            prototype = (Prototype)super.clone();    </div><div class="line">            prototype.list = (ArrayList) this.list.clone();    </div><div class="line">        &#125;catch(CloneNotSupportedException e)&#123;    </div><div class="line">            e.printStackTrace();    </div><div class="line">        &#125;    </div><div class="line">        return prototype;     </div><div class="line">    &#125;    </div><div class="line">&#125; </div><div class="line"></div><div class="line">public class Client &#123;</div><div class="line">	  public static void main(String[] args)&#123;    </div><div class="line">	        ConcretePrototypeA cpa = new ConcretePrototypeA(); </div><div class="line">	        ConcretePrototypeA cpa_clone=(ConcretePrototypeA) cpa.clone();</div><div class="line">	        </div><div class="line">			System.out.println(cpa.list.size());</div><div class="line">	        System.out.println(cpa_clone.list.size());</div><div class="line">	        </div><div class="line">			cpa.list.add(&quot;hzs&quot;);</div><div class="line">	        System.out.println(cpa.list.size());</div><div class="line">	        System.out.println(cpa_clone.list.size());</div><div class="line">	    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="建造者模式"><a href="#建造者模式" class="headerlink" title="建造者模式"></a>建造者模式</h1><p><a href="http://www.runoob.com/design-pattern/builder-pattern.html" target="_blank" rel="external">http://www.runoob.com/design-pattern/builder-pattern.html</a>  </p>
+<p>使用多个简单的对象一步一步构建成一个复杂的对象。扩展性好，但是要求组成元素有共同属性。</p>
+<ul>
+<li><p>扩展性好：新增一种大类，或者老品类里面添加一个新子类都很容易扩展；不添加新元素，老元素不同搭配形成新套餐也很容易扩展</p>
+</li>
+<li><p>理解案例：肯德基套餐经常在变化（搭配扩展性），有时候也添加新类型（比如牛肉卷、粥类），有时候老类型里面添加新品牌（比如 饮料之前是 百事 和Coke，现在添加 红牛进来），但是商品属性都一样：price、name。</p>
+</li>
+<li><p>元素类有3个层级：最上层是抽象的商品接口，第二层是大类（大类可能有某共同性），第三层是具体的商品</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">//所有商品 拥有相同的属性：price 和 name</div><div class="line">public interface Item &#123;</div><div class="line">	   public String name();</div><div class="line">	   public float price();    </div><div class="line">&#125;</div><div class="line"></div><div class="line">// 核心类Builder，不同的套餐分别装配不同的元素</div><div class="line">public class MealBuilder &#123;</div><div class="line">	public Meal prepareVegMeal ()&#123;</div><div class="line">	      Meal meal = new Meal();</div><div class="line">	      meal.addItem(new VegBurger());</div><div class="line">	      meal.addItem(new Coke());</div><div class="line">	      return meal;</div><div class="line">	   &#125;   </div><div class="line"></div><div class="line">	   public Meal prepareNonVegMeal ()&#123;</div><div class="line">	      Meal meal = new Meal();</div><div class="line">	      meal.addItem(new ChickenBurger());</div><div class="line">	      meal.addItem(new Pepsi());</div><div class="line">	      return meal;</div><div class="line">	   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/21/设计模式-创建型模式/" data-title="设计模式-创建型模式 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/03/21/设计模式 -行为类模式/" title="设计模式 -行为类模式">
+  <strong>上一篇：</strong><br/>
+  <span>
+  设计模式 -行为类模式</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/03/21/设计模式六大原则/"  title="设计模式六大原则">
+ <strong>下一篇：</strong><br/> 
+ <span>设计模式六大原则
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/03/21/设计模式-创建型模式/" data-title="设计模式-创建型模式" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/21/设计模式-创建型模式/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#单例模式"><span class="toc-number">1.</span> <span class="toc-text">单例模式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#工厂模式"><span class="toc-number">2.</span> <span class="toc-text">工厂模式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#原型模式"><span class="toc-number">3.</span> <span class="toc-text">原型模式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#相同对象的浅复制"><span class="toc-number">3.1.</span> <span class="toc-text">相同对象的浅复制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#相似对象的浅复制"><span class="toc-number">3.2.</span> <span class="toc-text">相似对象的浅复制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#验证浅复制"><span class="toc-number">3.3.</span> <span class="toc-text">验证浅复制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#深复制"><span class="toc-number">3.4.</span> <span class="toc-text">深复制</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#建造者模式"><span class="toc-number">4.</span> <span class="toc-text">建造者模式</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

@@ -1,0 +1,491 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Shiro总篇配置 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="参考blog SpringBoot项目：http://www.cnblogs.com/ityouknow/p/7089177.html 参考我的源码：（设置了密码器、包含用户、角色创建、权限分配、权限标签的使用、ehcache缓存和清空、验证码等模块的Demo）初始用户  admin /123456https://github.com/huangzhenshi/spring_shiro 非常全面的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Shiro总篇配置">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/06/06/Shiro总篇配置/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="参考blog SpringBoot项目：http://www.cnblogs.com/ityouknow/p/7089177.html 参考我的源码：（设置了密码器、包含用户、角色创建、权限分配、权限标签的使用、ehcache缓存和清空、验证码等模块的Demo）初始用户  admin /123456https://github.com/huangzhenshi/spring_shiro 非常全面的">
+<meta property="og:updated_time" content="2018-06-15T08:22:08.478Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Shiro总篇配置">
+<meta name="twitter:description" content="参考blog SpringBoot项目：http://www.cnblogs.com/ityouknow/p/7089177.html 参考我的源码：（设置了密码器、包含用户、角色创建、权限分配、权限标签的使用、ehcache缓存和清空、验证码等模块的Demo）初始用户  admin /123456https://github.com/huangzhenshi/spring_shiro 非常全面的">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/06/06/Shiro总篇配置/" title="Shiro总篇配置" itemprop="url">Shiro总篇配置</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-06-06T10:29:25.107Z" itemprop="datePublished"> 发表于 2018-06-06</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#流程"><span class="toc-number">1.</span> <span class="toc-text">流程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#功能"><span class="toc-number">2.</span> <span class="toc-text">功能</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#过滤器"><span class="toc-number">3.</span> <span class="toc-text">过滤器</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#整合Spring"><span class="toc-number">4.</span> <span class="toc-text">整合Spring</span></a></li></ol>
+		
+		</div>
+		
+		<p>参考blog SpringBoot项目：<br><a href="http://www.cnblogs.com/ityouknow/p/7089177.html" target="_blank" rel="external">http://www.cnblogs.com/ityouknow/p/7089177.html</a></p>
+<p>参考我的源码：（设置了密码器、包含用户、角色创建、权限分配、权限标签的使用、ehcache缓存和清空、验证码等模块的Demo）<br>初始用户  admin /123456<br><a href="https://github.com/huangzhenshi/spring_shiro">https://github.com/huangzhenshi/spring_shiro</a></p>
+<p>非常全面的blog，但是源码有问题<br><a href="https://github.com/codingXiaxw/shiro">https://github.com/codingXiaxw/shiro</a></p>
+<h1 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h1><ul>
+<li>设置ShiroConfig类，写Filter过滤方法，默认静态资源的访问，登录页面是不需要权限认证的</li>
+<li>设置用户类：用户名、密码、List&lt;角色&gt;等信息</li>
+<li>登录的时候会调用MyShiroRealm.doGetAuthenticationInfo()，方法，查询用户，并且把用户信息缓存起来</li>
+<li>调用其它资源的时候，会调用MyShiroRealm.doGetAuthorizationInfo()方法，查询缓存中的UserInfo，然后遍历角色和角色对应的资源，放回给系统进行过滤</li>
+<li>编写方法的时候添加注解，表明该方法的需要用户具备 某某某资源<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@RequestMapping(&quot;/userList&quot;)</div><div class="line">@RequiresPermissions(&quot;userInfo:view&quot;)//权限管理;</div><div class="line">public String userInfo()&#123;</div><div class="line">    return &quot;userInfo&quot;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h1><ul>
+<li><p>Authentication：身份认证/登录，验证用户是不是拥有相应的身份。</p>
+</li>
+<li><p>Authorization：授权，即权限验证，验证某个已认证的用户是否拥有某个权限；即判断用户是否能做事情，常见的如：验证某个用户是否拥有某个角色。或者细粒度的验证某个用户对某个资源是否具有某个权限。</p>
+</li>
+<li><p>Cryptography：加密，保护数据的安全性，如密码加密存储到数据库，而不是明文存储。</p>
+</li>
+<li><p>Remember Me：记住我，这个是非常常见的功能，即一次登录后，下次再来的话不用登录了。</p>
+</li>
+<li><p>Session Manager：会话管理，即用户登录后就是一次会话，在没有退出之前，它的所有信息都在会话中；会话可以是普通 JavaSE 环境的，也可以是如 Web 环境的。</p>
+</li>
+<li><p>Caching：缓存，比如用户登录后，其用户信息、拥有的角色/权限不必每次去查，这样可以提高效率。</p>
+</li>
+<li><p>Concurrency：shiro 支持多线程应用的并发验证，即如在一个线程中开启另一个线程，能把权限自动传播过去。</p>
+</li>
+</ul>
+<h1 id="过滤器"><a href="#过滤器" class="headerlink" title="过滤器"></a>过滤器</h1><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">/admins/**=anon               # 表示该 uri 可以匿名访问</div><div class="line">/admins/**=auth               # 表示该 uri 需要认证才能访问</div><div class="line">/admins/**=authcBasic         # 表示该 uri 需要 httpBasic 认证</div><div class="line">/admins/**=perms[user:add:*]  # 表示该 uri 需要认证用户拥有 user:add:* 权限才能访问</div><div class="line">/admins/**=port[8081]         # 表示该 uri 需要使用 8081 端口</div><div class="line">/admins/**=rest[user]         # 相当于 /admins/**=perms[user:method]，其中，method 表示  get、post、delete 等</div><div class="line">/admins/**=roles[admin]       # 表示该 uri 需要认证用户拥有 admin 角色才能访问</div><div class="line">/admins/**=ssl                # 表示该 uri 需要使用 https 协议</div><div class="line">/admins/**=user               # 表示该 uri 需要认证或通过记住我认证才能访问</div><div class="line">/logout=logout                # 表示注销,可以当作固定配置</div></pre></td></tr></table></figure>
+<h1 id="整合Spring"><a href="#整合Spring" class="headerlink" title="整合Spring"></a>整合Spring</h1><ol>
+<li><p>maven 相关依赖（如果依赖shiro-web的话，loginUrl的处理逻辑会不同）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;org.apache.shiro&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;shiro-core&lt;/artifactId&gt;</div><div class="line">    &lt;version&gt;1.4.0&lt;/version&gt;</div><div class="line">&lt;/dependency&gt;</div><div class="line">&lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;org.apache.shiro&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;shiro-spring&lt;/artifactId&gt;</div><div class="line">    &lt;version&gt;1.4.0&lt;/version&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>web.xml配置</p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"> &lt;!-- shiro过滤器定义 --&gt;</div><div class="line"> &lt;filter&gt;  </div><div class="line">    &lt;filter-name&gt;shiroFilter&lt;/filter-name&gt;  </div><div class="line">    &lt;filter-class&gt;org.springframework.web.filter.DelegatingFilterProxy&lt;/filter-class&gt;  </div><div class="line">    &lt;init-param&gt;   </div><div class="line">    &lt;param-name&gt;targetFilterLifecycle&lt;/param-name&gt;  </div><div class="line">    &lt;param-value&gt;true&lt;/param-value&gt;  </div><div class="line">    &lt;/init-param&gt;  </div><div class="line">&lt;/filter&gt;  </div><div class="line">&lt;filter-mapping&gt;  </div><div class="line">        &lt;filter-name&gt;shiroFilter&lt;/filter-name&gt;  </div><div class="line">        &lt;url-pattern&gt;/*&lt;/url-pattern&gt;  </div><div class="line">&lt;/filter-mapping&gt;</div></pre></td></tr></table></figure>
+<ol>
+<li><p>如果用ehcache缓存的话，配置ehcache的缓存管理器</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;bean id=&quot;cacheManager&quot; class=&quot;org.springframework.cache.ehcache.EhCacheManagerFactoryBean&quot;&gt;</div><div class="line">      &lt;property name=&quot;configLocation&quot; value=&quot;classpath:$&#123;ehcache.file&#125;&quot;&gt;&lt;/property&gt;</div><div class="line">  &lt;/bean&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>ShiroFilter的配置<br>4种常用的过滤规则：</p>
+</li>
+</ol>
+<ul>
+<li><p>anon:例子/admins/**=anon 没有参数，表示可以匿名使用。</p>
+</li>
+<li><p>authc:例如/admins/user/**=authc表示需要认证(登录)才能使用，没有参数</p>
+</li>
+<li><p>roles：例子/admins/user/<strong>=roles[admin],参数可以写多个，多个时必须加上引号，并且参数之间用逗号分割，当有多个参数时，例如admins/user/</strong>=roles[“admin,guest”],每个参数通过才算通过，相当于hasAllRoles()方法。</p>
+</li>
+<li><p>perms：例子/admins/user/<strong>=perms[user:add:*],参数可以写多个，多个时必须加上引号，并且参数之间用逗号分割，例如/admins/user/</strong>=perms[“user:add:<em>,user:modify:</em>“]，当有多个参数时必须每个参数都通过才通过，想当于isPermitedAll()方法</p>
+</li>
+</ul>
+<ol>
+<li><p>securityManager的配置</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">    &lt;bean id=&quot;securityManager&quot; class=&quot;org.apache.shiro.web.mgt.DefaultWebSecurityManager&quot;&gt;</div><div class="line">        &lt;property name=&quot;realm&quot; ref=&quot;systemAuthorizingRealm&quot; /&gt;</div><div class="line">        &lt;property name=&quot;sessionManager&quot; ref=&quot;sessionManager&quot; /&gt;</div><div class="line">        &lt;property name=&quot;cacheManager&quot; ref=&quot;shiroCacheManager&quot; /&gt;</div><div class="line">    &lt;/bean&gt;</div><div class="line"></div><div class="line"></div><div class="line">&lt;bean id=&quot;securityManager&quot; class=&quot;org.apache.shiro.web.mgt.DefaultWebSecurityManager&quot;&gt;</div><div class="line">    &lt;property name=&quot;realm&quot; ref=&quot;customRealm&quot; /&gt;</div><div class="line">&lt;/bean&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>自定义 realm</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"># 不含加密器设置</div><div class="line">&lt;bean id=&quot;customRealm&quot; class=&quot;com.light.ac.web.realm.CustomRealm&quot; /&gt;</div><div class="line"></div><div class="line"># 含加密器的设置</div><div class="line">&lt;bean id=&quot;customRealm&quot; class=&quot;com.light.ac.web.realm.CustomRealm&quot;&gt;</div><div class="line">	&lt;property name=&quot;credentialsMatcher&quot; ref=&quot;credentialsMatcher&quot;/&gt;</div><div class="line">&lt;/bean&gt;</div><div class="line"></div><div class="line">&lt;bean id=&quot;credentialsMatcher&quot; class=&quot;org.apache.shiro.authc.credential.HashedCredentialsMatcher&quot;&gt;</div><div class="line">    &lt;property name=&quot;hashAlgorithmName&quot; value=&quot;md5&quot;/&gt;</div><div class="line">    &lt;property name=&quot;hashIterations&quot; value=&quot;1&quot;/&gt;</div><div class="line">&lt;/bean&gt;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/06/06/Shiro总篇配置/" data-title="Shiro总篇配置 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/06/11/Web项目常用优化配置/" title="Web项目常用优化配置">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Web项目常用优化配置</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/06/05/Mybatis通用Mapper配置/"  title="Mybatis通用Mapper配置">
+ <strong>下一篇：</strong><br/> 
+ <span>Mybatis通用Mapper配置
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/06/06/Shiro总篇配置/" data-title="Shiro总篇配置" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/06/06/Shiro总篇配置/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#流程"><span class="toc-number">1.</span> <span class="toc-text">流程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#功能"><span class="toc-number">2.</span> <span class="toc-text">功能</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#过滤器"><span class="toc-number">3.</span> <span class="toc-text">过滤器</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#整合Spring"><span class="toc-number">4.</span> <span class="toc-text">整合Spring</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

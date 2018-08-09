@@ -1,0 +1,484 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Solr安装配置、日志、核心配置、URL命令（一） | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="参考文档 一个系列可以实现solr集成tomcat、core的创建、创建相关的字段和配置、数据库信息导入http://www.cnblogs.com/blueskyli/p/7100443.htmlhttp://www.cnblogs.com/blueskyli/p/7120847.htmlhttp://www.cnblogs.com/blueskyli/p/7128400.html  solr管">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Solr安装配置、日志、核心配置、URL命令（一）">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/05/08/Solr安装配置、日志、核心配置、URL命令（一）/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="参考文档 一个系列可以实现solr集成tomcat、core的创建、创建相关的字段和配置、数据库信息导入http://www.cnblogs.com/blueskyli/p/7100443.htmlhttp://www.cnblogs.com/blueskyli/p/7120847.htmlhttp://www.cnblogs.com/blueskyli/p/7128400.html  solr管">
+<meta property="og:updated_time" content="2018-05-16T06:23:40.706Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Solr安装配置、日志、核心配置、URL命令（一）">
+<meta name="twitter:description" content="参考文档 一个系列可以实现solr集成tomcat、core的创建、创建相关的字段和配置、数据库信息导入http://www.cnblogs.com/blueskyli/p/7100443.htmlhttp://www.cnblogs.com/blueskyli/p/7120847.htmlhttp://www.cnblogs.com/blueskyli/p/7128400.html  solr管">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/05/08/Solr安装配置、日志、核心配置、URL命令（一）/" title="Solr安装配置、日志、核心配置、URL命令（一）" itemprop="url">Solr安装配置、日志、核心配置、URL命令（一）</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-05-08T07:21:45.800Z" itemprop="datePublished"> 发表于 2018-05-08</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考文档"><span class="toc-number">1.</span> <span class="toc-text">参考文档</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Solr特点"><span class="toc-number">2.</span> <span class="toc-text">Solr特点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#solr集成tomcat的安装方法"><span class="toc-number">3.</span> <span class="toc-text">solr集成tomcat的安装方法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#web管理界面"><span class="toc-number">4.</span> <span class="toc-text">web管理界面</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#cloud功能"><span class="toc-number">4.1.</span> <span class="toc-text">cloud功能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#query界面"><span class="toc-number">4.2.</span> <span class="toc-text">query界面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#analysis功能"><span class="toc-number">4.3.</span> <span class="toc-text">analysis功能</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#url命令"><span class="toc-number">5.</span> <span class="toc-text">url命令</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#webSolr-API"><span class="toc-number">6.</span> <span class="toc-text">webSolr API</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#solr服务器核心配置"><span class="toc-number">7.</span> <span class="toc-text">solr服务器核心配置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#webapp下的solr的web-xml"><span class="toc-number">7.1.</span> <span class="toc-text">webapp下的solr的web.xml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#solr-xml-端口、超时、zk、jetty等设置"><span class="toc-number">7.2.</span> <span class="toc-text">solr.xml 端口、超时、zk、jetty等设置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Core应用配置"><span class="toc-number">7.3.</span> <span class="toc-text">Core应用配置</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#solr的查询日志"><span class="toc-number">8.</span> <span class="toc-text">solr的查询日志</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#生成持久日志的方法："><span class="toc-number">8.1.</span> <span class="toc-text">生成持久日志的方法：</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h1><ul>
+<li><p>一个系列可以实现solr集成tomcat、core的创建、创建相关的字段和配置、数据库信息导入<br><a href="http://www.cnblogs.com/blueskyli/p/7100443.html" target="_blank" rel="external">http://www.cnblogs.com/blueskyli/p/7100443.html</a><br><a href="http://www.cnblogs.com/blueskyli/p/7120847.html" target="_blank" rel="external">http://www.cnblogs.com/blueskyli/p/7120847.html</a><br><a href="http://www.cnblogs.com/blueskyli/p/7128400.html" target="_blank" rel="external">http://www.cnblogs.com/blueskyli/p/7128400.html</a></p>
+</li>
+<li><p>solr管理界面 query的详细说明博客<br><a href="https://www.cnblogs.com/xinfang520/p/7722363.html" target="_blank" rel="external">https://www.cnblogs.com/xinfang520/p/7722363.html</a></p>
+</li>
+<li><p>solr索引和搜索原理说明 666<br><a href="http://www.importnew.com/12707.html" target="_blank" rel="external">http://www.importnew.com/12707.html</a></p>
+</li>
+<li><p>zk集群和solr-cloud搭建<br><a href="http://blog.csdn.net/makang110/article/details/53032458" target="_blank" rel="external">http://blog.csdn.net/makang110/article/details/53032458</a></p>
+</li>
+<li><p>solr官方url命令API<br><a href="https://lucene.apache.org/solr/guide/6_6/collections-api.html" target="_blank" rel="external">https://lucene.apache.org/solr/guide/6_6/collections-api.html</a></p>
+</li>
+</ul>
+<h1 id="Solr特点"><a href="#Solr特点" class="headerlink" title="Solr特点"></a>Solr特点</h1><ul>
+<li>先进的全文搜索功能（不同于数据库的like查询，会根据分词结果的匹配程度按照评分规则顺序展示）</li>
+<li>支持像英语，德语，中国，日本，法国和许多主要语言（中文分词：Ansj分词插件、IK等）</li>
+<li>高度可扩展和容错（主要是solr-cloud而言）</li>
+<li>API支持关键词高亮、颜色显示等渲染形式</li>
+<li>XML，JSON和HTTP等结果返回形式 </li>
+<li>丰富的文档分析</li>
+</ul>
+<h1 id="solr集成tomcat的安装方法"><a href="#solr集成tomcat的安装方法" class="headerlink" title="solr集成tomcat的安装方法"></a>solr集成tomcat的安装方法</h1><ul>
+<li>安装方法<br><a href="http://www.cnblogs.com/blueskyli/p/7100443.html" target="_blank" rel="external">http://www.cnblogs.com/blueskyli/p/7100443.html</a></li>
+<li>访问路径<br><a href="http://localhost:8088/solr/index.html#/" target="_blank" rel="external">http://localhost:8088/solr/index.html#/</a></li>
+</ul>
+<h1 id="web管理界面"><a href="#web管理界面" class="headerlink" title="web管理界面"></a>web管理界面</h1><h2 id="cloud功能"><a href="#cloud功能" class="headerlink" title="cloud功能"></a>cloud功能</h2><p>当solr继承了zookeeper之后，当有2个节点的时候，就会显示出cloud的操作界面，通过Graph功能，就能看到各个相关节点的运行状态和关联情况</p>
+<h2 id="query界面"><a href="#query界面" class="headerlink" title="query界面"></a>query界面</h2><p>q： 查询内容(九江市  或者为 * 查询该字段的全部内容)<br>df:为字段名称(cityname)</p>
+<h2 id="analysis功能"><a href="#analysis功能" class="headerlink" title="analysis功能"></a>analysis功能</h2><p><a href="https://blog.csdn.net/john1337/article/details/79408172" target="_blank" rel="external">https://blog.csdn.net/john1337/article/details/79408172</a><br>通过在fieldvalue 里面输入文字，再选择字段后进行分析，可以看出字段中文字的分词情况</p>
+<h1 id="url命令"><a href="#url命令" class="headerlink" title="url命令"></a>url命令</h1><ul>
+<li><p>solr官方url命令API<br><a href="https://lucene.apache.org/solr/guide/6_6/collections-api.html" target="_blank" rel="external">https://lucene.apache.org/solr/guide/6_6/collections-api.html</a></p>
+</li>
+<li><p>删除废弃的节点：<br>可以先通过命令查看下该节点属于core_node几，只要网络能通的话，就能删。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">http://218.30.99.44:8880/solr/admin/collections?action=DELETEREPLICA&amp;collection=course&amp;shard=shard1&amp;replica=core_node7</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="webSolr-API"><a href="#webSolr-API" class="headerlink" title="webSolr API"></a>webSolr API</h1><p><a href="https://www.cnblogs.com/xiao-zhang-blogs/p/7339476.html" target="_blank" rel="external">https://www.cnblogs.com/xiao-zhang-blogs/p/7339476.html</a><br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public void deleteDocumentById() throws Exception &#123;  </div><div class="line">        //选择具体的某一个solr core</div><div class="line">        HttpSolrClient server = new HttpSolrClient(SOLR_URL+&quot;helloworld&quot;);</div><div class="line">        //删除文档  </div><div class="line">		//server.deleteById(&quot;3&quot;);</div><div class="line">        //删除所有的索引</div><div class="line">        server.deleteByQuery(&quot;*:*&quot;);</div><div class="line">        //提交修改  </div><div class="line">        server.commit();</div><div class="line">        server.close();</div><div class="line">    &#125; </div><div class="line"></div><div class="line"> public void addDoc() throws SolrServerException, IOException&#123;</div><div class="line">        //获得一个solr服务端的请求，去提交  ,选择具体的某一个solr core</div><div class="line">        //solr的服务器地址</div><div class="line">        //private final static String SOLR_URL = &quot;http://localhost:8080/solr/&quot;;</div><div class="line">        </div><div class="line">        HttpSolrClient solr = new HttpSolrClient(SOLR_URL + &quot;helloworld&quot;);</div><div class="line">        try &#123;</div><div class="line">           //构造一篇文档  </div><div class="line">           SolrInputDocument document = new SolrInputDocument();  </div><div class="line">           //往doc中添加字段,在客户端这边添加的字段必须在服务端中有过定义 </div><div class="line">           document.addField(&quot;id&quot;, &quot;1&quot;);  </div><div class="line">           document.addField(&quot;name&quot;, &quot;你好&quot;);  </div><div class="line">           document.addField(&quot;description&quot;, &quot;前进的中国你好&quot;);  </div><div class="line">           solr.add(document);</div><div class="line">           </div><div class="line">           solr.commit();</div><div class="line">        &#125; finally&#123;</div><div class="line">            solr.close();</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<h1 id="solr服务器核心配置"><a href="#solr服务器核心配置" class="headerlink" title="solr服务器核心配置"></a>solr服务器核心配置</h1><h2 id="webapp下的solr的web-xml"><a href="#webapp下的solr的web-xml" class="headerlink" title="webapp下的solr的web.xml"></a>webapp下的solr的web.xml</h2><ul>
+<li>指定solr_home和屏蔽访问权限，默认的路径就是tomcat下面</li>
+<li>可以把solr/home 设置在 tomcat的 solr-home文件夹下面<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">   	&lt;env-entry&gt;</div><div class="line">       &lt;env-entry-name&gt;solr/home&lt;/env-entry-name&gt;</div><div class="line">       &lt;env-entry-value&gt;../solr-home&lt;/env-entry-value&gt;</div><div class="line">       &lt;env-entry-type&gt;java.lang.String&lt;/env-entry-type&gt;</div><div class="line">    &lt;/env-entry&gt;</div><div class="line"></div><div class="line"></div><div class="line">  &lt;!--</div><div class="line">  &lt;security-constraint&gt;</div><div class="line">    &lt;web-resource-collection&gt;</div><div class="line">      &lt;web-resource-name&gt;Disable TRACE&lt;/web-resource-name&gt;</div><div class="line">      &lt;url-pattern&gt;/&lt;/url-pattern&gt;</div><div class="line">      &lt;http-method&gt;TRACE&lt;/http-method&gt;</div><div class="line">    &lt;/web-resource-collection&gt;</div><div class="line">    &lt;auth-constraint/&gt;</div><div class="line">  &lt;/security-constraint&gt;</div><div class="line">  &lt;security-constraint&gt;</div><div class="line">    &lt;web-resource-collection&gt;</div><div class="line">      &lt;web-resource-name&gt;Enable everything but TRACE&lt;/web-resource-name&gt;</div><div class="line">      &lt;url-pattern&gt;/&lt;/url-pattern&gt;</div><div class="line">      &lt;http-method-omission&gt;TRACE&lt;/http-method-omission&gt;</div><div class="line">    &lt;/web-resource-collection&gt;</div><div class="line">  &lt;/security-constraint&gt;</div><div class="line">--&gt;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="solr-xml-端口、超时、zk、jetty等设置"><a href="#solr-xml-端口、超时、zk、jetty等设置" class="headerlink" title="solr.xml 端口、超时、zk、jetty等设置"></a>solr.xml 端口、超时、zk、jetty等设置</h2><p>路径在 solr/home下面<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;str name=&quot;host&quot;&gt;$&#123;host:&#125;&lt;/str&gt;</div><div class="line">  &lt;int name=&quot;hostPort&quot;&gt;$&#123;jetty.port:8983&#125;&lt;/int&gt;</div><div class="line">  &lt;str name=&quot;hostContext&quot;&gt;$&#123;hostContext:solr&#125;&lt;/str&gt;</div></pre></td></tr></table></figure></p>
+<h2 id="Core应用配置"><a href="#Core应用配置" class="headerlink" title="Core应用配置"></a>Core应用配置</h2><p>在collection/conf路径下面</p>
+<ul>
+<li>dataconfig.xml<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;dataConfig&gt;</div><div class="line">	&lt;dataSource driver=&quot;com.mysql.jdbc.Driver&quot; url=&quot;jdbc:mysql://10.110.12.91:3306/eedu?useUnicode=true&amp;amp;characterEncoding=utf-8&quot; readOnly=&quot;true&quot; batchSize=&quot;3000&quot; user=&quot;dh&quot; password=&quot;dh&quot;/&gt;</div><div class="line">	&lt;document name=&quot;course&quot;&gt;</div><div class="line">		&lt;entity name=&quot;course&quot; query=&quot;select * from course where deleted != 1&quot;&gt;</div><div class="line">			&lt;field column=&quot;id&quot; name=&quot;id&quot; /&gt;</div><div class="line">			&lt;field column=&quot;name&quot; name=&quot;name&quot; /&gt;</div><div class="line">			&lt;field column=&quot;description&quot; name=&quot;description&quot; /&gt;</div><div class="line">			&lt;field column=&quot;image&quot; name=&quot;image&quot; /&gt;</div><div class="line">			&lt;field column=&quot;length&quot; name=&quot;length&quot; /&gt;</div><div class="line">			&lt;field column=&quot;score&quot; name=&quot;score&quot; /&gt;</div><div class="line">			&lt;field column=&quot;type&quot; name=&quot;type&quot; /&gt;</div><div class="line">            &lt;field column=&quot;is_vertical&quot; name=&quot;is_vertical&quot; /&gt;</div><div class="line">            &lt;entity name=&quot;class&quot; query=&quot;select classes_id,subclasses_id FROM course_subclass WHERE course_subclass.course_id=$&#123;course.id&#125;&quot;&gt;</div><div class="line">                &lt;field column=&quot;classes_id&quot; name=&quot;classId&quot; /&gt;</div><div class="line">                &lt;field column=&quot;subclasses_id&quot; name=&quot;subclassId&quot; /&gt;</div><div class="line">            &lt;/entity&gt;</div><div class="line">            &lt;entity name=&quot;eapp&quot; query=&quot;select * from eapp_course where course_id=$&#123;course.id&#125;&quot;&gt;</div><div class="line">                &lt;field column=&quot;eapp_id&quot; name=&quot;app&quot; /&gt;</div><div class="line">            &lt;/entity&gt;</div><div class="line">            &lt;entity name=&quot;tags&quot; query=&quot;select tag.name FROM course_tags, tag WHERE course_tags.tag_id=tag.id and course_tags.course_id=$&#123;course.id&#125;&quot;&gt;</div><div class="line">                &lt;field column=&quot;name&quot; name=&quot;tags&quot; /&gt;</div><div class="line">            &lt;/entity&gt; </div><div class="line">		&lt;/entity&gt;</div><div class="line">	&lt;/document&gt;</div><div class="line">&lt;/dataConfig&gt;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="solr的查询日志"><a href="#solr的查询日志" class="headerlink" title="solr的查询日志"></a>solr的查询日志</h1><p><a href="https://blog.csdn.net/woshiwanxin102213/article/details/18793271" target="_blank" rel="external">https://blog.csdn.net/woshiwanxin102213/article/details/18793271</a></p>
+<ul>
+<li>默认情况下，solr的日志是瞬时的，tomcat重启后，就消失了。可以通过图形化界面<a href="http://ip:port/solr/#/~logging查看" target="_blank" rel="external">http://ip:port/solr/#/~logging查看</a><h2 id="生成持久日志的方法："><a href="#生成持久日志的方法：" class="headerlink" title="生成持久日志的方法："></a>生成持久日志的方法：</h2></li>
+</ul>
+<ol>
+<li>将solr-4.5.1\example\lib\ext下面的jar包放到solr-4.5.1.war里边的WEB-INF\lib下面，因为从solr4开始，日志的jar被分离出来放到solr-4.5.1\example\lib\ext里边了</li>
+<li>在solr-4.5.1.war的WEB-INF下建classes目录，在该目录创建文件log4j.properties，log4j.properties的样例如下(日志级别、日志路径可自定义)：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"># 例如我们系统的配置</div><div class="line"></div><div class="line"># 路径在 bin目录下的logs/solr.log</div><div class="line">solr.log=logs/</div><div class="line"></div><div class="line">#  Logging level</div><div class="line">log4j.rootLogger=WARN, file, CONSOLE</div><div class="line"></div><div class="line">log4j.appender.CONSOLE=org.apache.log4j.ConsoleAppender</div><div class="line"></div><div class="line">log4j.appender.CONSOLE.layout=org.apache.log4j.PatternLayout</div><div class="line">log4j.appender.CONSOLE.layout.ConversionPattern=%-4r [%t] %-5p %c %x \u2013 %m%n</div><div class="line"></div><div class="line">#- size rotation with log cleanup.</div><div class="line">log4j.appender.file=org.apache.log4j.RollingFileAppender</div><div class="line">log4j.appender.file.MaxFileSize=4MB</div><div class="line">log4j.appender.file.MaxBackupIndex=9</div><div class="line"></div><div class="line">#- File to log to and log format</div><div class="line">log4j.appender.file.File=$&#123;solr.log&#125;/solr.log</div><div class="line">log4j.appender.file.layout=org.apache.log4j.PatternLayout</div><div class="line">log4j.appender.file.layout.ConversionPattern=%-5p - %d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125;; %C; %m\n</div><div class="line"></div><div class="line">log4j.logger.org.apache.zookeeper=WARN</div><div class="line">log4j.logger.org.apache.hadoop=WARN</div><div class="line"></div><div class="line"># set to INFO to enable infostream log messages</div><div class="line">log4j.logger.org.apache.solr.update.LoggingInfoStream=OFF</div></pre></td></tr></table></figure>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/05/08/Solr安装配置、日志、核心配置、URL命令（一）/" data-title="Solr安装配置、日志、核心配置、URL命令（一） | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/05/16/SolrCloud相关配置和本地实现（三）/" title="SolrCloud相关配置和本地实现（三）">
+  <strong>上一篇：</strong><br/>
+  <span>
+  SolrCloud相关配置和本地实现（三）</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/05/05/Mysql数据操作命令/"  title="Mysql数据操作命令">
+ <strong>下一篇：</strong><br/> 
+ <span>Mysql数据操作命令
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/05/08/Solr安装配置、日志、核心配置、URL命令（一）/" data-title="Solr安装配置、日志、核心配置、URL命令（一）" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/05/08/Solr安装配置、日志、核心配置、URL命令（一）/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考文档"><span class="toc-number">1.</span> <span class="toc-text">参考文档</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Solr特点"><span class="toc-number">2.</span> <span class="toc-text">Solr特点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#solr集成tomcat的安装方法"><span class="toc-number">3.</span> <span class="toc-text">solr集成tomcat的安装方法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#web管理界面"><span class="toc-number">4.</span> <span class="toc-text">web管理界面</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#cloud功能"><span class="toc-number">4.1.</span> <span class="toc-text">cloud功能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#query界面"><span class="toc-number">4.2.</span> <span class="toc-text">query界面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#analysis功能"><span class="toc-number">4.3.</span> <span class="toc-text">analysis功能</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#url命令"><span class="toc-number">5.</span> <span class="toc-text">url命令</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#webSolr-API"><span class="toc-number">6.</span> <span class="toc-text">webSolr API</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#solr服务器核心配置"><span class="toc-number">7.</span> <span class="toc-text">solr服务器核心配置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#webapp下的solr的web-xml"><span class="toc-number">7.1.</span> <span class="toc-text">webapp下的solr的web.xml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#solr-xml-端口、超时、zk、jetty等设置"><span class="toc-number">7.2.</span> <span class="toc-text">solr.xml 端口、超时、zk、jetty等设置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Core应用配置"><span class="toc-number">7.3.</span> <span class="toc-text">Core应用配置</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#solr的查询日志"><span class="toc-number">8.</span> <span class="toc-text">solr的查询日志</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#生成持久日志的方法："><span class="toc-number">8.1.</span> <span class="toc-text">生成持久日志的方法：</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

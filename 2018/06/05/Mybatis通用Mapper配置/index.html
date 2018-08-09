@@ -1,0 +1,461 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Mybatis通用Mapper配置 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="https://blog.csdn.net/qq1130169218/article/details/71747429 demo 示例https://github.com/huangzhenshi/mybatis-mapper 注意事项 实体类需要按照如下规则和数据库表进行转换，注解全部是JPA中的注解，所以我们在maven中添加了它的jar包依赖 表名默认使用类名，驼峰转下划线，如UserInf">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mybatis通用Mapper配置">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/06/05/Mybatis通用Mapper配置/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="https://blog.csdn.net/qq1130169218/article/details/71747429 demo 示例https://github.com/huangzhenshi/mybatis-mapper 注意事项 实体类需要按照如下规则和数据库表进行转换，注解全部是JPA中的注解，所以我们在maven中添加了它的jar包依赖 表名默认使用类名，驼峰转下划线，如UserInf">
+<meta property="og:updated_time" content="2018-06-05T10:20:39.326Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mybatis通用Mapper配置">
+<meta name="twitter:description" content="https://blog.csdn.net/qq1130169218/article/details/71747429 demo 示例https://github.com/huangzhenshi/mybatis-mapper 注意事项 实体类需要按照如下规则和数据库表进行转换，注解全部是JPA中的注解，所以我们在maven中添加了它的jar包依赖 表名默认使用类名，驼峰转下划线，如UserInf">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/06/05/Mybatis通用Mapper配置/" title="Mybatis通用Mapper配置" itemprop="url">Mybatis通用Mapper配置</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-06-05T09:49:34.543Z" itemprop="datePublished"> 发表于 2018-06-05</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#注意事项"><span class="toc-number">1.</span> <span class="toc-text">注意事项</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#API"><span class="toc-number">2.</span> <span class="toc-text">API</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#搭建过程"><span class="toc-number">3.</span> <span class="toc-text">搭建过程</span></a></li></ol>
+		
+		</div>
+		
+		<p><a href="https://blog.csdn.net/qq1130169218/article/details/71747429" target="_blank" rel="external">https://blog.csdn.net/qq1130169218/article/details/71747429</a></p>
+<p>demo 示例<br><a href="https://github.com/huangzhenshi/mybatis-mapper">https://github.com/huangzhenshi/mybatis-mapper</a></p>
+<h1 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h1><ul>
+<li>实体类需要按照如下规则和数据库表进行转换，注解全部是JPA中的注解，所以我们在maven中添加了它的jar包依赖</li>
+<li>表名默认使用类名，驼峰转下划线，如UserInfo默认对应的表名为user_info</li>
+<li>表名可以使用@Table(name = “tableName”)进行指定，对不符合第一条默认规则的可以通过这种方式指定表名</li>
+<li>字段默认和@Column一样，都会作为表字段，表字段默认为Java对象的Field名字驼峰转下划线形式</li>
+<li>可以使用@Column(name = “fieldName”)指定不符合第3条规则的字段名</li>
+<li>使用@Transient注解可以忽略字段，添加该注解的字段不会作为表字段使用，建议一定是有一个@Id注解作为主键的字段，可以有多个@Id注解的字段作为联合主键</li>
+<li>默认情况下，实体类中如果不存在包含@Id注解的字段，所有的字段都会作为主键字段进行使用(这种效率极低)</li>
+<li>实体类可以继承使用</li>
+<li>由于基本类型，如int作为实体类字段时会有默认值0，而且无法消除，所以实体类中建议不要使用基本类型</li>
+</ul>
+<h1 id="API"><a href="#API" class="headerlink" title="API"></a>API</h1><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">/**</div><div class="line">    * 根据实体中的属性值进行查询，查询条件使用等号</div><div class="line">    */</div><div class="line">   @SelectProvider(type = BaseSelectProvider.class, method = &quot;dynamicSQL&quot;)</div><div class="line">   List&lt;T&gt; select(T record);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">   VirtualIpBean vipBean = new VirtualIpBean();  </div><div class="line">   vipBean.setBeginTime(new Date());  </div><div class="line">   //（1）mapper基础接口  </div><div class="line">   //select接口  </div><div class="line">   List&lt;VirtualIpBean&gt; vipList = vipMapper.select(vipBean);//根据实体中的属性值进行查询，查询条件使用等号 </div><div class="line"></div><div class="line">   VirtualIpBean vip = vipMapper.selectOne(vipBean);//根据实体中的属性进行查询，只能有一个返回值，有多个结果是抛出异常，查询条件使用等号  </div><div class="line">  </div><div class="line">List&lt;VirtualIpBean&gt; vipList2 = vipMapper.selectAll();//查询全部结果，select(null)方法能达到同样的效果  </div><div class="line">   VirtualIpBean vip2 = vipMapper.selectByPrimaryKey(1);//根据主键字段进行查询，方法参数必须包含完整的主键属性，查询条件使用等号  </div><div class="line">   int count = vipMapper.selectCount(vipBean);//根据实体中的属性查询总数，查询条件使用等号  </div><div class="line">   //insert接口  </div><div class="line">   int a = vipMapper.insert(vipBean);//保存一个实体，null的属性也会保存，不会使用数据库默认值  </div><div class="line">   int a1 = vipMapper.insertSelective(vipBean);//保存实体，null的属性不会保存，会使用数据库默认值  </div><div class="line">   //update接口  </div><div class="line">   int b = vipMapper.updateByPrimaryKeySelective(vipBean);//根据主键更新属性不为null的值  </div><div class="line">   int c = vipMapper.updateByPrimaryKey(vipBean);//根据主键更新实体全部字段，null值会被更新  </div><div class="line">   //delete接口  </div><div class="line">   int d = vipMapper.delete(vipBean);//根据实体属性作为条件进行删除，查询条件使用等号  </div><div class="line">   int e = vipMapper.deleteByPrimaryKey(1);//根据主键字段进行删除，方法参数必须包含完整的主键属性  </div><div class="line">   //（2）Example方法  </div><div class="line">   Example example = new Example(VirtualIpBean.class);  </div><div class="line">   example.createCriteria().andEqualTo(&quot;id&quot;, 1);  </div><div class="line">   example.createCriteria().andLike(&quot;val&quot;, &quot;1&quot;);  </div><div class="line">   //自定义查询  </div><div class="line">   List&lt;VirtualIpBean&gt; vipList3 = vipMapper.selectByExample(example);</div></pre></td></tr></table></figure>
+<h1 id="搭建过程"><a href="#搭建过程" class="headerlink" title="搭建过程"></a>搭建过程</h1><ol>
+<li><p>引入依赖</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"> &lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;javax.persistence&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;persistence-api&lt;/artifactId&gt;</div><div class="line">    &lt;version&gt;1.0&lt;/version&gt;</div><div class="line">&lt;/dependency&gt;</div><div class="line"></div><div class="line">&lt;!--通用Mapper--&gt;</div><div class="line">&lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;tk.mybatis&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;mapper&lt;/artifactId&gt;</div><div class="line">    &lt;version&gt;3.3.9&lt;/version&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>指定Mapper接口所在包路径</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;bean class=&quot;tk.mybatis.spring.mapper.MapperScannerConfigurer&quot;&gt;</div><div class="line">	&lt;property name=&quot;basePackage&quot; value=&quot;com.test.IDao&quot;/&gt;</div><div class="line">&lt;/bean&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>标明实体类和表映射关系</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Data</div><div class="line">@Table(name=&quot;user_t&quot;)</div><div class="line">public class User &#123;</div><div class="line">    @Id</div><div class="line">    private Long id;</div><div class="line">    private String userName;</div><div class="line">    private String password;</div><div class="line">    private Short age;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>接口类集成Mapper和指定实体类</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public interface UserDAO extends Mapper&lt;User&gt;&#123;&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>调用</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Transactional</div><div class="line">public void saveUser()&#123;</div><div class="line">	User user = new User();</div><div class="line">	user.setUserName(&quot;test1736&quot;);</div><div class="line">	user.setPassword(&quot;qwert&quot;);</div><div class="line">	userDAO.insertSelective(user);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/06/05/Mybatis通用Mapper配置/" data-title="Mybatis通用Mapper配置 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/06/06/Shiro总篇配置/" title="Shiro总篇配置">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Shiro总篇配置</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/06/01/SpringBoot高级功能/"  title="SpringBoot高级功能">
+ <strong>下一篇：</strong><br/> 
+ <span>SpringBoot高级功能
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/06/05/Mybatis通用Mapper配置/" data-title="Mybatis通用Mapper配置" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/06/05/Mybatis通用Mapper配置/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#注意事项"><span class="toc-number">1.</span> <span class="toc-text">注意事项</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#API"><span class="toc-number">2.</span> <span class="toc-text">API</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#搭建过程"><span class="toc-number">3.</span> <span class="toc-text">搭建过程</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

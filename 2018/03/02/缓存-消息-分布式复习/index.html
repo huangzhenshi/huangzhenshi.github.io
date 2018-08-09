@@ -1,0 +1,518 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>缓存-消息-分布式复习 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="常见缓存：  SQL级别的缓存（mybatis、hibernate的一级二级缓存） 工具缓存对象级缓存（ehcache、redis、memcache） 整合Spring注解方法级缓存  缓存会导致查询不走数据库，摆脱了数据库的事务控制，会有并发问题的。 Spring 常用缓存注解 @Cacheable 配置 value key condition支持el表达式的缓存 @CachePut 调用时不取">
+<meta property="og:type" content="article">
+<meta property="og:title" content="缓存-消息-分布式复习">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/02/缓存-消息-分布式复习/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="常见缓存：  SQL级别的缓存（mybatis、hibernate的一级二级缓存） 工具缓存对象级缓存（ehcache、redis、memcache） 整合Spring注解方法级缓存  缓存会导致查询不走数据库，摆脱了数据库的事务控制，会有并发问题的。 Spring 常用缓存注解 @Cacheable 配置 value key condition支持el表达式的缓存 @CachePut 调用时不取">
+<meta property="og:updated_time" content="2018-03-01T05:30:10.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="缓存-消息-分布式复习">
+<meta name="twitter:description" content="常见缓存：  SQL级别的缓存（mybatis、hibernate的一级二级缓存） 工具缓存对象级缓存（ehcache、redis、memcache） 整合Spring注解方法级缓存  缓存会导致查询不走数据库，摆脱了数据库的事务控制，会有并发问题的。 Spring 常用缓存注解 @Cacheable 配置 value key condition支持el表达式的缓存 @CachePut 调用时不取">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/03/02/缓存-消息-分布式复习/" title="缓存-消息-分布式复习" itemprop="url">缓存-消息-分布式复习</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-03-02T00:19:25.020Z" itemprop="datePublished"> Published 2018-03-02</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring-常用缓存注解"><span class="toc-number">1.</span> <span class="toc-text">Spring 常用缓存注解</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mybatis和hibernate的一级二级缓存"><span class="toc-number">2.</span> <span class="toc-text">mybatis和hibernate的一级二级缓存</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ehcache缓存"><span class="toc-number">3.</span> <span class="toc-text">ehcache缓存</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis和Memcache"><span class="toc-number">4.</span> <span class="toc-text">Redis和Memcache</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#消息队列"><span class="toc-number">5.</span> <span class="toc-text">消息队列</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Dubbo"><span class="toc-number">6.</span> <span class="toc-text">Dubbo</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#消息队列和dubbo"><span class="toc-number">7.</span> <span class="toc-text">消息队列和dubbo</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#keepalive：通过VRRP协议实现主备机之间的高可用"><span class="toc-number">8.</span> <span class="toc-text">keepalive：通过VRRP协议实现主备机之间的高可用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#nginx反向代理服务器"><span class="toc-number">9.</span> <span class="toc-text">nginx反向代理服务器</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#docker"><span class="toc-number">10.</span> <span class="toc-text">docker</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#linux"><span class="toc-number">11.</span> <span class="toc-text">linux</span></a></li></ol>
+		
+		</div>
+		
+		<p>常见缓存：</p>
+<ul>
+<li>SQL级别的缓存（mybatis、hibernate的一级二级缓存）</li>
+<li>工具缓存对象级缓存（ehcache、redis、memcache）</li>
+<li>整合Spring注解方法级缓存</li>
+</ul>
+<p>缓存会导致查询不走数据库，摆脱了数据库的事务控制，会有并发问题的。</p>
+<h1 id="Spring-常用缓存注解"><a href="#Spring-常用缓存注解" class="headerlink" title="Spring 常用缓存注解"></a>Spring 常用缓存注解</h1><ul>
+<li>@Cacheable 配置 value key condition支持el表达式的缓存</li>
+<li>@CachePut 调用时不取缓存，结束后把返回值更新到缓存中</li>
+<li>@CacheEvict清空一个或者多个缓存的 部分或者全部key的缓存</li>
+<li>@CacheConfig 类级别的缓存注解</li>
+</ul>
+<h1 id="mybatis和hibernate的一级二级缓存"><a href="#mybatis和hibernate的一级二级缓存" class="headerlink" title="mybatis和hibernate的一级二级缓存"></a>mybatis和hibernate的一级二级缓存</h1><ul>
+<li>默认开启一级缓存中，在开启事务中，查询2个相同的sql，会查询缓存，没事务则不缓存</li>
+<li>二级缓存：默认关闭，配置mybatis和Mapper文件的select实现，mybatis内置框架实现和维护</li>
+</ul>
+<h1 id="ehcache缓存"><a href="#ehcache缓存" class="headerlink" title="ehcache缓存"></a>ehcache缓存</h1><p>非分布式纯java、支持持久化、结合spring缓存注解实现方法级别的缓存<br>3 种清空策略：</p>
+<ul>
+<li>FIFO先进先出，按照创建时间排序</li>
+<li>LFU最少使用，按照使用次数排序</li>
+<li>LRU最近最少使用，每次使用后更新时间戳，再按照时间排序</li>
+</ul>
+<h1 id="Redis和Memcache"><a href="#Redis和Memcache" class="headerlink" title="Redis和Memcache"></a>Redis和Memcache</h1><ul>
+<li>都是分布式内存服务器、都支持事务控制</li>
+<li>Redis支持丰富的数据类型(value值可以是字符串、List、Hashmap)而Memcache只支持 key value，value类型单一</li>
+<li>Redis支持数据的持久化，Memcache不支持</li>
+<li>Redis单核，Memcache多核，缓存超过100k数据的时候，memcache优于redis</li>
+</ul>
+<p>redis淘汰策略配置：maxmemory-policy voltile-lru，支持热配置<br>redis6种淘汰策略：LRU是不精准的</p>
+<ul>
+<li>Allkeys-LRU 最近最少使用</li>
+<li>Allkeys-Random 随机删除</li>
+<li>volatile-LRU 标记了过期时间结果集中 最近最少使用的</li>
+<li>volatile-ttl 标记了过期时间结果集中 FIFO</li>
+<li>volatile-random</li>
+<li>no-enviction 禁止淘汰</li>
+</ul>
+<h1 id="消息队列"><a href="#消息队列" class="headerlink" title="消息队列"></a>消息队列</h1><p>设计消息队列的整体思路: 先build一个整体的数据流,例如producer发送给broker,broker发送给consumer,consumer回复消费确认，broker删除/备份消息等。</p>
+<p>解决的问题：分布式系统间从接口调用到通过中间件来通讯。</p>
+<ul>
+<li>解耦，下游服务器宕机了，调用会存在消息队列当中，不会丢失，只有被下游消化了才删除，保证被执行</li>
+<li>自带负载均衡，可以多个消息消费者从一个channel中取消息，还有灵活的分配策略</li>
+<li>消息队列在处理耗时操作时候优势明显，不会因为下游服务器性能差而长期占据线程资源等待，只需要把消息发给服务器即可，有固定的长连接等待回调</li>
+<li>提供广播功能，所有订阅了改queue的消费者都能收到消息</li>
+<li>实现错峰和控流。中间件按照一定的策略分配消息到消费者上面。而不是一股脑的调用消费者的接口</li>
+</ul>
+<h1 id="Dubbo"><a href="#Dubbo" class="headerlink" title="Dubbo"></a>Dubbo</h1><p>实现PRC和实现SOA理念：provider、register、consumer、monitor</p>
+<ul>
+<li>实现类似于本地方法调用的远程调用方法</li>
+<li>结合zookeeper实现 负载均衡和高可用，支持丰富的轮询策略</li>
+<li>提供了一个管理界面监控调用情况</li>
+</ul>
+<p>实现步骤：</p>
+<ol>
+<li>安装和配置zookeeper</li>
+<li>下载dubbo-admin的war包，放在tomcat下运行，并设置账号</li>
+<li>创建provider 、interface、consumer对象，打包interface接口，注册后就可以调用</li>
+</ol>
+<h1 id="消息队列和dubbo"><a href="#消息队列和dubbo" class="headerlink" title="消息队列和dubbo"></a>消息队列和dubbo</h1><ul>
+<li>都是分布式系统间调用</li>
+<li>dubbo更适合同步需要返回结果的业务场景，虽然需要消耗线程等待返回结果。消息队列更适合对可靠性要求高、广播、错峰、不需要返回结果的通知类</li>
+<li>RPC更简单</li>
+</ul>
+<h1 id="keepalive：通过VRRP协议实现主备机之间的高可用"><a href="#keepalive：通过VRRP协议实现主备机之间的高可用" class="headerlink" title="keepalive：通过VRRP协议实现主备机之间的高可用"></a>keepalive：通过VRRP协议实现主备机之间的高可用</h1><p>master和backup之间定期的发包通讯，如果backup发现master挂掉了，就由备机对该虚拟IP向外部提供访问。</p>
+<h1 id="nginx反向代理服务器"><a href="#nginx反向代理服务器" class="headerlink" title="nginx反向代理服务器"></a>nginx反向代理服务器</h1><ul>
+<li>负载均衡：设置upstream把请求按照策略分发到不同的server上</li>
+<li>反向代理：监听多端口代理到多内网IP。</li>
+<li>动静分离高并发：静态资源的访问可以不通过tomcat访问</li>
+<li>丰富的路由规则：正则</li>
+</ul>
+<h1 id="docker"><a href="#docker" class="headerlink" title="docker"></a>docker</h1><p>轻量级的虚拟机技术</p>
+<ul>
+<li>秒开机和关机</li>
+<li>很多厂家支持docker的镜像制作</li>
+<li>跨操作系统，只认docker软件</li>
+<li>理论上比虚拟机镜像要小，不是完整的操作系统</li>
+<li>开源免费的</li>
+</ul>
+<h1 id="linux"><a href="#linux" class="headerlink" title="linux"></a>linux</h1><p>太抽象，只好讲自己做过的相关工作</p>
+<ul>
+<li>测试环境的搭建：FTP、SSH、Telnet的服务器开启、JDK、Mysql、Tomcat的安装和运行</li>
+<li>服务器的维护和迁移：磁盘分区和LVM</li>
+<li>定时任务性能监控</li>
+<li>定时任务邮件通知网站运营数据</li>
+<li>各种软件的安装和使用 redis、docker、keepalive</li>
+<li>发布和tomcat启动的脚本的查看</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/02/缓存-消息-分布式复习/" data-title="缓存-消息-分布式复习 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/03/02/其他复习/" title="其他复习">
+  <strong>上一篇：</strong><br/>
+  <span>
+  其他复习</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/03/02/Mysql复习/"  title="mysql复习">
+ <strong>下一篇：</strong><br/> 
+ <span>mysql复习
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/03/02/缓存-消息-分布式复习/" data-title="缓存-消息-分布式复习" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/02/缓存-消息-分布式复习/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring-常用缓存注解"><span class="toc-number">1.</span> <span class="toc-text">Spring 常用缓存注解</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mybatis和hibernate的一级二级缓存"><span class="toc-number">2.</span> <span class="toc-text">mybatis和hibernate的一级二级缓存</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ehcache缓存"><span class="toc-number">3.</span> <span class="toc-text">ehcache缓存</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis和Memcache"><span class="toc-number">4.</span> <span class="toc-text">Redis和Memcache</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#消息队列"><span class="toc-number">5.</span> <span class="toc-text">消息队列</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Dubbo"><span class="toc-number">6.</span> <span class="toc-text">Dubbo</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#消息队列和dubbo"><span class="toc-number">7.</span> <span class="toc-text">消息队列和dubbo</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#keepalive：通过VRRP协议实现主备机之间的高可用"><span class="toc-number">8.</span> <span class="toc-text">keepalive：通过VRRP协议实现主备机之间的高可用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#nginx反向代理服务器"><span class="toc-number">9.</span> <span class="toc-text">nginx反向代理服务器</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#docker"><span class="toc-number">10.</span> <span class="toc-text">docker</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#linux"><span class="toc-number">11.</span> <span class="toc-text">linux</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

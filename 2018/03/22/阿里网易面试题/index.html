@@ -1,0 +1,488 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>阿里网易面试题 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="蚂蚁金服在线编程半小时 手写单例模式 实现一个集群模式下系统生成唯一流水号的算法：流水号不能重复、不能生成一次访问一次数据库 从给定的数组中找3个数，让他们的和为0.输出所有可能 jvm类加载机制 或者任意WEB服务器的类加载机制 有一个程序能够接受很多网络申请，同时把这些网络请求中携带的信息记录下来。如果是记录至文件，那么瓶颈可能是哪些，如何设计来提高性能，其中的关键点是？相应的解决方案又有哪些">
+<meta property="og:type" content="article">
+<meta property="og:title" content="阿里网易面试题">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/22/阿里网易面试题/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="蚂蚁金服在线编程半小时 手写单例模式 实现一个集群模式下系统生成唯一流水号的算法：流水号不能重复、不能生成一次访问一次数据库 从给定的数组中找3个数，让他们的和为0.输出所有可能 jvm类加载机制 或者任意WEB服务器的类加载机制 有一个程序能够接受很多网络申请，同时把这些网络请求中携带的信息记录下来。如果是记录至文件，那么瓶颈可能是哪些，如何设计来提高性能，其中的关键点是？相应的解决方案又有哪些">
+<meta property="og:updated_time" content="2018-04-17T03:52:40.537Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="阿里网易面试题">
+<meta name="twitter:description" content="蚂蚁金服在线编程半小时 手写单例模式 实现一个集群模式下系统生成唯一流水号的算法：流水号不能重复、不能生成一次访问一次数据库 从给定的数组中找3个数，让他们的和为0.输出所有可能 jvm类加载机制 或者任意WEB服务器的类加载机制 有一个程序能够接受很多网络申请，同时把这些网络请求中携带的信息记录下来。如果是记录至文件，那么瓶颈可能是哪些，如何设计来提高性能，其中的关键点是？相应的解决方案又有哪些">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜單">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/03/22/阿里网易面试题/" title="阿里网易面试题" itemprop="url">阿里网易面试题</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-03-22T03:26:29.999Z" itemprop="datePublished"> 發表於 2018-03-22</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目錄</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#蚂蚁金服"><span class="toc-number">1.</span> <span class="toc-text">蚂蚁金服</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#在线编程半小时"><span class="toc-number">1.1.</span> <span class="toc-text">在线编程半小时</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#电话面试题"><span class="toc-number">1.2.</span> <span class="toc-text">电话面试题</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#阿里云部门"><span class="toc-number">2.</span> <span class="toc-text">阿里云部门</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#蚂蚁金服财务对账部门"><span class="toc-number">3.</span> <span class="toc-text">蚂蚁金服财务对账部门</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#网易云音乐部门"><span class="toc-number">4.</span> <span class="toc-text">网易云音乐部门</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#一面电话面"><span class="toc-number">4.1.</span> <span class="toc-text">一面电话面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二面、三面"><span class="toc-number">4.2.</span> <span class="toc-text">二面、三面</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="蚂蚁金服"><a href="#蚂蚁金服" class="headerlink" title="蚂蚁金服"></a>蚂蚁金服</h1><h2 id="在线编程半小时"><a href="#在线编程半小时" class="headerlink" title="在线编程半小时"></a>在线编程半小时</h2><ol>
+<li>手写单例模式</li>
+<li>实现一个集群模式下系统生成唯一流水号的算法：流水号不能重复、不能生成一次访问一次数据库</li>
+<li>从给定的数组中找3个数，让他们的和为0.输出所有可能</li>
+<li>jvm类加载机制 或者任意WEB服务器的类加载机制</li>
+<li>有一个程序能够接受很多网络申请，同时把这些网络请求中携带的信息记录下来。如果是记录至文件，那么瓶颈可能是哪些，如何设计来提高性能，其中的关键点是？相应的解决方案又有哪些副作用呢？</li>
+</ol>
+<h2 id="电话面试题"><a href="#电话面试题" class="headerlink" title="电话面试题"></a>电话面试题</h2><ol>
+<li>JUC下的Executors框架熟悉吗？ 不熟悉，那么数据库的线程池熟悉吗？ 超过连接数如何处理</li>
+<li>命令模式、责任链设计模式</li>
+<li>Loombok的实现原理是什么？ 反射和编译期Anotation Process过程</li>
+<li>Spring的IOC原理，AOP实现机制。</li>
+<li>TCP的3次握手，阻塞队列的流量控制</li>
+<li>AIO有用过吗？Socket编程有了解吗？</li>
+<li>redis的集群和持久化方式</li>
+</ol>
+<h1 id="阿里云部门"><a href="#阿里云部门" class="headerlink" title="阿里云部门"></a>阿里云部门</h1><p>2018-3-22 技术面试</p>
+<ol>
+<li>频繁跳槽的原因，能否接受出差，自我介绍</li>
+<li>最有挑战性的一个问题，如何解决的。（我聊了任务调度，从前端到后端完整的过程)</li>
+<li>mysql B+树的索引实现原理</li>
+<li>线上频繁FULLGC 如何排查？何时会触发 FULLGC ，永久代如果满了，如何解决</li>
+<li>ZK 分布式锁原理</li>
+<li>JMeter 测试工具是否有用过</li>
+</ol>
+<h1 id="蚂蚁金服财务对账部门"><a href="#蚂蚁金服财务对账部门" class="headerlink" title="蚂蚁金服财务对账部门"></a>蚂蚁金服财务对账部门</h1><ul>
+<li>介绍之前做过的项目：特别是 增值税项目（因为是金融方面的面试部门），大概的业务模块和业务处理方式。</li>
+<li>你的技术如何？是偏项目管理还是技术开发，因为我项目介绍当中侧重了项目整体</li>
+<li>JVM的类加载机制。 和Tomcat容器的类加载机制。如果一个类已经被加载了，但是做过了修改，如何重新加载？</li>
+<li>有没有做过分布式的项目，我说我们的项目就是消息队列实现通讯，消息队列当中如何保证A消息准确的传递到了B消息，如何确保数据一致性？ 分布式事务的实现方式？有什么RPC的手段实现？ Dubbo的原理是什么，有没有使用经验，如何使用，和Spring cloud的区别是什么？</li>
+<li>Spring的事务传播机制级别有哪些？默认的事务传播机制是什么，如何实现B事务独立，不管抛不抛出异常都继续执行A事务</li>
+</ul>
+<h1 id="网易云音乐部门"><a href="#网易云音乐部门" class="headerlink" title="网易云音乐部门"></a>网易云音乐部门</h1><h2 id="一面电话面"><a href="#一面电话面" class="headerlink" title="一面电话面"></a>一面电话面</h2><p>2018-3-23</p>
+<ul>
+<li>Spring相关技术：我讲了IOC AOP MVC，挨个讲了一遍，Spring AOP的运用除了事务控制和日志还有哪些运用</li>
+<li>nginx中tomcat集群的配置，如何配置权重，以及整个过程</li>
+<li>Redis原理和 Memcache的区别，redis的请求竞争</li>
+<li>Zookeeper的原理和分布式锁</li>
+<li>SpringBoot的特点，和Spring的区别，如何现实 习惯优于配置，常用的注解</li>
+<li>8*2如何最快的实现</li>
+<li>String 、StringBuilder、StringBuffer的区别</li>
+<li>网络协议讲一下：我讲了TCP的三次握手 四次挥手 还有阻塞模式和滑动窗口。说完他都不敢问了。</li>
+</ul>
+<h2 id="二面、三面"><a href="#二面、三面" class="headerlink" title="二面、三面"></a>二面、三面</h2><ol>
+<li>分布式事务的具体实现（提到了RocketMQ实现了重传和幂等性)</li>
+<li>Tomcat的线程管理和如何控制并发，讲了一下JAVA的JUC下的线程池，构造函数，然后他问实际使用场景。</li>
+<li>mysql如何支持并发写的操作–&gt;分库</li>
+<li>奖金池的操作，抢票操作，如何从数据库层面实现。</li>
+<li>BolckQueue 如何防止服务器挂了 –&gt; 数据库持久化–&gt;数据库存储 Or 文本保存</li>
+<li>Redis 集群和持久化</li>
+<li>ZK的分布式锁实现原理，nginx做网关如何实现  –&gt;业务是有新的url匹配规则 和 动态变化的NODE信息，做一个网关实现 ZK 和 Nginx的搭配</li>
+<li>java锁机制 和运用–&gt; 我说了 Socket编程当中IO流的 线程池使用，还有ConcurrentHashMap中的分段锁和volatile的使用，问CHMap中size()的实现原理</li>
+<li>消息队列的原理，以及如何实现事务（RocketMq里面有实现，但是实现原理是如何，具体在代码层面如何做实现）</li>
+<li>测试这一块，知道哪些？ 功能性测试、软件测试、压力测试（简历当中写了功能测试)</li>
+<li>自己在项目中负责哪些模块？介绍下业务 和技术</li>
+<li>项目的架构（我按照技术+实现的功能 大致讲了一下）</li>
+<li>xml解析的两种方式：一种快的，一种慢的，边度边写，和读完再写。 （延伸自我写的mybatis xml文件热加载)</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/22/阿里网易面试题/" data-title="阿里网易面试题 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/03/26/JVM实战调优/" title="JVM实战调优">
+  <strong>上一篇：</strong><br/>
+  <span>
+  JVM实战调优</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/03/21/设计模式-结构类模式/"  title="设计模式-结构类模式">
+ <strong>下一篇：</strong><br/> 
+ <span>设计模式-结构类模式
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/03/22/阿里网易面试题/" data-title="阿里网易面试题" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/22/阿里网易面试题/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="顯示側邊欄"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目錄</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#蚂蚁金服"><span class="toc-number">1.</span> <span class="toc-text">蚂蚁金服</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#在线编程半小时"><span class="toc-number">1.1.</span> <span class="toc-text">在线编程半小时</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#电话面试题"><span class="toc-number">1.2.</span> <span class="toc-text">电话面试题</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#阿里云部门"><span class="toc-number">2.</span> <span class="toc-text">阿里云部门</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#蚂蚁金服财务对账部门"><span class="toc-number">3.</span> <span class="toc-text">蚂蚁金服财务对账部门</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#网易云音乐部门"><span class="toc-number">4.</span> <span class="toc-text">网易云音乐部门</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#一面电话面"><span class="toc-number">4.1.</span> <span class="toc-text">一面电话面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二面、三面"><span class="toc-number">4.2.</span> <span class="toc-text">二面、三面</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隱藏側邊欄"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回頂部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

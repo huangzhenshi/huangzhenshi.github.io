@@ -1,0 +1,519 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Mysql事务和锁 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="ACID A：原子性，联级操作，要么一起执行，要么一起回滚，不存在执行了操作一，但是操作二失败了，，操作一、二是一个整体 C：一致性，要么处于修改都成功，要么处于修改都失败，一致性的状态。 I：隔离性，比如A 和 B同时开启事务，A操作了数据a，B读取a会读取之前的a，而不是刚被A操作的a D：持久性，提交过的事务，会持久性的保存在数据库当中，即使宕机还有效  SELECT @@tx_isolat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql事务和锁">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/01/05/mysql事务问题/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="ACID A：原子性，联级操作，要么一起执行，要么一起回滚，不存在执行了操作一，但是操作二失败了，，操作一、二是一个整体 C：一致性，要么处于修改都成功，要么处于修改都失败，一致性的状态。 I：隔离性，比如A 和 B同时开启事务，A操作了数据a，B读取a会读取之前的a，而不是刚被A操作的a D：持久性，提交过的事务，会持久性的保存在数据库当中，即使宕机还有效  SELECT @@tx_isolat">
+<meta property="og:updated_time" content="2018-03-27T08:43:59.745Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mysql事务和锁">
+<meta name="twitter:description" content="ACID A：原子性，联级操作，要么一起执行，要么一起回滚，不存在执行了操作一，但是操作二失败了，，操作一、二是一个整体 C：一致性，要么处于修改都成功，要么处于修改都失败，一致性的状态。 I：隔离性，比如A 和 B同时开启事务，A操作了数据a，B读取a会读取之前的a，而不是刚被A操作的a D：持久性，提交过的事务，会持久性的保存在数据库当中，即使宕机还有效  SELECT @@tx_isolat">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/01/05/mysql事务问题/" title="Mysql事务和锁" itemprop="url">Mysql事务和锁</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-01-05T07:47:33.032Z" itemprop="datePublished"> 发表于 2018-01-05</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#ACID"><span class="toc-number">1.</span> <span class="toc-text">ACID</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#并发引发"><span class="toc-number">2.</span> <span class="toc-text">并发引发</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#事务级别（默认-REPEATABLE-READ，可能会幻读的"><span class="toc-number">3.</span> <span class="toc-text">事务级别（默认 REPEATABLE-READ，可能会幻读的)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#锁机制"><span class="toc-number">4.</span> <span class="toc-text">锁机制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#共享锁-和排他锁"><span class="toc-number">4.1.</span> <span class="toc-text">共享锁 和排他锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#意向锁"><span class="toc-number">4.2.</span> <span class="toc-text">意向锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mysql的行级锁"><span class="toc-number">4.3.</span> <span class="toc-text">mysql的行级锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#悲观锁、乐观锁"><span class="toc-number">4.4.</span> <span class="toc-text">悲观锁、乐观锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#死锁"><span class="toc-number">4.5.</span> <span class="toc-text">死锁</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#MVCC"><span class="toc-number">5.</span> <span class="toc-text">MVCC</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="ACID"><a href="#ACID" class="headerlink" title="ACID"></a>ACID</h1><ul>
+<li>A：原子性，联级操作，要么一起执行，要么一起回滚，不存在执行了操作一，但是操作二失败了，，操作一、二是一个整体</li>
+<li>C：一致性，要么处于修改都成功，要么处于修改都失败，一致性的状态。</li>
+<li>I：隔离性，比如A 和 B同时开启事务，A操作了数据a，B读取a会读取之前的a，而不是刚被A操作的a</li>
+<li>D：持久性，提交过的事务，会持久性的保存在数据库当中，即使宕机还有效</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">SELECT @@tx_isolation;</div><div class="line">set transaction isolation level read uncommitted;</div><div class="line">set transaction isolation level read committed;    </div><div class="line">set transaction isolation level repeatable read;  </div><div class="line">set transaction isolation level serializable;</div></pre></td></tr></table></figure>
+<h1 id="并发引发"><a href="#并发引发" class="headerlink" title="并发引发"></a>并发引发</h1><ul>
+<li>更新丢失：同时修改同一数据，A先修改完，B再修改，A的修改结果丢失。</li>
+</ul>
+<ul>
+<li><p>脏读：更改但未提交的数据，被其他人查询到了未提交的数据，脏读</p>
+</li>
+<li><p>不可重复读：一个事务在读取某些数据后的某个时间，再次读取以前读过的数据，却发现其读出的数据已经发生了改变、或某些记录已经被删除了！这种现象就叫做“不可重复读”。但是可能会查到之前不存在的数据，幻读。</p>
+</li>
+<li><p>幻读（Phantom Reads）：一个事务按相同的查询条件重新读取以前检索过的数据，却发现其他事务插入了满足其查询条件的新数据，这种现象就称为“幻读”<br>幻读案例:<br>例如在RR级别下，开启一个事务A，查询数据，开启一个数据B，插入新数据并且提交，name事务A虽然直接查询不到新数据，因为可重复读，但是可以update插入的新数据，并且update成功后，可以查到新数据。太神奇了。</p>
+</li>
+</ul>
+<p>脏读 和 不可重复读是两回事，禁止脏读，就是只读取提交后的数据，无法避免，一个事务第一次读数据还没结束事务，该数据被其他事务读取且删除而且提交了，再次读取就读取不到或者读取不一致，还是会发生不可重复读的情况。</p>
+<h1 id="事务级别（默认-REPEATABLE-READ，可能会幻读的"><a href="#事务级别（默认-REPEATABLE-READ，可能会幻读的" class="headerlink" title="事务级别（默认 REPEATABLE-READ，可能会幻读的)"></a>事务级别（默认 REPEATABLE-READ，可能会幻读的)</h1><ul>
+<li>READ UNCOMMITTED ，可以读到其他事务修改甚至未提交的，–&gt;引发脏读</li>
+</ul>
+<ul>
+<li><p>READ COMMITTED ，其他事务对数据库的修改,只要已经提交,其修改的结果就是可见的,与这两个事务开始的先后顺序无关–&gt;不可重复读，在一个事务中两次读取不一致</p>
+</li>
+<li><p>REPEATABLE READ，可重复读，完全适用MVCC，只能读取在它开始之前已经提交的事务对数据库的修改,在它开始以后,所有其他事务对数据库的修改对它来说均不可见</p>
+</li>
+</ul>
+<ul>
+<li>Serializable(可串行化)<br>一条数据加锁了之后，其他事务无法更改这条数据。<br>set tx_isolation=’serializable’;</li>
+</ul>
+<p>select @@tx_isolation;</p>
+<p>事务A<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">start transaction;</div><div class="line">select * from user_t ;</div></pre></td></tr></table></figure></p>
+<p>事务B<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">start transaction;</div><div class="line"></div><div class="line">INSERT user_t values(null,&apos;huangnew&apos;,&apos;huangnew&apos;,50);</div></pre></td></tr></table></figure></p>
+<p>因为隔离级别是 可串行化，事务A查询的时候把所有的查询行都加了共享锁，所以事务B阻塞，从而避免了幻读的可能性。</p>
+<ul>
+<li>RR不能解决幻读的解释<br>因为可重复读和提交读本身就是冲突的，默认可重复读是会出现幻读的，除非加共享锁取读取，就可以读取提交的最新的数据。<br>只有串行化才可以保证数据的绝对不冲突。</li>
+</ul>
+<p>解释博客：<br><a href="http://blog.sina.com.cn/s/blog_499740cb0100ugs7.html" target="_blank" rel="external">http://blog.sina.com.cn/s/blog_499740cb0100ugs7.html</a></p>
+<h1 id="锁机制"><a href="#锁机制" class="headerlink" title="锁机制"></a>锁机制</h1><h2 id="共享锁-和排他锁"><a href="#共享锁-和排他锁" class="headerlink" title="共享锁 和排他锁"></a>共享锁 和排他锁</h2><p><a href="https://www.cnblogs.com/boblogsbo/p/5602122.html" target="_blank" rel="external">https://www.cnblogs.com/boblogsbo/p/5602122.html</a></p>
+<ul>
+<li><p>共享锁又称为读锁，简称S锁，顾名思义，共享锁就是多个事务对于同一数据可以共享一把锁，都能访问到数据，但是只能读不能修改。</p>
+</li>
+<li><p>排他锁又称为写锁，简称X锁，顾名思义，排他锁就是不能与其他所并存，如一个事务获取了一个数据行的排他锁，其他事务就不能再获取该行的其他锁，包括共享锁和排他锁，但是获取排他锁的事务是可以对数据就行读取和修改。</p>
+</li>
+<li><p>不带任何锁的普通查询，不管有没有锁，直接读老数据。<br>排他锁指的是一个事务在一行数据加上排他锁后，其他事务不能再在其上加其他的锁。mysql InnoDB引擎默认的修改数据语句，update,delete,insert都会自动给涉及到的数据加上排他锁，select语句默认不会加任何锁类型，如果加排他锁可以使用select …for update语句，加共享锁可以使用select … lock in share mode语句。所以加过排他锁的数据行在其他事务种是不能修改数据的，也不能通过for update和lock in share mode锁的方式查询数据，但可以直接通过select …from…查询数据，因为普通查询没有任何锁机制</p>
+</li>
+<li><p>开启事务未提交的DML操作都会自动加排他锁，这个时候只能进行不带锁的普通查询，而且只能查到老数据</p>
+</li>
+</ul>
+<h2 id="意向锁"><a href="#意向锁" class="headerlink" title="意向锁"></a>意向锁</h2><p>对表中某一行或者几行数据加锁的时候，都会给表加表级别的 IS IX锁，这样，事务B要给表加表锁的使用因为该表以及是IS 或者IX了，所以直接加锁失败，而不需要遍历表中的所有记录是否有锁。</p>
+<h2 id="mysql的行级锁"><a href="#mysql的行级锁" class="headerlink" title="mysql的行级锁"></a>mysql的行级锁</h2><p>开始事务update一条数据的话，可以用共享锁 和 排他锁的方式读取非这条数据</p>
+<ul>
+<li>锁命令<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">lock tables t1 write|read;</div><div class="line">UNLOCK TABLES;</div><div class="line">SELECT * FROM `user_t` for update;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="悲观锁、乐观锁"><a href="#悲观锁、乐观锁" class="headerlink" title="悲观锁、乐观锁"></a>悲观锁、乐观锁</h2><p><a href="https://www.cnblogs.com/zhiqian-ali/p/6200874.html" target="_blank" rel="external">https://www.cnblogs.com/zhiqian-ali/p/6200874.html</a></p>
+<ul>
+<li><p>悲观锁<br>特点是先获取锁，再进行业务操作，即“悲观”的认为获取锁是非常有可能失败的，因此要先确保获取锁成功再进行业务操作。通常所说的“一锁二查三更新”即指的是使用悲观锁。<br>select … for update操作来实现悲观锁，并发进行的时候，下一个事务如果有行交集的话就会阻塞。<br>也是串行化级别的采取的策略</p>
+</li>
+<li><p>乐观锁<br>乐观锁的区别在于乐观的认为获取锁是很有可能成功的，如果真的不成功，被别人改过数据了，则回滚。<br>乐观锁在数据库上的实现完全是逻辑的，不需要数据库提供特殊的支持。一般的做法是在需要锁的数据上增加一个版本号，或者时间戳<br>乐观锁 + MYISAM 可以实现带事务控制的同时支持 高性能读取，又支持不频繁带事务控制的写。适用读多写少，且回滚开销不是特别大的场景。InnoDB就是乐观锁+版本控制管理，才实现的高并发的RR事务级别。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">1. SELECT data AS old_data, version AS old_version FROM …;</div><div class="line">2. 根据获取的数据进行业务操作，得到new_data和new_version</div><div class="line">3. UPDATE SET data = new_data, version = new_version WHERE version = old_version</div><div class="line">if (updated row &gt; 0) &#123;</div><div class="line">    // 乐观锁获取成功，操作完成</div><div class="line">&#125; else &#123;</div><div class="line">    // 乐观锁获取失败，回滚并重试</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>区别</p>
+</li>
+</ul>
+<ol>
+<li>乐观锁是否在事务中其实都是无所谓的，悲观锁一定要有事务控制，</li>
+<li>乐观锁在不发生取锁失败的情况下开销比悲观锁小，但是一旦发生失败回滚开销则比较大，特别是多个DML一起操作，所有执行成功的DML都要回滚，因此适合用在取锁失败概率比较小的场景，可以提升系统并发性能。因为锁表锁行是需要数据库开销的，即使未阻塞，也是有开销的。但是每次计算都是有效的，不存在计算之后数据回滚的风险。</li>
+<li>悲观锁不支持高并发，容易死锁</li>
+</ol>
+<h2 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h2><p>事务A占用了 数据1 准备更新数据2时 发现事务B已经占用了数据2，所以事务A等待事务B解锁数据2.<br>事务B占用了数据2准备更新数据1时，发现事务A已经占用了数据1，所以事务B等待事务A解锁诗句1.<br>这个时候就是死锁了。</p>
+<p>解决方案:</p>
+<ul>
+<li>一次锁所有数据</li>
+<li>保持锁的顺序</li>
+<li>允许死锁，然后kill掉代价最小的事务。回滚之</li>
+</ul>
+<h1 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h1><p>InnDB引擎的原理，不能避免幻读，特别是UPDATE操作，能解释为什么更新并发提交后，可以查看到新增加的数据，因为插入了一行新数据，且这个新数据的CTX=当前事务ID，所以更新之后就可以查的到了。</p>
+<ol>
+<li><p>INSERT 新增的行往C里写入当前系统版本号。 这样新事物可以通过这个版本号保证不查到他</p>
+</li>
+<li><p>DELETE 为删除的行写D字段为当前系统版本号。</p>
+</li>
+<li><p>UPDATE 插入一行新数据写C为当前系统版本号，老数据写D为当前系统版本号。</p>
+</li>
+<li><p>SELECT 的时候只查 C&lt;=当前版本 &amp;&amp; (D &gt; 当前版本 || D is not defined) 这样主要是为了在不加锁的情况下，一个事务能够读取到事务开始前已经存在且未被删除，且没有经过修改的数据。 也就是解决脏读的问题。即该事物开始之后的其他事务的各种修改事务提交都不会对当前事务的读取产生影响。</p>
+</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/01/05/mysql事务问题/" data-title="Mysql事务和锁 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/01/09/数据库三大范式/" title="数据库三大范式">
+  <strong>上一篇：</strong><br/>
+  <span>
+  数据库三大范式</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/01/04/Mysql大纲_存储引擎/"  title="Mysql大纲、存储引擎">
+ <strong>下一篇：</strong><br/> 
+ <span>Mysql大纲、存储引擎
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/01/05/mysql事务问题/" data-title="Mysql事务和锁" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/01/05/mysql事务问题/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#ACID"><span class="toc-number">1.</span> <span class="toc-text">ACID</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#并发引发"><span class="toc-number">2.</span> <span class="toc-text">并发引发</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#事务级别（默认-REPEATABLE-READ，可能会幻读的"><span class="toc-number">3.</span> <span class="toc-text">事务级别（默认 REPEATABLE-READ，可能会幻读的)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#锁机制"><span class="toc-number">4.</span> <span class="toc-text">锁机制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#共享锁-和排他锁"><span class="toc-number">4.1.</span> <span class="toc-text">共享锁 和排他锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#意向锁"><span class="toc-number">4.2.</span> <span class="toc-text">意向锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mysql的行级锁"><span class="toc-number">4.3.</span> <span class="toc-text">mysql的行级锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#悲观锁、乐观锁"><span class="toc-number">4.4.</span> <span class="toc-text">悲观锁、乐观锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#死锁"><span class="toc-number">4.5.</span> <span class="toc-text">死锁</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#MVCC"><span class="toc-number">5.</span> <span class="toc-text">MVCC</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

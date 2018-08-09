@@ -1,0 +1,473 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>日志配置 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="logbackdemo 先设置appender 再用root设置级别，并且关联appender.name，就配置好了　&amp;lt;configuration&amp;gt; 　　　　　　&amp;lt;appender name=&amp;quot;STDOUT&amp;quot; class=&amp;quot;ch.qos.logback.core.ConsoleAppender&amp;quot;&amp;gt; 　　　　　　&amp;lt;encoder&amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="日志配置">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/04/25/日志配置/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="logbackdemo 先设置appender 再用root设置级别，并且关联appender.name，就配置好了　&amp;lt;configuration&amp;gt; 　　　　　　&amp;lt;appender name=&amp;quot;STDOUT&amp;quot; class=&amp;quot;ch.qos.logback.core.ConsoleAppender&amp;quot;&amp;gt; 　　　　　　&amp;lt;encoder&amp;">
+<meta property="og:updated_time" content="2018-07-20T03:39:30.130Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="日志配置">
+<meta name="twitter:description" content="logbackdemo 先设置appender 再用root设置级别，并且关联appender.name，就配置好了　&amp;lt;configuration&amp;gt; 　　　　　　&amp;lt;appender name=&amp;quot;STDOUT&amp;quot; class=&amp;quot;ch.qos.logback.core.ConsoleAppender&amp;quot;&amp;gt; 　　　　　　&amp;lt;encoder&amp;">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/04/25/日志配置/" title="日志配置" itemprop="url">日志配置</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-04-25T08:45:27.240Z" itemprop="datePublished"> 发表于 2018-04-25</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#logback"><span class="toc-number">1.</span> <span class="toc-text">logback</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#demo"><span class="toc-number">1.1.</span> <span class="toc-text">demo</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#logback打印mybatis的sql配置"><span class="toc-number">1.2.</span> <span class="toc-text">logback打印mybatis的sql配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#logback框架在代码中做log输出"><span class="toc-number">1.3.</span> <span class="toc-text">logback框架在代码中做log输出</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#设置logback的文件日志的规则（按天生成、按大小生成、按时间和大小生成-3种模式）"><span class="toc-number">1.4.</span> <span class="toc-text">设置logback的文件日志的规则（按天生成、按大小生成、按时间和大小生成 3种模式）</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#log4j配置"><span class="toc-number">2.</span> <span class="toc-text">log4j配置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#log4j提供的Appender"><span class="toc-number">2.1.</span> <span class="toc-text">log4j提供的Appender</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置日志信息的格式（布局）"><span class="toc-number">2.2.</span> <span class="toc-text">配置日志信息的格式（布局）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#自定义日志输出格式设置"><span class="toc-number">2.3.</span> <span class="toc-text">自定义日志输出格式设置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Demo说明"><span class="toc-number">2.4.</span> <span class="toc-text">Demo说明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#log4j打印mybatis-sql语句配置"><span class="toc-number">2.5.</span> <span class="toc-text">log4j打印mybatis sql语句配置</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="logback"><a href="#logback" class="headerlink" title="logback"></a>logback</h1><h2 id="demo"><a href="#demo" class="headerlink" title="demo"></a>demo</h2><ol>
+<li>先设置appender</li>
+<li>再用root设置级别，并且关联appender.name，就配置好了<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">　&lt;configuration&gt; </div><div class="line">　　　　　　&lt;appender name=&quot;STDOUT&quot; class=&quot;ch.qos.logback.core.ConsoleAppender&quot;&gt; </div><div class="line">　　　　　　&lt;encoder&gt; </div><div class="line">　　　　　　　　&lt;pattern&gt;%-4relative [%thread] %-5level %logger&#123;35&#125; - %msg %n&lt;/pattern&gt; </div><div class="line">　　　　　　&lt;/encoder&gt; </div><div class="line">　　　　　　&lt;/appender&gt; </div><div class="line"></div><div class="line">　　　　　　&lt;root level=&quot;DEBUG&quot;&gt; </div><div class="line">　　　　　　　　&lt;appender-ref ref=&quot;STDOUT&quot; /&gt; </div><div class="line">　　　　　　&lt;/root&gt; </div><div class="line">　　　　&lt;/configuration&gt;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="logback打印mybatis的sql配置"><a href="#logback打印mybatis的sql配置" class="headerlink" title="logback打印mybatis的sql配置"></a>logback打印mybatis的sql配置</h2><p>需要在配置文件当中配置 如下信息，则会在file日志输出当中打印出sql，方便调试<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;configuration&gt;</div><div class="line">	***</div><div class="line">    &lt;logger name=&quot;com.ge.eapp&quot; level=&quot;debug&quot; /&gt;</div><div class="line">    &lt;logger name=&quot;jdbc.sqltiming&quot; level=&quot;debug&quot;/&gt;</div><div class="line">	&lt;logger name=&quot;com.ibatis&quot; level=&quot;debug&quot; /&gt;</div><div class="line">    &lt;logger name=&quot;com.ibatis.common.jdbc.SimpleDataSource&quot; level=&quot;debug&quot; /&gt;</div><div class="line">    &lt;logger name=&quot;com.ibatis.common.jdbc.ScriptRunner&quot; level=&quot;debug&quot; /&gt;</div><div class="line">    &lt;logger name=&quot;com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate&quot;</div><div class="line">        level=&quot;debug&quot; /&gt;</div><div class="line">    &lt;logger name=&quot;java.sql.Connection&quot; level=&quot;debug&quot; /&gt;</div><div class="line">    &lt;logger name=&quot;java.sql.Statement&quot; level=&quot;debug&quot; /&gt;</div><div class="line">    &lt;logger name=&quot;java.sql.PreparedStatement&quot; level=&quot;debug&quot; /&gt;</div><div class="line">    &lt;logger name=&quot;java.sql.ResultSet&quot; level=&quot;debug&quot; /&gt;</div><div class="line">	***</div><div class="line">&lt;/configuration&gt;</div></pre></td></tr></table></figure></p>
+<h2 id="logback框架在代码中做log输出"><a href="#logback框架在代码中做log输出" class="headerlink" title="logback框架在代码中做log输出"></a>logback框架在代码中做log输出</h2><p>@Slf4j 标志，然后log.info就可以输出到日志文件当中了</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Controller</div><div class="line">@RequestMapping(&quot;/region&quot;)</div><div class="line">@Slf4j</div><div class="line">public class RegionAction &#123;</div><div class="line">	@ResponseBody</div><div class="line">	@RequestMapping(value = &quot;/provinceList&quot;, method = RequestMethod.GET)</div><div class="line">	public List&lt;Map&lt;String, Object&gt;&gt; getProvinceList() &#123;</div><div class="line">		log.info(&quot;getProvinceList() entered&quot;);</div><div class="line">		return toInfoMapList(regionService.getProvinceList());</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="设置logback的文件日志的规则（按天生成、按大小生成、按时间和大小生成-3种模式）"><a href="#设置logback的文件日志的规则（按天生成、按大小生成、按时间和大小生成-3种模式）" class="headerlink" title="设置logback的文件日志的规则（按天生成、按大小生成、按时间和大小生成 3种模式）"></a>设置logback的文件日志的规则（按天生成、按大小生成、按时间和大小生成 3种模式）</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">1. 按时间归档</div><div class="line">&lt;rollingPolicy class=&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;&gt;</div><div class="line">			&lt;FileNamePattern&gt;$&#123;LOG_HOME&#125;/consumer.%d&#123;yyyy-MM-dd_HH&#125;.log&lt;/FileNamePattern&gt;</div><div class="line">			&lt;!-- 日志文件保留天数 --&gt;</div><div class="line">			&lt;MaxHistory&gt;30&lt;/MaxHistory&gt;</div><div class="line">&lt;/rollingPolicy&gt;</div><div class="line"></div><div class="line">2. 按照文件大小进行归档</div><div class="line">   &lt;appender name=&quot;all&quot; class=&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;&gt;</div><div class="line">        &lt;File&gt;../front-end-logs/front-end.log&lt;/File&gt;</div><div class="line">        &lt;rollingPolicy class=&quot;ch.qos.logback.core.rolling.FixedWindowRollingPolicy&quot;&gt;</div><div class="line">            &lt;FileNamePattern&gt;../front-end-logs/front-end.%i.log&lt;/FileNamePattern&gt;</div><div class="line">            &lt;MinIndex&gt;1&lt;/MinIndex&gt;</div><div class="line">            &lt;MaxIndex&gt;100&lt;/MaxIndex&gt;</div><div class="line">        &lt;/rollingPolicy&gt;</div><div class="line">        &lt;triggeringPolicy class=&quot;ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy&quot;&gt;</div><div class="line">            &lt;MaxFileSize&gt;5MB&lt;/MaxFileSize&gt;</div><div class="line">        &lt;/triggeringPolicy&gt;</div><div class="line">        &lt;layout class=&quot;ch.qos.logback.classic.PatternLayout&quot;&gt;</div><div class="line">            &lt;Pattern&gt;%date %-5level - %msg%n&lt;/Pattern&gt;</div><div class="line">        &lt;/layout&gt;</div><div class="line">    &lt;/appender&gt;</div><div class="line"></div><div class="line">    &lt;appender name=&quot;all&quot; class=&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;&gt;</div><div class="line">        &lt;File&gt;./front-end-logs/front-end.log&lt;/File&gt;</div><div class="line">       &lt;rollingPolicy class=&quot;ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy&quot;&gt;</div><div class="line">		  &lt;fileNamePattern&gt;front-end-%d&#123;yyyy-MM-dd&#125;.%i.log&lt;/fileNamePattern&gt;</div><div class="line">		   &lt;maxFileSize&gt;5MB&lt;/maxFileSize&gt;    </div><div class="line">		   &lt;maxHistory&gt;15&lt;/maxHistory&gt;</div><div class="line">		   &lt;totalSizeCap&gt;1GB&lt;/totalSizeCap&gt;</div><div class="line">		&lt;/rollingPolicy&gt;</div><div class="line">        &lt;layout class=&quot;ch.qos.logback.classic.PatternLayout&quot;&gt;</div><div class="line">            &lt;Pattern&gt;%date [%thread] %-5level - %msg%n&lt;/Pattern&gt;</div><div class="line">        &lt;/layout&gt;</div><div class="line">    &lt;/appender&gt;</div></pre></td></tr></table></figure>
+<h1 id="log4j配置"><a href="#log4j配置" class="headerlink" title="log4j配置"></a>log4j配置</h1><ul>
+<li>Log4j由三个重要的组件构成：日志信息的优先级，日志信息的输出目的地，日志信息的输出格式</li>
+<li><p>level 是日志记录的优先级，ERROR、WARN、INFO、DEBUG</p>
+</li>
+<li><p>指定根级别的日志级别和日志信息输出目的地Appender</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">log4j.rootLogger = [ level ] , appenderName, appenderName, …</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="log4j提供的Appender"><a href="#log4j提供的Appender" class="headerlink" title="log4j提供的Appender"></a>log4j提供的Appender</h2><ul>
+<li>org.apache.log4j.ConsoleAppender（控制台），  </li>
+<li>org.apache.log4j.FileAppender（文件），  </li>
+<li>org.apache.log4j.DailyRollingFileAppender（每天产生一个日志文件），  </li>
+<li>org.apache.log4j.RollingFileAppender（文件大小到达指定尺寸的时候产生一个新的文件），  </li>
+<li>org.apache.log4j.WriterAppender（将日志信息以流格式发送到任意指定的地方）</li>
+</ul>
+<h2 id="配置日志信息的格式（布局）"><a href="#配置日志信息的格式（布局）" class="headerlink" title="配置日志信息的格式（布局）"></a>配置日志信息的格式（布局）</h2><ul>
+<li>org.apache.log4j.HTMLLayout（以HTML表格形式布局），  </li>
+<li>org.apache.log4j.PatternLayout（可以灵活地指定布局模式），  </li>
+<li>org.apache.log4j.SimpleLayout（包含日志信息的级别和信息字符串），  </li>
+<li>org.apache.log4j.TTCCLayout（包含日志产生的时间、线程、类别等等信息）</li>
+</ul>
+<h2 id="自定义日志输出格式设置"><a href="#自定义日志输出格式设置" class="headerlink" title="自定义日志输出格式设置"></a>自定义日志输出格式设置</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">%p 输出优先级，即DEBUG，INFO，WARN，ERROR，FATAL  </div><div class="line">%r 输出自应用启动到输出该log信息耗费的毫秒数  </div><div class="line">%c 输出所属的类目，通常就是所在类的全名  </div><div class="line">%t 输出产生该日志事件的线程名  </div><div class="line">%n 输出一个回车换行符，Windows平台为“rn”，Unix平台为“n”  </div><div class="line">%d 输出日志时间点的日期或时间，默认格式为ISO8601，也可以在其后指定格式，比如：%d&#123;yyy MMM dd HH:mm:ss,SSS&#125;，输出类似：2002年10月18日 22：10：28，921  </div><div class="line">%l 输出日志事件的发生位置，包括类目名、发生的线程，以及在代码中的行数。举例：Testlog4.main(TestLog4.java:10)</div></pre></td></tr></table></figure>
+<h2 id="Demo说明"><a href="#Demo说明" class="headerlink" title="Demo说明"></a>Demo说明</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"># 指定日志的级别 --&gt; DEBUG 和要输出目的地 --&gt; stdout和 D（只是个代号，需要分别在下面去定义stdout 和 D </div><div class="line">log4j.rootLogger = DEBUG,stdout,D</div><div class="line"></div><div class="line">#指定stdout的Appender的类型 为控制台</div><div class="line">log4j.appender.stdout = org.apache.log4j.ConsoleAppender  </div><div class="line">#指定日志的输出格式为自定义类型</div><div class="line">log4j.appender.stdout.layout = org.apache.log4j.PatternLayout  </div><div class="line">#定义自定义类型的格式</div><div class="line">log4j.appender.stdout.layout.ConversionPattern = [%-5p] %d&#123;yyyy-MM-dd HH:mm:ss,SSS&#125; method:%l%n%m%n</div><div class="line"></div><div class="line">log4j.appender.D = org.apache.log4j.DailyRollingFileAppender  </div><div class="line">log4j.appender.D.File = ../dh-edu-logs/transaction.log  </div><div class="line">log4j.appender.D.Append = true  </div><div class="line">log4j.appender.D.Threshold = DEBUG   </div><div class="line">log4j.appender.D.layout = org.apache.log4j.PatternLayout  </div><div class="line">log4j.appender.D.layout.ConversionPattern = %-d&#123;yyyy-MM-dd HH:mm:ss&#125;  [ %t:%r ] - [ %p ]  %m%n</div></pre></td></tr></table></figure>
+<h2 id="log4j打印mybatis-sql语句配置"><a href="#log4j打印mybatis-sql语句配置" class="headerlink" title="log4j打印mybatis sql语句配置"></a>log4j打印mybatis sql语句配置</h2><ul>
+<li><p>必须要指定mybatis的log框架为LOG4J，配置mybatis-config.xml</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;    </div><div class="line">&lt;!DOCTYPE configuration PUBLIC &quot;-//mybatis.org//DTD Config 3.0//EN&quot;  </div><div class="line">&quot;http://mybatis.org/dtd/mybatis-3-config.dtd&quot;&gt;  </div><div class="line">  </div><div class="line">&lt;configuration&gt;  </div><div class="line">    &lt;properties&gt;  </div><div class="line">        &lt;property name=&quot;dialect&quot; value=&quot;mysql&quot; /&gt;  </div><div class="line">    &lt;/properties&gt;  </div><div class="line">    &lt;settings&gt;  </div><div class="line">        &lt;setting name=&quot;logImpl&quot; value=&quot;LOG4J&quot; /&gt;    </div><div class="line">    &lt;/settings&gt;  </div><div class="line">&lt;/configuration&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>嵌入mybatis配置文件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;bean  id=&quot;sqlSessionFactory&quot; class=&quot;org.mybatis.spring.SqlSessionFactoryBean&quot;&gt;</div><div class="line">   	&lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;</div><div class="line">   	&lt;property name=&quot;configLocation&quot; value=&quot;classpath:mybatis-config.xml&quot;/&gt;  </div><div class="line">       &lt;property name=&quot;mapperLocations&quot; value=&quot;classpath:com/test/mapping/*.xml&quot;&gt;&lt;/property&gt;</div><div class="line">&lt;/bean&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>配置log4j</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">log4j.appender.stdout = org.apache.log4j.ConsoleAppender  </div><div class="line">log4j.appender.stdout.layout = org.apache.log4j.PatternLayout  </div><div class="line">log4j.appender.stdout.layout.ConversionPattern = [%-5p] %d&#123;HH:mm:ss,SSS&#125; method:%l%n%m%n</div><div class="line"></div><div class="line">log4j.appender.D = org.apache.log4j.DailyRollingFileAppender  </div><div class="line">log4j.appender.D.File = ../dh-edu-logs/transaction.log  </div><div class="line">log4j.appender.D.Append = true  </div><div class="line">log4j.appender.D.Threshold = DEBUG   </div><div class="line">log4j.appender.D.layout = org.apache.log4j.PatternLayout  </div><div class="line">log4j.appender.D.layout.ConversionPattern = %-d&#123;yyyy-MM-dd HH:mm:ss&#125;  [ %t:%r ] - [ %p ]  %m%n </div><div class="line"></div><div class="line">log4j.logger.java.sql.Connection=DEBUG  </div><div class="line">log4j.logger.java.sql.Statement=DEBUG  </div><div class="line">log4j.logger.java.sql.PreparedStatement=DEBUG</div><div class="line">log4j.rootLogger = DEBUG,stdout,D</div></pre></td></tr></table></figure>
+</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/04/25/日志配置/" data-title="日志配置 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/04/28/Java事务控制/" title="Java事务控制">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Java事务控制</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/04/19/activemq实战/"  title="activemq实战">
+ <strong>下一篇：</strong><br/> 
+ <span>activemq实战
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/04/25/日志配置/" data-title="日志配置" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/04/25/日志配置/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#logback"><span class="toc-number">1.</span> <span class="toc-text">logback</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#demo"><span class="toc-number">1.1.</span> <span class="toc-text">demo</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#logback打印mybatis的sql配置"><span class="toc-number">1.2.</span> <span class="toc-text">logback打印mybatis的sql配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#logback框架在代码中做log输出"><span class="toc-number">1.3.</span> <span class="toc-text">logback框架在代码中做log输出</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#设置logback的文件日志的规则（按天生成、按大小生成、按时间和大小生成-3种模式）"><span class="toc-number">1.4.</span> <span class="toc-text">设置logback的文件日志的规则（按天生成、按大小生成、按时间和大小生成 3种模式）</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#log4j配置"><span class="toc-number">2.</span> <span class="toc-text">log4j配置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#log4j提供的Appender"><span class="toc-number">2.1.</span> <span class="toc-text">log4j提供的Appender</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置日志信息的格式（布局）"><span class="toc-number">2.2.</span> <span class="toc-text">配置日志信息的格式（布局）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#自定义日志输出格式设置"><span class="toc-number">2.3.</span> <span class="toc-text">自定义日志输出格式设置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Demo说明"><span class="toc-number">2.4.</span> <span class="toc-text">Demo说明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#log4j打印mybatis-sql语句配置"><span class="toc-number">2.5.</span> <span class="toc-text">log4j打印mybatis sql语句配置</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

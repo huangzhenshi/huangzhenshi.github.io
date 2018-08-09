@@ -1,0 +1,464 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Solr系列一(项目调用） | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="路线 学习e学e用的配置–&amp;gt; 更新DML和查询 + 页面渲染 从单点solr完整的搭建，搜索引擎，到页面渲染 在PSM项目中实战solr 学习配置zk+solr+nginx的配置在测试环境下面  solr系统调用流程图request –&amp;gt; tomcat –&amp;gt; nginx –&amp;gt;solrNode –&amp;gt;zookeeper管理 业务查询功能简述搜索关键词经过加工之后 –&amp;gt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Solr系列一(项目调用）">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/05/08/Solr系列一/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="路线 学习e学e用的配置–&amp;gt; 更新DML和查询 + 页面渲染 从单点solr完整的搭建，搜索引擎，到页面渲染 在PSM项目中实战solr 学习配置zk+solr+nginx的配置在测试环境下面  solr系统调用流程图request –&amp;gt; tomcat –&amp;gt; nginx –&amp;gt;solrNode –&amp;gt;zookeeper管理 业务查询功能简述搜索关键词经过加工之后 –&amp;gt">
+<meta property="og:updated_time" content="2018-05-10T06:52:51.719Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Solr系列一(项目调用）">
+<meta name="twitter:description" content="路线 学习e学e用的配置–&amp;gt; 更新DML和查询 + 页面渲染 从单点solr完整的搭建，搜索引擎，到页面渲染 在PSM项目中实战solr 学习配置zk+solr+nginx的配置在测试环境下面  solr系统调用流程图request –&amp;gt; tomcat –&amp;gt; nginx –&amp;gt;solrNode –&amp;gt;zookeeper管理 业务查询功能简述搜索关键词经过加工之后 –&amp;gt">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/05/08/Solr系列一/" title="Solr系列一(项目调用）" itemprop="url">Solr系列一(项目调用）</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-05-08T07:21:45.800Z" itemprop="datePublished"> Published 2018-05-08</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#路线"><span class="toc-number">1.</span> <span class="toc-text">路线</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#solr系统调用流程图"><span class="toc-number">2.</span> <span class="toc-text">solr系统调用流程图</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#业务查询功能简述"><span class="toc-number">3.</span> <span class="toc-text">业务查询功能简述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#solr管理界面"><span class="toc-number">4.</span> <span class="toc-text">solr管理界面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#e学e用配置流程："><span class="toc-number">5.</span> <span class="toc-text">e学e用配置流程：</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#常规配置"><span class="toc-number">5.1.</span> <span class="toc-text">常规配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#查询调用"><span class="toc-number">5.2.</span> <span class="toc-text">查询调用</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#DML课件"><span class="toc-number">6.</span> <span class="toc-text">DML课件</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#maven-依赖"><span class="toc-number">6.1.</span> <span class="toc-text">maven 依赖</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#核心方法"><span class="toc-number">7.</span> <span class="toc-text">核心方法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#query-SolrQuery"><span class="toc-number">7.1.</span> <span class="toc-text">query(SolrQuery)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#核心类"><span class="toc-number">8.</span> <span class="toc-text">核心类</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#SearchVo-工具类"><span class="toc-number">8.1.</span> <span class="toc-text">SearchVo 工具类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SearchCourse-结果Instance类"><span class="toc-number">8.2.</span> <span class="toc-text">SearchCourse 结果Instance类</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Fileds-和SearchCourse类对应"><span class="toc-number">9.</span> <span class="toc-text">Fileds 和SearchCourse类对应</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#solr的查询日志"><span class="toc-number">10.</span> <span class="toc-text">solr的查询日志</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#生成持久日志的方法："><span class="toc-number">10.1.</span> <span class="toc-text">生成持久日志的方法：</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#e学e用-core配置"><span class="toc-number">11.</span> <span class="toc-text">e学e用 core配置</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="路线"><a href="#路线" class="headerlink" title="路线"></a>路线</h1><ol>
+<li>学习e学e用的配置–&gt; 更新DML和查询 + 页面渲染</li>
+<li>从单点solr完整的搭建，搜索引擎，到页面渲染</li>
+<li>在PSM项目中实战solr</li>
+<li>学习配置zk+solr+nginx的配置在测试环境下面</li>
+</ol>
+<h1 id="solr系统调用流程图"><a href="#solr系统调用流程图" class="headerlink" title="solr系统调用流程图"></a>solr系统调用流程图</h1><p>request –&gt; tomcat –&gt; nginx –&gt;solrNode –&gt;zookeeper管理</p>
+<h1 id="业务查询功能简述"><a href="#业务查询功能简述" class="headerlink" title="业务查询功能简述"></a>业务查询功能简述</h1><p>搜索关键词经过加工之后 –&gt;tags:(jct) OR name:(jct) OR description:(jct)进行查询获取课件的结果集–&gt;获取resultMap再渲染到jsp页面上去（查询会获取分类count的信息和课件列表信息）</p>
+<h1 id="solr管理界面"><a href="#solr管理界面" class="headerlink" title="solr管理界面"></a>solr管理界面</h1><p><a href="http://localhost:8880/solr/#/" target="_blank" rel="external">http://localhost:8880/solr/#/</a></p>
+<h1 id="e学e用配置流程："><a href="#e学e用配置流程：" class="headerlink" title="e学e用配置流程："></a>e学e用配置流程：</h1><h2 id="常规配置"><a href="#常规配置" class="headerlink" title="常规配置"></a>常规配置</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">CourseSearchServiceImpl 前台。</div><div class="line">//获取 bean中配置的courseSolrServer</div><div class="line">@Resource(name = &quot;courseSolrServer&quot;)</div><div class="line">private SolrServer solrServer;</div><div class="line">    @Override</div><div class="line">    public SolrServer getSolrServer() &#123;</div><div class="line">    	</div><div class="line">        return solrServer;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"> &lt;bean id=&quot;courseSolrServer&quot; class=&quot;org.apache.solr.client.solrj.impl.HttpSolrServer&quot; destroy-method=&quot;shutdown&quot;&gt;</div><div class="line">        &lt;constructor-arg value=&quot;#&#123;config.solrhost&#125;course&quot;/&gt;</div><div class="line">        &lt;property name=&quot;soTimeout&quot;                    value=&quot;15000&quot;/&gt;</div><div class="line">        &lt;property name=&quot;connectionTimeout&quot;            value=&quot;15000&quot;/&gt;</div><div class="line">        &lt;property name=&quot;defaultMaxConnectionsPerHost&quot; value=&quot;1000&quot;/&gt;</div><div class="line">        &lt;property name=&quot;maxTotalConnections&quot;          value=&quot;1000&quot;/&gt;</div><div class="line">        &lt;property name=&quot;followRedirects&quot;              value=&quot;false&quot;/&gt;</div><div class="line">        &lt;property name=&quot;allowCompression&quot;             value=&quot;true&quot;/&gt;</div><div class="line">    &lt;/bean&gt;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">ServerConfig.java</div><div class="line">    @Value(&quot;#&#123;configProperties[&apos;solr.server.host&apos;]&#125;&quot;)</div><div class="line">    private String solrhost;</div><div class="line"></div><div class="line">sourceserver.properties</div><div class="line">solr.server.host=http://edu.gehealthcare.cn:9898/solr/</div></pre></td></tr></table></figure>
+<h2 id="查询调用"><a href="#查询调用" class="headerlink" title="查询调用"></a>查询调用</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">SearchAction</div><div class="line"></div><div class="line">searchVo.getPageUtil().setCurrentPage(currentPage == null ? 1 : currentPage);</div><div class="line">searchVo.getPageUtil().setPageSize(pageSize == null ? 20 : pageSize);</div><div class="line"></div><div class="line">BaseSearchService --&gt;</div><div class="line">搜索分组数据：</div><div class="line">public SearchVo searchWithFacets(SearchVo searchVo) &#123; 	</div><div class="line">        	searchFacets(searchVo);</div><div class="line">        	search(searchVo);</div><div class="line">&#125;</div><div class="line"></div><div class="line">private SearchVo searchFacets(SearchVo searchVo) &#123;  </div><div class="line">			//根据关键词按照规则生成搜索命令</div><div class="line">			//tags:(jct) OR name:(jct) OR description:(jct)</div><div class="line">        	SolrQuery query = createQueryWithParams(searchVo, false);</div><div class="line">			//未做什么核心操作，只是做了一些设置facot操作</div><div class="line">            queryGroup(query, searchVo);</div><div class="line">			//执行搜索操作</div><div class="line">            QueryResponse queryResponse = getSolrServer().query(query);</div><div class="line">            Map&lt;Object, Object&gt; dataMap = Maps.newHashMap();</div><div class="line">			</div><div class="line">            transferGroup(dataMap, queryResponse);</div><div class="line">            populateResult(dataMap, searchVo);</div><div class="line">&#125;</div><div class="line"></div><div class="line">private SolrQuery createQueryWithParams(SearchVo s, boolean withPager) &#123;</div><div class="line">    	SolrQuery query = new SolrQuery();</div><div class="line">    	query.setQuery(formatQueryString(s));</div><div class="line">    	if (withPager) &#123;</div><div class="line">            query.setStart((s.getPageUtil().getCurrentPage() - 1) * s.getPageUtil().getPageSize());</div><div class="line">            query.setRows(s.getPageUtil().getPageSize());</div><div class="line">    	&#125;</div><div class="line">        if (s.getT() == 1) &#123;</div><div class="line">        </div><div class="line">            query.setParam(&quot;q.op&quot;, &quot;AND&quot;);</div><div class="line">        &#125;</div><div class="line">        return query;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">private String formatQueryString(SearchVo s) &#123;</div><div class="line">        String queryStr;</div><div class="line">		//s的word就是搜索关键词</div><div class="line">        String keyword = s.getWord();</div><div class="line">        if (StringUtils.isNotEmpty(keyword)) &#123;    	</div><div class="line">        	keyword = keyword.toLowerCase();</div><div class="line">            String regEx = &quot;[`~!@#$%^&amp;*()-+=|&#123;&#125;&apos;:;&apos;,\\[\\].&lt;&gt;/?~！@#￥%……&amp;*（）——+|&#123;&#125;【】‘；：”“’。，、？]&quot;;</div><div class="line">            Pattern p = Pattern.compile(regEx);</div><div class="line">            Matcher m = p.matcher(keyword);</div><div class="line">            keyword = m.replaceAll(&quot; &quot;).trim();</div><div class="line">            p = Pattern.compile(&quot; &#123;2,&#125;&quot;); // 去除多余空格</div><div class="line">            m = p.matcher(keyword);</div><div class="line">            keyword = m.replaceAll(&quot; &quot;);</div><div class="line">            queryStr = varietyQuery(s, keyword);</div><div class="line">            </div><div class="line">        &#125; else &#123;</div><div class="line">        	</div><div class="line">            queryStr = &quot;*:*&quot;;</div><div class="line">        &#125;</div><div class="line">		//tags:(jct) OR name:(jct) OR description:(jct)</div><div class="line">        return queryStr;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"> 	@Override</div><div class="line">    protected String varietyQuery(SearchVo s, String queryStr) &#123;</div><div class="line">    	</div><div class="line">    	StringBuilder queryStrBuilder = new StringBuilder();</div><div class="line">    	queryStrBuilder.append(&quot;tags:(&quot;).append(queryStr).append(&quot;)&quot;);</div><div class="line">    	if (s.getT() != 1) &#123;</div><div class="line">    		</div><div class="line">    		queryStrBuilder.append(&quot; OR name:(&quot;).append(queryStr).append(&quot;) OR description:(&quot;).append(queryStr).append(&quot;)&quot;);</div><div class="line">    	&#125;</div><div class="line">    	</div><div class="line">        return queryStrBuilder.toString();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h1 id="DML课件"><a href="#DML课件" class="headerlink" title="DML课件"></a>DML课件</h1><p>CourseMessageReceiver.java<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">courseSearchService.updateCourse(courseId, type);</div></pre></td></tr></table></figure></p>
+<p>CourseSearchServiceImpl.java<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">    @Override</div><div class="line">    public void updateCourse(Integer courseId, Integer type) &#123;</div><div class="line">        try &#123;</div><div class="line">            solrServer.deleteById(courseId.toString());</div><div class="line">            if (type &gt;= 0) &#123;</div><div class="line">                Course course = courseMapper.selectByPrimaryKey(courseId);</div><div class="line">                SearchCourse searchCourse = new SearchCourse();</div><div class="line">                searchCourse.setId(course.getId());</div><div class="line">                searchCourse.setName(course.getName());</div><div class="line">                searchCourse.setImage(course.getImage());</div><div class="line">                searchCourse.setDescription(course.getDescription());</div><div class="line">                searchCourse.setLength(course.getLength());</div><div class="line">                searchCourse.setScore(course.getScore() == null ? 0 : course.getScore());</div><div class="line">                searchCourse.setType(course.getType());</div><div class="line">                searchCourse.setVertical(Integer.valueOf(1).equals(course.getIsVertical()));</div><div class="line">                fillExtendInfos(searchCourse);</div><div class="line">                solrServer.add(solrServer.getBinder().toSolrInputDocument(searchCourse));</div><div class="line">            &#125;</div><div class="line">            solrServer.commit();</div><div class="line">            </div><div class="line">        &#125; catch (Exception e) &#123;</div><div class="line">        	</div><div class="line">            log.error(&quot;update solr index failed&quot;, e);</div><div class="line">            try &#123;</div><div class="line">            	</div><div class="line">                solrServer.rollback();</div><div class="line">                </div><div class="line">            &#125; catch (Exception ignore) &#123;</div><div class="line">            &#125;</div><div class="line">            throw new IllegalStateException(&quot;update solr index failed&quot;, e);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">private void fillExtendInfos(SearchCourse searchCourse) &#123;</div><div class="line">    	Integer courseId = searchCourse.getId();</div><div class="line">    	List&lt;Subclasses&gt; subclassesList = courseSubClassMapper.getSubClassListByCourseId(courseId);</div><div class="line">        Integer[] classIds = new Integer[subclassesList.size()];</div><div class="line">        Integer[] subClassIds = new Integer[subclassesList.size()];</div><div class="line">        for (int i = 0, j = subclassesList.size(); i &lt; j; i++) &#123;</div><div class="line">        	Subclasses subclasses = subclassesList.get(i);</div><div class="line">        	classIds[i] = subclasses.getClassesId();</div><div class="line">        	subClassIds[i] = subclasses.getId();</div><div class="line">        &#125;</div><div class="line">        searchCourse.setClassId(classIds);</div><div class="line">        searchCourse.setSubclassId(subClassIds);</div><div class="line">        List&lt;EappCourse&gt; eappCourseList = eappCourseMapper.getEappCourseListByCourseId(courseId);</div><div class="line">        Integer[] eappIds = new Integer[eappCourseList.size()];</div><div class="line">        for (int i = 0, j = eappCourseList.size(); i &lt; j; i++) &#123;</div><div class="line">        	</div><div class="line">        	eappIds[i] = eappCourseList.get(i).getEappId();</div><div class="line">        &#125;</div><div class="line">        searchCourse.setEappId(eappIds);</div><div class="line">        List&lt;Tag&gt; tagList = tagDao.findByCourseId(courseId);</div><div class="line">        String[] tags = new String[tagList.size()];</div><div class="line">        for (int i = 0, j = tagList.size(); i &lt; j; i++) &#123;</div><div class="line">        	tags[i] = tagList.get(i).getName();</div><div class="line">        &#125;</div><div class="line">        searchCourse.setTags(tags);</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<h2 id="maven-依赖"><a href="#maven-依赖" class="headerlink" title="maven 依赖"></a>maven 依赖</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;solr-version&gt;4.1.0&lt;/solr-version&gt;</div><div class="line"></div><div class="line">		 &lt;dependency&gt;</div><div class="line">            &lt;artifactId&gt;solr-solrj&lt;/artifactId&gt;</div><div class="line">            &lt;groupId&gt;org.apache.solr&lt;/groupId&gt;</div><div class="line">            &lt;version&gt;$&#123;solr-version&#125;&lt;/version&gt;</div><div class="line">        &lt;/dependency&gt;</div></pre></td></tr></table></figure>
+<h1 id="核心方法"><a href="#核心方法" class="headerlink" title="核心方法"></a>核心方法</h1><h2 id="query-SolrQuery"><a href="#query-SolrQuery" class="headerlink" title="query(SolrQuery)"></a>query(SolrQuery)</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">QueryResponse queryResponse = getSolrServer().query(query);</div></pre></td></tr></table></figure>
+<h1 id="核心类"><a href="#核心类" class="headerlink" title="核心类"></a>核心类</h1><h2 id="SearchVo-工具类"><a href="#SearchVo-工具类" class="headerlink" title="SearchVo 工具类"></a>SearchVo 工具类</h2><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class SearchVo &#123;</div><div class="line">	//搜索关键词</div><div class="line">    private String word;</div><div class="line">	//课件类型    </div><div class="line">	private CourseType courseType;</div><div class="line">	private int t = 0;</div><div class="line">    private int s = 0;</div><div class="line">    private Integer[] subclass;</div><div class="line">    private Integer[] type;</div><div class="line">    private List&lt;GroupItem&gt; classes;</div><div class="line">    private Map&lt;String,List&lt;GroupItem&gt;&gt; subclassmap;</div><div class="line">    private List&lt;GroupItem&gt; types;	</div><div class="line">	//搜索结果total</div><div class="line">	private int total = 0;</div><div class="line">	//搜索结果集</div><div class="line">    private List&lt;SearchCourse&gt; result;</div><div class="line">	//分页工具属性，提供 get方法	</div><div class="line">	PageUtil pageUtil = new PageUtil(null, total, 20, 0);</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<h2 id="SearchCourse-结果Instance类"><a href="#SearchCourse-结果Instance类" class="headerlink" title="SearchCourse 结果Instance类"></a>SearchCourse 结果Instance类</h2><ul>
+<li>对应了collection的scheam里面的字段</li>
+<li>用的是Solr提供的Field注解<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Data</div><div class="line">public class SearchCourse &#123;</div><div class="line">	@Field(&quot;id&quot;)</div><div class="line">	private Integer id;</div><div class="line"></div><div class="line">	@Field(&quot;name&quot;)</div><div class="line">	private String name;</div><div class="line"></div><div class="line">	@Field(&quot;description&quot;)</div><div class="line">	private String description;</div><div class="line">	</div><div class="line">	&apos;&apos;&apos;</div><div class="line">	&apos;&apos;&apos;&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="Fileds-和SearchCourse类对应"><a href="#Fileds-和SearchCourse类对应" class="headerlink" title="Fileds 和SearchCourse类对应"></a>Fileds 和SearchCourse类对应</h1><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">id、_version、name、length、type、app、score、description、</div><div class="line">image、classId、subclassId、tags、is_vertical</div></pre></td></tr></table></figure>
+<h1 id="solr的查询日志"><a href="#solr的查询日志" class="headerlink" title="solr的查询日志"></a>solr的查询日志</h1><p><a href="https://blog.csdn.net/woshiwanxin102213/article/details/18793271" target="_blank" rel="external">https://blog.csdn.net/woshiwanxin102213/article/details/18793271</a></p>
+<ul>
+<li>默认情况下，solr的日志是瞬时的，tomcat重启后，就消失了。可以通过图形化界面<a href="http://ip:port/solr/#/~logging查看" target="_blank" rel="external">http://ip:port/solr/#/~logging查看</a><h2 id="生成持久日志的方法："><a href="#生成持久日志的方法：" class="headerlink" title="生成持久日志的方法："></a>生成持久日志的方法：</h2></li>
+</ul>
+<ol>
+<li>将solr-4.5.1\example\lib\ext下面的jar包放到solr-4.5.1.war里边的WEB-INF\lib下面，因为从solr4开始，日志的jar被分离出来放到solr-4.5.1\example\lib\ext里边了</li>
+<li>在solr-4.5.1.war的WEB-INF下建classes目录，在该目录创建文件log4j.properties，log4j.properties的样例如下(日志级别、日志路径可自定义)：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"># 例如我们系统的配置</div><div class="line"></div><div class="line"># 路径在 bin目录下的logs/solr.log</div><div class="line">solr.log=logs/</div><div class="line"></div><div class="line">#  Logging level</div><div class="line">log4j.rootLogger=WARN, file, CONSOLE</div><div class="line"></div><div class="line">log4j.appender.CONSOLE=org.apache.log4j.ConsoleAppender</div><div class="line"></div><div class="line">log4j.appender.CONSOLE.layout=org.apache.log4j.PatternLayout</div><div class="line">log4j.appender.CONSOLE.layout.ConversionPattern=%-4r [%t] %-5p %c %x \u2013 %m%n</div><div class="line"></div><div class="line">#- size rotation with log cleanup.</div><div class="line">log4j.appender.file=org.apache.log4j.RollingFileAppender</div><div class="line">log4j.appender.file.MaxFileSize=4MB</div><div class="line">log4j.appender.file.MaxBackupIndex=9</div><div class="line"></div><div class="line">#- File to log to and log format</div><div class="line">log4j.appender.file.File=$&#123;solr.log&#125;/solr.log</div><div class="line">log4j.appender.file.layout=org.apache.log4j.PatternLayout</div><div class="line">log4j.appender.file.layout.ConversionPattern=%-5p - %d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125;; %C; %m\n</div><div class="line"></div><div class="line">log4j.logger.org.apache.zookeeper=WARN</div><div class="line">log4j.logger.org.apache.hadoop=WARN</div><div class="line"></div><div class="line"># set to INFO to enable infostream log messages</div><div class="line">log4j.logger.org.apache.solr.update.LoggingInfoStream=OFF</div></pre></td></tr></table></figure>
+<h1 id="e学e用-core配置"><a href="#e学e用-core配置" class="headerlink" title="e学e用 core配置"></a>e学e用 core配置</h1><p>soreconfig.xml<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;requestHandler name=&quot;/dataimport&quot; class=&quot;org.apache.solr.handler.dataimport.DataImportHandler&quot;&gt;</div><div class="line">  &lt;lst name=&quot;defaults&quot;&gt;</div><div class="line">    &lt;str name=&quot;config&quot;&gt;data-config.xml&lt;/str&gt;</div><div class="line">  &lt;/lst&gt;</div><div class="line">&lt;/requestHandler&gt;</div></pre></td></tr></table></figure></p>
+<p>data-config.xml<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;dataConfig&gt;</div><div class="line">	&lt;dataSource driver=&quot;com.mysql.jdbc.Driver&quot; url=&quot;jdbc:mysql://10.110.12.91:3306/eedu?useUnicode=true&amp;amp;characterEncoding=utf-8&quot; readOnly=&quot;true&quot; batchSize=&quot;3000&quot; user=&quot;dh&quot; password=&quot;dh&quot;/&gt;</div><div class="line">	&lt;document name=&quot;course&quot;&gt;</div><div class="line">		&lt;entity name=&quot;course&quot; query=&quot;select * from course where deleted != 1&quot;&gt;</div><div class="line">			&lt;field column=&quot;id&quot; name=&quot;id&quot; /&gt;</div><div class="line">			&lt;field column=&quot;name&quot; name=&quot;name&quot; /&gt;</div><div class="line">			&lt;field column=&quot;description&quot; name=&quot;description&quot; /&gt;</div><div class="line">			&lt;field column=&quot;image&quot; name=&quot;image&quot; /&gt;</div><div class="line">			&lt;field column=&quot;length&quot; name=&quot;length&quot; /&gt;</div><div class="line">			&lt;field column=&quot;score&quot; name=&quot;score&quot; /&gt;</div><div class="line">			&lt;field column=&quot;type&quot; name=&quot;type&quot; /&gt;</div><div class="line">            &lt;field column=&quot;is_vertical&quot; name=&quot;is_vertical&quot; /&gt;</div><div class="line">            &lt;entity name=&quot;class&quot; query=&quot;select classes_id,subclasses_id FROM course_subclass WHERE course_subclass.course_id=$&#123;course.id&#125;&quot;&gt;</div><div class="line">                &lt;field column=&quot;classes_id&quot; name=&quot;classId&quot; /&gt;</div><div class="line">                &lt;field column=&quot;subclasses_id&quot; name=&quot;subclassId&quot; /&gt;</div><div class="line">            &lt;/entity&gt;</div><div class="line">            &lt;entity name=&quot;eapp&quot; query=&quot;select * from eapp_course where course_id=$&#123;course.id&#125;&quot;&gt;</div><div class="line">                &lt;field column=&quot;eapp_id&quot; name=&quot;app&quot; /&gt;</div><div class="line">            &lt;/entity&gt;</div><div class="line">            &lt;entity name=&quot;tags&quot; query=&quot;select tag.name FROM course_tags, tag WHERE course_tags.tag_id=tag.id and course_tags.course_id=$&#123;course.id&#125;&quot;&gt;</div><div class="line">                &lt;field column=&quot;name&quot; name=&quot;tags&quot; /&gt;</div><div class="line">            &lt;/entity&gt; </div><div class="line">		&lt;/entity&gt;</div><div class="line">	&lt;/document&gt;</div><div class="line">&lt;/dataConfig&gt;</div></pre></td></tr></table></figure></p>
+<p>scheam.xml<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">&lt;field name=&quot;id&quot; type=&quot;int&quot; indexed=&quot;true&quot; stored=&quot;true&quot; required=&quot;true&quot;/&gt;</div><div class="line">   &lt;field name=&quot;_version_&quot; type=&quot;long&quot; indexed=&quot;true&quot; stored=&quot;true&quot;/&gt;</div><div class="line">   &lt;field name=&quot;name&quot; type=&quot;text&quot; indexed=&quot;true&quot; stored=&quot;true&quot; /&gt; </div><div class="line">   &lt;field name=&quot;length&quot; type=&quot;string&quot; indexed=&quot;true&quot; stored=&quot;true&quot; multiValued=&quot;false&quot;/&gt;</div><div class="line">   &lt;field name=&quot;type&quot; type=&quot;int&quot; indexed=&quot;true&quot; stored=&quot;true&quot; multiValued=&quot;false&quot;/&gt;</div><div class="line">   &lt;field name=&quot;app&quot; type=&quot;int&quot; indexed=&quot;true&quot; stored=&quot;true&quot; multiValued=&quot;true&quot;/&gt;</div><div class="line">   &lt;field name=&quot;score&quot; type=&quot;float&quot; indexed=&quot;false&quot; stored=&quot;true&quot;/&gt;</div><div class="line">   &lt;field name=&quot;description&quot; type=&quot;text&quot; indexed=&quot;true&quot; stored=&quot;true&quot;/&gt;</div><div class="line">   &lt;field name=&quot;image&quot; type=&quot;string&quot; indexed=&quot;true&quot; stored=&quot;true&quot;/&gt;</div><div class="line">   &lt;field name=&quot;classId&quot; type=&quot;int&quot; indexed=&quot;true&quot; stored=&quot;true&quot; multiValued=&quot;true&quot;/&gt;</div><div class="line">   &lt;field name=&quot;subclassId&quot; type=&quot;int&quot; indexed=&quot;true&quot; stored=&quot;true&quot; multiValued=&quot;true&quot;/&gt;</div><div class="line">   &lt;field name=&quot;tags&quot; type=&quot;text&quot; indexed=&quot;true&quot; stored=&quot;true&quot; multiValued=&quot;true&quot;/&gt;</div><div class="line">   &lt;field name=&quot;is_vertical&quot; type=&quot;boolean&quot; indexed=&quot;false&quot; stored=&quot;true&quot; multiValued=&quot;false&quot;/&gt;</div><div class="line">&lt;uniqueKey&gt;id&lt;/uniqueKey&gt;</div></pre></td></tr></table></figure></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/05/08/Solr系列一/" data-title="Solr系列一(项目调用） | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/05/10/Solr系列二--本地搭建solr/" title="Solr系列二--本地搭建、配置、使用">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Solr系列二--本地搭建、配置、使用</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/05/05/Mysql数据操作命令/"  title="Mysql数据操作命令">
+ <strong>下一篇：</strong><br/> 
+ <span>Mysql数据操作命令
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/05/08/Solr系列一/" data-title="Solr系列一(项目调用）" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/05/08/Solr系列一/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#路线"><span class="toc-number">1.</span> <span class="toc-text">路线</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#solr系统调用流程图"><span class="toc-number">2.</span> <span class="toc-text">solr系统调用流程图</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#业务查询功能简述"><span class="toc-number">3.</span> <span class="toc-text">业务查询功能简述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#solr管理界面"><span class="toc-number">4.</span> <span class="toc-text">solr管理界面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#e学e用配置流程："><span class="toc-number">5.</span> <span class="toc-text">e学e用配置流程：</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#常规配置"><span class="toc-number">5.1.</span> <span class="toc-text">常规配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#查询调用"><span class="toc-number">5.2.</span> <span class="toc-text">查询调用</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#DML课件"><span class="toc-number">6.</span> <span class="toc-text">DML课件</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#maven-依赖"><span class="toc-number">6.1.</span> <span class="toc-text">maven 依赖</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#核心方法"><span class="toc-number">7.</span> <span class="toc-text">核心方法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#query-SolrQuery"><span class="toc-number">7.1.</span> <span class="toc-text">query(SolrQuery)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#核心类"><span class="toc-number">8.</span> <span class="toc-text">核心类</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#SearchVo-工具类"><span class="toc-number">8.1.</span> <span class="toc-text">SearchVo 工具类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SearchCourse-结果Instance类"><span class="toc-number">8.2.</span> <span class="toc-text">SearchCourse 结果Instance类</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Fileds-和SearchCourse类对应"><span class="toc-number">9.</span> <span class="toc-text">Fileds 和SearchCourse类对应</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#solr的查询日志"><span class="toc-number">10.</span> <span class="toc-text">solr的查询日志</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#生成持久日志的方法："><span class="toc-number">10.1.</span> <span class="toc-text">生成持久日志的方法：</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#e学e用-core配置"><span class="toc-number">11.</span> <span class="toc-text">e学e用 core配置</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

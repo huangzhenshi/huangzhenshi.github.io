@@ -1,0 +1,517 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>类加载机制 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="java类的加载机制 java编译期：.java文件通过编译器编译成.class文件的过程，其中会校验格式和初步的问题（比如是否捕捉异常，list插入数据类型格式不对），也会优化一些运算（比如 String test=”a”+”b”； –&amp;gt; test=”ab”；）  编译期的过程：     解析与填充符号表过程：解析主要包括词法分析和语法分析两个过程； 插入式注解处理过程；（loombok的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="类加载机制">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/18/类加载机制/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="java类的加载机制 java编译期：.java文件通过编译器编译成.class文件的过程，其中会校验格式和初步的问题（比如是否捕捉异常，list插入数据类型格式不对），也会优化一些运算（比如 String test=”a”+”b”； –&amp;gt; test=”ab”；）  编译期的过程：     解析与填充符号表过程：解析主要包括词法分析和语法分析两个过程； 插入式注解处理过程；（loombok的">
+<meta property="og:updated_time" content="2018-03-18T13:39:48.334Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="类加载机制">
+<meta name="twitter:description" content="java类的加载机制 java编译期：.java文件通过编译器编译成.class文件的过程，其中会校验格式和初步的问题（比如是否捕捉异常，list插入数据类型格式不对），也会优化一些运算（比如 String test=”a”+”b”； –&amp;gt; test=”ab”；）  编译期的过程：     解析与填充符号表过程：解析主要包括词法分析和语法分析两个过程； 插入式注解处理过程；（loombok的">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/03/18/类加载机制/" title="类加载机制" itemprop="url">类加载机制</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-03-18T13:28:37.045Z" itemprop="datePublished"> 发表于 2018-03-18</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#java类的加载机制"><span class="toc-number">1.</span> <span class="toc-text">java类的加载机制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#classLoader"><span class="toc-number">1.1.</span> <span class="toc-text">classLoader</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#tomcat的类加载机制"><span class="toc-number">1.2.</span> <span class="toc-text">tomcat的类加载机制</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#反射和Spring-IOC"><span class="toc-number">2.</span> <span class="toc-text">反射和Spring IOC</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="java类的加载机制"><a href="#java类的加载机制" class="headerlink" title="java类的加载机制"></a>java类的加载机制</h1><ul>
+<li><p>java编译期：<em>.java文件通过编译器编译成</em>.class文件的过程，其中会校验格式和初步的问题（比如是否捕捉异常，list插入数据类型格式不对），也会优化一些运算（比如 String test=”a”+”b”； –&gt; test=”ab”；）</p>
+</li>
+<li><p>编译期的过程： </p>
+</li>
+</ul>
+<ol>
+<li>解析与填充符号表过程：解析主要包括词法分析和语法分析两个过程；</li>
+<li>插入式注解处理过程；（loombok的原理就是在这个时候按照规则插入相应的代码，绝对不是反射，反射是运行时编译)</li>
+<li>语义分析与字节码的生成过程；</li>
+</ol>
+<ul>
+<li>java运行期： 加载、连接、初始化、创建堆中对象</li>
+</ul>
+<h2 id="classLoader"><a href="#classLoader" class="headerlink" title="classLoader"></a>classLoader</h2><p><a href="http://blog.csdn.net/briblue/article/details/54973413#reply" target="_blank" rel="external">http://blog.csdn.net/briblue/article/details/54973413#reply</a></p>
+<ol>
+<li>加载器：</li>
+</ol>
+<ul>
+<li>BootstrapClassLoader 最顶层的加载类，jvm内置的加载器，主要加载核心类库，%JRE_HOME%\lib下的rt.jar、resources.jar、charsets.jar和class等。 </li>
+<li>ExtentionClassLoader 扩展的类加载器，加载目录%JRE_HOME%\lib\ext目录下的jar包和class文件 </li>
+<li>AppclassLoader也称为SystemAppClass 加载当前应用的classpath的所有类。也就是自己写的类基本上都是APP来加载的</li>
+<li>自定义ClassLoader，可以突破class文件包路径的限制，需要重写findClass()缓存查找方法制定寻找路径即可</li>
+<li>contextClassLoader，是Thread的成员变量，默认是AppClassLoader。子线程默认和父线程相同的加载器</li>
+</ul>
+<ol>
+<li>特点</li>
+</ol>
+<ul>
+<li>不同包路径下的类由不同的类加载器加载</li>
+<li>jvm懒加载，根据需要去动态加载</li>
+<li>父加载器不是父类。</li>
+</ul>
+<ol>
+<li>加载机制：<br>BootstrapClassLoader、ExtClassLoader、AppClassLoader实际是查阅相应的环境属性sun.boot.class.path、java.ext.dirs和java.class.path来加载资源文件的</li>
+</ol>
+<ul>
+<li>AppclassLoader的父加载器为ExtClassLoader,ExtClassLoader的父加载器为null，JVM发现为null时就找内置的加载器BootstrapClassLoader。</li>
+<li>Bootstrap ClassLoader是由C/C++编写的，它本身是虚拟机的一部分，所以它并不是一个JAVA类，也就是无法在java代码中获取它的引用，JVM启动时通过Bootstrap类加载器加载rt.jar等核心jar包中的class文件器。Bootstrap没有父加载器，但是它却可以作用一个ClassLoader的父加载器。比如ExtClassLoader</li>
+</ul>
+<ol>
+<li>双亲委托：自下而上，先挨个找缓存，到了顶层缓存中还没有，就开始初始化，从各自对应负责的包路径下查找，有就创建，没有给就子加载器找。</li>
+</ol>
+<ul>
+<li>避免重复创建对象，浪费内存</li>
+</ul>
+<ol>
+<li>重要的方法</li>
+</ol>
+<ul>
+<li>loadClass(String 类全路径，Boolean resloved) </li>
+<li>findLoadedClass(name)  先加锁在自己的加载器缓存中找是否已经有实例化</li>
+<li>c = parent.loadClass(name, false); 找不到就递归在父加载器中加载</li>
+<li>c = findClass(name);父加载器也加载不了，就在自己的管辖范围内创建类</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">synchronized (getClassLoadingLock(name)) &#123;</div><div class="line">           // 首先，检测是否已经加载</div><div class="line">           Class&lt;?&gt; c = findLoadedClass(name);</div></pre></td></tr></table></figure>
+<h2 id="tomcat的类加载机制"><a href="#tomcat的类加载机制" class="headerlink" title="tomcat的类加载机制"></a>tomcat的类加载机制</h2><p><a href="http://blog.csdn.net/jiaomingliang/article/details/47416007" target="_blank" rel="external">http://blog.csdn.net/jiaomingliang/article/details/47416007</a><br><a href="http://blog.csdn.net/czmacd/article/details/54017027" target="_blank" rel="external">http://blog.csdn.net/czmacd/article/details/54017027</a></p>
+<ol>
+<li>tomcat类加载器</li>
+</ol>
+<ul>
+<li>CommonClassLoader（默认父加载器为AppClassLoader）。加载一些tomcat/lib下面的jar包，servlet-api.jar、jsp-api.jar等</li>
+<li>catalinaClassLoader</li>
+<li>sharedClassLoader</li>
+<li>WebAppClassLoader（程序里面打的class包）</li>
+</ul>
+<ol>
+<li>加载顺序</li>
+</ol>
+<ul>
+<li>tomcat启动，先加载BootStrap类初始化：CommonClassLoader、catalinaLoader、sharedLoader，会根据catelina.property里面的配置分配各自管理的类范围，默认catalinaLoader、sharedLoader配置为null，也就是默认3个加载器是同一个CommonClassLoader。</li>
+<li>每个应用程序都要各自独立的WebAppClassLoader，继承自sharedClassLoader</li>
+</ul>
+<p>3.关键逻辑<br>tomcat的类加载机制是违反了双亲委托原则的，最后走投无路自己加载不了再去调用父加载器</p>
+<ul>
+<li>先在本地缓存中查找是否已经加载过该类</li>
+<li>再查询JVM缓存中查找是否已经加载过该类</li>
+<li>让系统类加载器(AppClassLoader)尝试加载该类，主要是为了防止一些基础类会被web中的类覆盖（tomcat bin下包)</li>
+<li>web应用的类加载器将自行加载（findClass),这里也违背了双亲</li>
+<li>最后还是加载不到的话，则委托父类加载器(Common ClassLoader)去加载。</li>
+</ul>
+<h1 id="反射和Spring-IOC"><a href="#反射和Spring-IOC" class="headerlink" title="反射和Spring IOC"></a>反射和Spring IOC</h1><ul>
+<li><p>反射是运行期编译，只有执行到这个方法，确定了参数:类名的时候才编译出对应的class文件，再加载到内存当中<br>Class tc = Class.forName(“com.java.dbtest.TestConnection”);</p>
+</li>
+<li><p>CGLIB也是运行期编译，Enhancer类继承代理类，拦截相应的方法，实现代理</p>
+</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/18/类加载机制/" data-title="类加载机制 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/03/18/并发编程线程池/" title="并发编程线程池">
+  <strong>上一篇：</strong><br/>
+  <span>
+  并发编程线程池</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/03/09/排序算法实战高级/"  title="排序算法实战高级">
+ <strong>下一篇：</strong><br/> 
+ <span>排序算法实战高级
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/03/18/类加载机制/" data-title="类加载机制" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/18/类加载机制/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#java类的加载机制"><span class="toc-number">1.</span> <span class="toc-text">java类的加载机制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#classLoader"><span class="toc-number">1.1.</span> <span class="toc-text">classLoader</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#tomcat的类加载机制"><span class="toc-number">1.2.</span> <span class="toc-text">tomcat的类加载机制</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#反射和Spring-IOC"><span class="toc-number">2.</span> <span class="toc-text">反射和Spring IOC</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

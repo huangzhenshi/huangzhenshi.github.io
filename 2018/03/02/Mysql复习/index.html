@@ -1,0 +1,513 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>mysql复习 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="存储引擎MYISAM 不支持事务和外键 查询速度快 普通索引为非聚集索引，直接保存数据的引用地址 select count(*) 操作直接获取，已经记录了该值 适合多查询少DML的场景，因为是表所，不支持DML并发  InnoDB 支持事务和外键 支持走索引的行级别锁，所以并发支持好，不走索引的普通查询也是表锁 索引的类型支持BTREE索引、FullText索引 普通索引为聚集索引，需要找到主键才">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mysql复习">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/02/Mysql复习/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="存储引擎MYISAM 不支持事务和外键 查询速度快 普通索引为非聚集索引，直接保存数据的引用地址 select count(*) 操作直接获取，已经记录了该值 适合多查询少DML的场景，因为是表所，不支持DML并发  InnoDB 支持事务和外键 支持走索引的行级别锁，所以并发支持好，不走索引的普通查询也是表锁 索引的类型支持BTREE索引、FullText索引 普通索引为聚集索引，需要找到主键才">
+<meta property="og:updated_time" content="2018-03-02T03:11:15.591Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="mysql复习">
+<meta name="twitter:description" content="存储引擎MYISAM 不支持事务和外键 查询速度快 普通索引为非聚集索引，直接保存数据的引用地址 select count(*) 操作直接获取，已经记录了该值 适合多查询少DML的场景，因为是表所，不支持DML并发  InnoDB 支持事务和外键 支持走索引的行级别锁，所以并发支持好，不走索引的普通查询也是表锁 索引的类型支持BTREE索引、FullText索引 普通索引为聚集索引，需要找到主键才">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/03/02/Mysql复习/" title="mysql复习" itemprop="url">mysql复习</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-03-02T00:19:24.970Z" itemprop="datePublished"> Published 2018-03-02</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#存储引擎"><span class="toc-number">1.</span> <span class="toc-text">存储引擎</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#MYISAM"><span class="toc-number">1.1.</span> <span class="toc-text">MYISAM</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#InnoDB"><span class="toc-number">1.2.</span> <span class="toc-text">InnoDB</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#memory"><span class="toc-number">1.3.</span> <span class="toc-text">memory</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#merge"><span class="toc-number">1.4.</span> <span class="toc-text">merge</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#日志功能"><span class="toc-number">2.</span> <span class="toc-text">日志功能</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#并发引发的问题："><span class="toc-number">3.</span> <span class="toc-text">并发引发的问题：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Mysql事务级别"><span class="toc-number">4.</span> <span class="toc-text">Mysql事务级别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#锁机制"><span class="toc-number">5.</span> <span class="toc-text">锁机制</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#MVCC"><span class="toc-number">6.</span> <span class="toc-text">MVCC</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#数据库三大范式"><span class="toc-number">7.</span> <span class="toc-text">数据库三大范式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Query-cache"><span class="toc-number">8.</span> <span class="toc-text">Query_cache</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#索引注意事项"><span class="toc-number">9.</span> <span class="toc-text">索引注意事项</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mysql分区"><span class="toc-number">10.</span> <span class="toc-text">mysql分区</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mysql分表"><span class="toc-number">11.</span> <span class="toc-text">mysql分表</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mysql读写分离和主从复制"><span class="toc-number">12.</span> <span class="toc-text">mysql读写分离和主从复制</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="存储引擎"><a href="#存储引擎" class="headerlink" title="存储引擎"></a>存储引擎</h1><h2 id="MYISAM"><a href="#MYISAM" class="headerlink" title="MYISAM"></a>MYISAM</h2><ul>
+<li>不支持事务和外键</li>
+<li>查询速度快</li>
+<li>普通索引为非聚集索引，直接保存数据的引用地址</li>
+<li>select count(*) 操作直接获取，已经记录了该值</li>
+<li>适合多查询少DML的场景，因为是表所，不支持DML并发</li>
+</ul>
+<h2 id="InnoDB"><a href="#InnoDB" class="headerlink" title="InnoDB"></a>InnoDB</h2><ul>
+<li>支持事务和外键</li>
+<li>支持走索引的行级别锁，所以并发支持好，不走索引的普通查询也是表锁</li>
+<li>索引的类型支持BTREE索引、FullText索引</li>
+<li>普通索引为聚集索引，需要找到主键才能找到源数据，所以主键长度不要太大</li>
+<li>为默认的mysql表存储引擎</li>
+</ul>
+<h2 id="memory"><a href="#memory" class="headerlink" title="memory"></a>memory</h2><ul>
+<li>内存存储，mysql重启后数据消失，类似于redis</li>
+<li>默认索引Hash算法、速度快</li>
+<li>不支持事务控制</li>
+</ul>
+<h2 id="merge"><a href="#merge" class="headerlink" title="merge"></a>merge</h2><p>用来做mysql分表的时候用，几个表结构相同的表，从代码层面可以访问子表来实现高效查询，但是逻辑上可以公用总表。</p>
+<h1 id="日志功能"><a href="#日志功能" class="headerlink" title="日志功能"></a>日志功能</h1><ul>
+<li>慢查询日志可以实现有问题SQL性能监控</li>
+<li>二进制日志可以实现DML监控，从而主从复制实现、读写分离、分库和负载均衡</li>
+</ul>
+<h1 id="并发引发的问题："><a href="#并发引发的问题：" class="headerlink" title="并发引发的问题："></a>并发引发的问题：</h1><ul>
+<li>重复修改（A先修改、B不知道也修改则第一个修改的修改无效啦）</li>
+<li>脏读</li>
+<li>不可重复读(第二次读了人家提交的数据)</li>
+<li>幻读（人家提交过，我插入失败、人家修改过我又读出来了）</li>
+</ul>
+<h1 id="Mysql事务级别"><a href="#Mysql事务级别" class="headerlink" title="Mysql事务级别"></a>Mysql事务级别</h1><ul>
+<li>Read Uncommited</li>
+<li>Read Commited</li>
+<li>Repeatable Read</li>
+<li>Serializble（查询的时候就加锁，别人就查不到了)</li>
+</ul>
+<h1 id="锁机制"><a href="#锁机制" class="headerlink" title="锁机制"></a>锁机制</h1><ul>
+<li>共享锁（读锁）（select –lock in share mode),别人可以普通查询、共享锁查询但是不能DML，因为是排它锁加不了</li>
+<li>排他锁（写锁）(开启事务后，DML都自动加排他锁、或者 select for update也是排他查询)</li>
+<li>意向锁：表中有一行或者多行数据加锁后，该表就有IS IX锁了，其它操作想加表锁的话会预先判断而不需要整表扫描</li>
+<li>悲观锁：悲观的认为要使用的数据会并发，一锁二查三更新，也是串行化级别的实现，容易死锁</li>
+<li>乐观锁：类似于mvcc，给一个版本号，操作+1，乐观的认为不会并发，如果并发修改则回退。适合读多写少，回退升本低的场景</li>
+<li>死锁：A事务锁住了a数据等待查询b数据，B事务锁住了b数据等待查询a数据，就会死锁卡主</li>
+</ul>
+<h1 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h1><p>每条数据进行版本控制，有1个创建版本号、1个删除版本号，每开启一个事务就会原版本号+1为当前事务版本号</p>
+<ul>
+<li>插入数据，会把C设置为当前事务版本号</li>
+<li>删除数据，会把D设置为当前事务版本号</li>
+<li>更新数据，会把老数据添加一个D，再新创建一个更新后的数据和C</li>
+<li>查询数据，版本号&lt;=当前版本号&amp;&amp;D&gt;当前版本号的数据</li>
+</ul>
+<h1 id="数据库三大范式"><a href="#数据库三大范式" class="headerlink" title="数据库三大范式"></a>数据库三大范式</h1><ul>
+<li>第一范式：所有的属性均不可被再分割，比如用户属性不能是 huangzhenshi-30-jiujiang，而应该是43399用户ID</li>
+<li>第二范式: 不能依赖部分主键，比如学生成绩表（userID courseId score coureseName）不满足</li>
+<li>第三范式: 所有非主属性之间不能有依赖关系，比如学生表（ID name DepartmentId departmentName)不满足</li>
+</ul>
+<h1 id="Query-cache"><a href="#Query-cache" class="headerlink" title="Query_cache"></a>Query_cache</h1><p>默认关闭，可以设置全部开启和指定开启，SQL级别的缓存，只认sql字符串，不认SQL语义，会维护数据更新。<br><code>select SQL_CACHE * from user;</code></p>
+<h1 id="索引注意事项"><a href="#索引注意事项" class="headerlink" title="索引注意事项"></a>索引注意事项</h1><ul>
+<li>最左匹配：like查询最左匹配、联合索引的字段最左匹配，查询优化器会调整SQL字段的顺序来走联合索引</li>
+<li>频繁变更的表不适合加索引</li>
+<li>区分度不大的字段不适合加索引</li>
+<li>InnoDB的话，主键尽量不要太大，否则普通索引的大小很大，未压缩的主键信息</li>
+<li>联合索引区分度大的字段放前面，更高效</li>
+<li>字符串截取区分度大的话，可以压缩索引的空间大小</li>
+<li>使用函数的索引无效</li>
+</ul>
+<h1 id="mysql分区"><a href="#mysql分区" class="headerlink" title="mysql分区"></a>mysql分区</h1><p>水平分区就是每一条数据完整，不同类型的数据分到不同的块中。垂直分区，不常用的大字段数据单独存储起来，又不影响数据的完整性。<br>条件：</p>
+<ul>
+<li>联合主键，因为分区字段一定要归属在主键当中</li>
+<li>分区键必须是INT类型，可以使用Year，Mod等函数来达到目的<br>其他：</li>
+<li>分区后没有全局索引，都是局部索引效率高</li>
+<li>分区的方法有 Range、List（适合批次查找）、Hash（适合精确查找，不适合范围查找）等</li>
+</ul>
+<h1 id="mysql分表"><a href="#mysql分表" class="headerlink" title="mysql分表"></a>mysql分表</h1><ul>
+<li>基本表必须是MYISAM</li>
+<li>merge引擎实现逻辑上一张表，SQL查询的时候大部分还是修改代码实现对应的子表查询</li>
+</ul>
+<h1 id="mysql读写分离和主从复制"><a href="#mysql读写分离和主从复制" class="headerlink" title="mysql读写分离和主从复制"></a>mysql读写分离和主从复制</h1><ul>
+<li>通过二进制日志监控，实现主从复制（或者说是实时备份）</li>
+<li>通过mysql-proxy等工具实现，查询SQL到特定的数据库，DML操作到一台主的数据库</li>
+<li>二进制同步的话，都是已经解析过了的SQL语句，不需要事务控制，读服务器同步数据的效率高</li>
+<li>主从复制需要授权和配置mysql.conf</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/02/Mysql复习/" data-title="mysql复习 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/03/02/缓存-消息-分布式复习/" title="缓存-消息-分布式复习">
+  <strong>上一篇：</strong><br/>
+  <span>
+  缓存-消息-分布式复习</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/03/02/JVM复习/"  title="JVM复习">
+ <strong>下一篇：</strong><br/> 
+ <span>JVM复习
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/03/02/Mysql复习/" data-title="mysql复习" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/02/Mysql复习/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#存储引擎"><span class="toc-number">1.</span> <span class="toc-text">存储引擎</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#MYISAM"><span class="toc-number">1.1.</span> <span class="toc-text">MYISAM</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#InnoDB"><span class="toc-number">1.2.</span> <span class="toc-text">InnoDB</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#memory"><span class="toc-number">1.3.</span> <span class="toc-text">memory</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#merge"><span class="toc-number">1.4.</span> <span class="toc-text">merge</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#日志功能"><span class="toc-number">2.</span> <span class="toc-text">日志功能</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#并发引发的问题："><span class="toc-number">3.</span> <span class="toc-text">并发引发的问题：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Mysql事务级别"><span class="toc-number">4.</span> <span class="toc-text">Mysql事务级别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#锁机制"><span class="toc-number">5.</span> <span class="toc-text">锁机制</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#MVCC"><span class="toc-number">6.</span> <span class="toc-text">MVCC</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#数据库三大范式"><span class="toc-number">7.</span> <span class="toc-text">数据库三大范式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Query-cache"><span class="toc-number">8.</span> <span class="toc-text">Query_cache</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#索引注意事项"><span class="toc-number">9.</span> <span class="toc-text">索引注意事项</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mysql分区"><span class="toc-number">10.</span> <span class="toc-text">mysql分区</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mysql分表"><span class="toc-number">11.</span> <span class="toc-text">mysql分表</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mysql读写分离和主从复制"><span class="toc-number">12.</span> <span class="toc-text">mysql读写分离和主从复制</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

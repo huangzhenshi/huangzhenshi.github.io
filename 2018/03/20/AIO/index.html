@@ -1,0 +1,462 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>AIO | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="https://www.jianshu.com/p/c5e16460047b Demo 源码：https://github.com/huangzhenshi/IO_NIO_NIO2Demo 名词解释 异步非阻塞IO：主线程向操作系统发起一个异步IO操作，并指定回调操作(CompletionHandler)，然后就可以做别的事情了，操作系统执行完IO操作之后，会创建一个子线程执行回调的方法。  异步">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AIO">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/20/AIO/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="https://www.jianshu.com/p/c5e16460047b Demo 源码：https://github.com/huangzhenshi/IO_NIO_NIO2Demo 名词解释 异步非阻塞IO：主线程向操作系统发起一个异步IO操作，并指定回调操作(CompletionHandler)，然后就可以做别的事情了，操作系统执行完IO操作之后，会创建一个子线程执行回调的方法。  异步">
+<meta property="og:updated_time" content="2018-03-23T03:18:56.024Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AIO">
+<meta name="twitter:description" content="https://www.jianshu.com/p/c5e16460047b Demo 源码：https://github.com/huangzhenshi/IO_NIO_NIO2Demo 名词解释 异步非阻塞IO：主线程向操作系统发起一个异步IO操作，并指定回调操作(CompletionHandler)，然后就可以做别的事情了，操作系统执行完IO操作之后，会创建一个子线程执行回调的方法。  异步">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/03/20/AIO/" title="AIO" itemprop="url">AIO</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-03-20T03:49:17.153Z" itemprop="datePublished"> 发表于 2018-03-20</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#名词解释"><span class="toc-number">1.</span> <span class="toc-text">名词解释</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#BIO-NIO-AIO适用场景"><span class="toc-number">2.</span> <span class="toc-text">BIO NIO AIO适用场景</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#AIO-新特性"><span class="toc-number">3.</span> <span class="toc-text">AIO 新特性</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#channel"><span class="toc-number">4.</span> <span class="toc-text">channel</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#回调式"><span class="toc-number">5.</span> <span class="toc-text">回调式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#将来式"><span class="toc-number">6.</span> <span class="toc-text">将来式</span></a></li></ol>
+		
+		</div>
+		
+		<p><a href="https://www.jianshu.com/p/c5e16460047b" target="_blank" rel="external">https://www.jianshu.com/p/c5e16460047b</a></p>
+<p>Demo 源码：<br><a href="https://github.com/huangzhenshi/IO_NIO_NIO2Demo">https://github.com/huangzhenshi/IO_NIO_NIO2Demo</a></p>
+<h1 id="名词解释"><a href="#名词解释" class="headerlink" title="名词解释"></a>名词解释</h1><ol>
+<li><p>异步非阻塞IO：主线程向操作系统发起一个异步IO操作，并指定回调操作(CompletionHandler)，然后就可以做别的事情了，操作系统执行完IO操作之后，会创建一个子线程执行回调的方法。</p>
+</li>
+<li><p>异步阻塞IO：将来式异步IO，主线程向操作系统发起一个异步IO操作，并返回一个future对象，主线程可以根据业务需求，在任意的操作时机，阻塞式的获取IO操作的结果。</p>
+</li>
+</ol>
+<h1 id="BIO-NIO-AIO适用场景"><a href="#BIO-NIO-AIO适用场景" class="headerlink" title="BIO NIO AIO适用场景"></a>BIO NIO AIO适用场景</h1><ol>
+<li><p>BIO方式适用于连接数目比较小且固定的架构，这种方式对服务器资源要求比较高，并发局限于应用中，JDK1.4以前的唯一选择，但程序直观简单易理解；</p>
+</li>
+<li><p>NIO方式适用于连接数目多且连接比较短（轻操作）的架构，比如聊天服务器，并发局限于应用中，编程比较复杂，JDK1.4开始支持；</p>
+</li>
+<li><p>AIO方式适用于连接数目多且连接比较长（重操作）的架构，比如相册服务器，充分调用OS参与并发操作，编程比较复杂，JDK7开始支持</p>
+</li>
+</ol>
+<h1 id="AIO-新特性"><a href="#AIO-新特性" class="headerlink" title="AIO 新特性"></a>AIO 新特性</h1><ul>
+<li>基于Path的复制、移动、删除</li>
+<li>获取和改变文件的属性(RW读写属性、最后修改时间和大小)</li>
+<li>递归目录功能</li>
+<li>封装了一些快速简洁读写的方法（Files.readAllLine())</li>
+<li>支持异步IO（包括文本IO和Socket IO），将来式（异步阻塞）和回调式（异步非阻塞）</li>
+<li>文件监听类，监听某文件发生改变（WatchService)</li>
+</ul>
+<h1 id="channel"><a href="#channel" class="headerlink" title="channel"></a>channel</h1><ul>
+<li>AsynchronousFileChannel: 用于文件异步读写；</li>
+<li>AsynchronousSocketChannel: 客户端异步socket；</li>
+<li>AsynchronousServerSocketChannel: 服务器异步socket。</li>
+</ul>
+<h1 id="回调式"><a href="#回调式" class="headerlink" title="回调式"></a>回调式</h1><p>主线程会派一个侦查员CompletionHandler到独立的线程中执行IO操作。<br>public abstract <a> void read(dst,position, attachment,CompletionHandler);<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public static void readAioStyle() throws IOException, InterruptedException&#123;</div><div class="line">	Path path = Paths.get(fileFrom);</div><div class="line">    AsynchronousFileChannel channel = AsynchronousFileChannel.open(path);</div><div class="line">    ByteBuffer buffer = ByteBuffer.allocate(1024);</div><div class="line">    channel.read(buffer, 0, buffer, new CompletionHandler&lt;Integer, ByteBuffer&gt;() &#123;</div><div class="line">        @Override</div><div class="line">        public void completed(Integer result, ByteBuffer attachment) &#123;</div><div class="line">            System.out.println(Thread.currentThread().getName() + &quot; read success!&quot;);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void failed(Throwable exc, ByteBuffer attachment) &#123;</div><div class="line">            System.out.println(&quot;read error&quot;);</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">    System.out.println(&quot;工作交代完了&quot;);</div><div class="line">    while (true)&#123;</div><div class="line">        System.out.println(Thread.currentThread().getName() + &quot; sleep&quot;);</div><div class="line">        Thread.sleep(1000);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></a></p>
+<h1 id="将来式"><a href="#将来式" class="headerlink" title="将来式"></a>将来式</h1><p>样子像NIO，只是底层实现原理不同  </p>
+<p>public abstract Future<integer> read(ByteBuffer dst, long position);<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">   //异步将来式读取文本，主线程通过返回的Future对象来按照自己的时机去检查结果</div><div class="line">public static void readAioFutureStyle() throws IOException, InterruptedException, ExecutionException&#123;</div><div class="line">	Path path = Paths.get(fileFrom);</div><div class="line">    AsynchronousFileChannel channel = AsynchronousFileChannel.open(path);</div><div class="line">    ByteBuffer buffer = ByteBuffer.allocate(1024);</div><div class="line">    Future&lt;Integer&gt; future = channel.read(buffer,0);</div><div class="line">    System.out.println(&quot;做点别的事情&quot;);</div><div class="line">    Thread.sleep(2000);</div><div class="line">    </div><div class="line">    System.out.println(&quot;start check&quot;);</div><div class="line">    Integer readNumber = future.get();</div><div class="line">    buffer.flip();</div><div class="line">    CharBuffer charBuffer = CharBuffer.allocate(1024);</div><div class="line">    CharsetDecoder decoder = Charset.defaultCharset().newDecoder();</div><div class="line">    decoder.decode(buffer,charBuffer,false);</div><div class="line">    charBuffer.flip();</div><div class="line">    String data = new String(charBuffer.array(),0, charBuffer.limit());</div><div class="line">    System.out.println(&quot;read number:&quot; + readNumber);</div><div class="line">    System.out.println(data);</div><div class="line">&#125;</div></pre></td></tr></table></figure></integer></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/20/AIO/" data-title="AIO | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/03/20/IO流/" title="IO流">
+  <strong>上一篇：</strong><br/>
+  <span>
+  IO流</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/03/19/socket编程/"  title="Socket编程">
+ <strong>下一篇：</strong><br/> 
+ <span>Socket编程
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/03/20/AIO/" data-title="AIO" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/20/AIO/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#名词解释"><span class="toc-number">1.</span> <span class="toc-text">名词解释</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#BIO-NIO-AIO适用场景"><span class="toc-number">2.</span> <span class="toc-text">BIO NIO AIO适用场景</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#AIO-新特性"><span class="toc-number">3.</span> <span class="toc-text">AIO 新特性</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#channel"><span class="toc-number">4.</span> <span class="toc-text">channel</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#回调式"><span class="toc-number">5.</span> <span class="toc-text">回调式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#将来式"><span class="toc-number">6.</span> <span class="toc-text">将来式</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

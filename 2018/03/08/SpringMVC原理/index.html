@@ -1,0 +1,447 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>SpringMVC原理 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="博客园超级干货https://www.cnblogs.com/fangjian0423/p/springMVC-directory-summary.html 原理(Spring Mvc 4.02版本)程序启动的时候会DispatcherServlet监听触发初始化：比如HandlerMappings映射、HandlerAdapters适配器、initHandlerExceptionResolver">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringMVC原理">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/08/SpringMVC原理/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="博客园超级干货https://www.cnblogs.com/fangjian0423/p/springMVC-directory-summary.html 原理(Spring Mvc 4.02版本)程序启动的时候会DispatcherServlet监听触发初始化：比如HandlerMappings映射、HandlerAdapters适配器、initHandlerExceptionResolver">
+<meta property="og:updated_time" content="2018-03-08T10:46:02.384Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringMVC原理">
+<meta name="twitter:description" content="博客园超级干货https://www.cnblogs.com/fangjian0423/p/springMVC-directory-summary.html 原理(Spring Mvc 4.02版本)程序启动的时候会DispatcherServlet监听触发初始化：比如HandlerMappings映射、HandlerAdapters适配器、initHandlerExceptionResolver">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/03/08/SpringMVC原理/" title="SpringMVC原理" itemprop="url">SpringMVC原理</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-03-08T03:14:53.102Z" itemprop="datePublished"> 发表于 2018-03-08</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#原理-Spring-Mvc-4-02版本"><span class="toc-number">1.</span> <span class="toc-text">原理(Spring Mvc 4.02版本)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#请求流程"><span class="toc-number">2.</span> <span class="toc-text">请求流程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#核心类"><span class="toc-number">3.</span> <span class="toc-text">核心类</span></a></li></ol>
+		
+		</div>
+		
+		<p>博客园超级干货<br><a href="https://www.cnblogs.com/fangjian0423/p/springMVC-directory-summary.html" target="_blank" rel="external">https://www.cnblogs.com/fangjian0423/p/springMVC-directory-summary.html</a></p>
+<h1 id="原理-Spring-Mvc-4-02版本"><a href="#原理-Spring-Mvc-4-02版本" class="headerlink" title="原理(Spring Mvc 4.02版本)"></a>原理(Spring Mvc 4.02版本)</h1><p>程序启动的时候会DispatcherServlet监听触发初始化：比如HandlerMappings映射、HandlerAdapters适配器、initHandlerExceptionResolvers、ViewResolvers解析器等等</p>
+<ul>
+<li>在容器初始化时会对所有进行过静态文件配置，或者@RequestMapping注解配置的HashMap集合，<br>urlmap handlerMethods，实现String url –&gt; RequestMappingInfo –&gt; HandlerMethod<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">private final Map&lt;T, HandlerMethod&gt; handlerMethods = new LinkedHashMap&lt;T, HandlerMethod&gt;();</div><div class="line"></div><div class="line">private final MultiValueMap&lt;String, T&gt; urlMap = new LinkedMultiValueMap&lt;String, T&gt;();</div><div class="line"></div><div class="line">T为RequestMappingInfo。</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="请求流程"><a href="#请求流程" class="headerlink" title="请求流程"></a>请求流程</h1><p>request 到DS，DS去HandlerMapping查找对应的HandlerMapping，再去HandlerAdapter中调用Handler返回一个ModelAndView到DS，DS再调用ViewResolver去解析页面，最后渲染返回给用户。</p>
+<h1 id="核心类"><a href="#核心类" class="headerlink" title="核心类"></a>核心类</h1><ul>
+<li><p>DispatcherServlet：作为前端控制器，整个流程控制的中心，控制其它组件执行，统一调度，降低组件之间的耦合性，提高每个组件的扩展性。</p>
+</li>
+<li><p>HandlerMapping：通过扩展处理器映射器实现不同的映射方式，例如：配置文件方式，实现接口方式，注解方式等。 </p>
+</li>
+<li><p>HandlAdapter：通过扩展处理器适配器，支持更多类型的处理器。</p>
+</li>
+<li><p>ViewResolver：通过扩展视图解析器，支持更多类型的视图解析，例如：jsp、freemarker、pdf、excel等。</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">  &lt;servlet&gt;</div><div class="line">    &lt;servlet-name&gt;springmvc&lt;/servlet-name&gt;</div><div class="line">    &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;</div><div class="line">    &lt;init-param&gt;</div><div class="line">      &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;</div><div class="line">      &lt;param-value&gt;classpath*:application-mvc.xml&lt;/param-value&gt;</div><div class="line">    &lt;/init-param&gt;</div><div class="line">    &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;</div><div class="line">  &lt;/servlet&gt;</div><div class="line">  </div><div class="line">  &lt;servlet-mapping&gt;</div><div class="line">    &lt;servlet-name&gt;springmvc&lt;/servlet-name&gt;</div><div class="line">    &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;</div><div class="line">  &lt;/servlet-mapping&gt;</div><div class="line"></div><div class="line"></div><div class="line">&lt;context:component-scan base-package=&quot;com.test.action&quot;/&gt;	</div><div class="line">&lt;mvc:annotation-driven/&gt;</div><div class="line">&lt;bean id=&quot;viewJspResolver&quot; class=&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;&gt;</div><div class="line">		&lt;property name=&quot;prefix&quot; value=&quot;/WEB-INF/views/&quot; /&gt;</div><div class="line">		&lt;property name=&quot;suffix&quot; value=&quot;.jsp&quot; /&gt;</div><div class="line">&lt;/bean&gt;</div></pre></td></tr></table></figure>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/08/SpringMVC原理/" data-title="SpringMVC原理 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/03/08/TCP IP协议/" title="TCP/IP协议">
+  <strong>上一篇：</strong><br/>
+  <span>
+  TCP/IP协议</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/03/07/Spring AOP原理/"  title="Spring AOP原理">
+ <strong>下一篇：</strong><br/> 
+ <span>Spring AOP原理
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/03/08/SpringMVC原理/" data-title="SpringMVC原理" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/08/SpringMVC原理/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#原理-Spring-Mvc-4-02版本"><span class="toc-number">1.</span> <span class="toc-text">原理(Spring Mvc 4.02版本)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#请求流程"><span class="toc-number">2.</span> <span class="toc-text">请求流程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#核心类"><span class="toc-number">3.</span> <span class="toc-text">核心类</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

@@ -1,0 +1,500 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>JVM复习 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="java类的生命周期过程：类的加载、连接（验证、准备、解析）、初始化、创建对象、卸载类本质：类加载器读取Java字节代码，并转换成java.lang.Class类的一个实例  加载：类加载器查找并加载类的二进制数据、在方法区存储类的数据结构、在堆区产生一个class对象描述这些信息 验证：文件格式验证，元数据验证，字节码验证以及符号引用验证。 准备：为类的静态变量分配内存并设为jvm默认的初值，为">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM复习">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/02/JVM复习/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="java类的生命周期过程：类的加载、连接（验证、准备、解析）、初始化、创建对象、卸载类本质：类加载器读取Java字节代码，并转换成java.lang.Class类的一个实例  加载：类加载器查找并加载类的二进制数据、在方法区存储类的数据结构、在堆区产生一个class对象描述这些信息 验证：文件格式验证，元数据验证，字节码验证以及符号引用验证。 准备：为类的静态变量分配内存并设为jvm默认的初值，为">
+<meta property="og:updated_time" content="2018-03-02T03:12:06.637Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JVM复习">
+<meta name="twitter:description" content="java类的生命周期过程：类的加载、连接（验证、准备、解析）、初始化、创建对象、卸载类本质：类加载器读取Java字节代码，并转换成java.lang.Class类的一个实例  加载：类加载器查找并加载类的二进制数据、在方法区存储类的数据结构、在堆区产生一个class对象描述这些信息 验证：文件格式验证，元数据验证，字节码验证以及符号引用验证。 准备：为类的静态变量分配内存并设为jvm默认的初值，为">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/03/02/JVM复习/" title="JVM复习" itemprop="url">JVM复习</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-03-02T00:19:24.960Z" itemprop="datePublished"> Published 2018-03-02</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#java类的生命周期"><span class="toc-number">1.</span> <span class="toc-text">java类的生命周期</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JVM内存结构"><span class="toc-number">2.</span> <span class="toc-text">JVM内存结构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#垃圾回收"><span class="toc-number">3.</span> <span class="toc-text">垃圾回收</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#垃圾回收的方法："><span class="toc-number">4.</span> <span class="toc-text">垃圾回收的方法：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#垃圾回收器"><span class="toc-number">5.</span> <span class="toc-text">垃圾回收器</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#CMS"><span class="toc-number">5.1.</span> <span class="toc-text">CMS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#G1"><span class="toc-number">5.2.</span> <span class="toc-text">G1</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#YGC"><span class="toc-number">6.</span> <span class="toc-text">YGC</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#FULL-GC触发条件："><span class="toc-number">7.</span> <span class="toc-text">FULL GC触发条件：</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#JVM监控命令"><span class="toc-number">7.1.</span> <span class="toc-text">JVM监控命令</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JVM监控工具"><span class="toc-number">8.</span> <span class="toc-text">JVM监控工具</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="java类的生命周期"><a href="#java类的生命周期" class="headerlink" title="java类的生命周期"></a>java类的生命周期</h1><p>过程：类的加载、连接（验证、准备、解析）、初始化、创建对象、卸载类<br>本质：类加载器读取Java字节代码，并转换成java.lang.Class类的一个实例</p>
+<ul>
+<li>加载：类加载器查找并加载类的二进制数据、在方法区存储类的数据结构、在堆区产生一个class对象描述这些信息</li>
+<li>验证：文件格式验证，元数据验证，字节码验证以及符号引用验证。</li>
+<li>准备：为类的静态变量分配内存并设为jvm默认的初值，为类的常量设置初始值。</li>
+<li>解析：常量池中的符号引用转换为直接引用，维护常量表对应在堆中的内存位置，直接指向这个内存地址。</li>
+<li>初始化：为类的静态变量赋值初始值，执行静态代码块</li>
+</ul>
+<p>初始化的时机：如果类没有进行过初始化,在new 对象、设置或读取静态变量、调用静态方法时会触发类的初始化，其他场景例如反射、子类初始化父类被迫初始化等<br><a href="https://www.cnblogs.com/zwbg/p/5903527.html" target="_blank" rel="external">https://www.cnblogs.com/zwbg/p/5903527.html</a></p>
+<h1 id="JVM内存结构"><a href="#JVM内存结构" class="headerlink" title="JVM内存结构"></a>JVM内存结构</h1><p>栈区：本地方法栈、虚拟机栈、程序计数器：存储方法的入口、局部变量等信息<br>堆区：老年代、新生代（eden、s0、s1）：存储所有实例化的对象<br>Perm区（永久代、非堆区）：存储类的信息、静态变量、常量</p>
+<ul>
+<li>方法区存储了每个类的信息（包括类的名称、方法信息、字段信息）、静态变量、常量以及编译器编译后的代码等</li>
+<li>程序计数器用来记录当前线程中正在执行的指令。如果当前正在执行的方法是本地方法，那么此刻程序计数器的值为undefined</li>
+</ul>
+<h1 id="垃圾回收"><a href="#垃圾回收" class="headerlink" title="垃圾回收"></a>垃圾回收</h1><p>垃圾回收的标记方法：可达性，GC Roots根节点是否可达来判断该对象是否有效。<br>GC Roots：局部变量引用的对象（本地方法栈中引用对象、虚拟机栈中引用对象)、静态成员变量、常量。<br>比如普通方法调用产生的局部变量在堆中，随着方法执行完毕出栈后，这些一次性的对象就需要GC回收掉。<br>比如静态成员变量，重新赋值后，老的在堆中引用的对象也需要被GC回收掉<br>比如常量，普通类常量一般不会变，但需要永久保存在堆中和Perm区中，但是String等操作是直接放在常量池的，也需要根节点可达且维护</p>
+<ul>
+<li>虚拟机栈中引用的对象。</li>
+<li>方法区中类静态属性实体引用的对象。</li>
+<li>方法区中常量引用的对象。</li>
+<li>本地方法栈中JNI引用的对象</li>
+</ul>
+<h1 id="垃圾回收的方法："><a href="#垃圾回收的方法：" class="headerlink" title="垃圾回收的方法："></a>垃圾回收的方法：</h1><ul>
+<li>标记-清除（效率不高而且有碎片）</li>
+<li>复制（高效但浪费空间）</li>
+<li>标记-压缩（如果对象存活时间长的时候效率极低）</li>
+<li>分带回收</li>
+</ul>
+<h1 id="垃圾回收器"><a href="#垃圾回收器" class="headerlink" title="垃圾回收器"></a>垃圾回收器</h1><p>我们系统4核的，CMS+Parnew</p>
+<ul>
+<li>Serial（单线程串行回收，适合单核CPU、效率高但STW长)</li>
+<li>Parnew（Serial的多线程版本，但是CPU切换开销、双核的时候不保证性能更好，适合多核CPU）</li>
+<li>Parallel Scanvenge (自动调整内存分配，从而达到吞吐量)<h2 id="CMS"><a href="#CMS" class="headerlink" title="CMS"></a>CMS</h2></li>
+<li>特点:追求的是停顿时间最短，适合多核CPU，和用户交互类的程序</li>
+<li>四大阶段：初始标记、并发标记、重新标记、并发清除</li>
+<li>缺点：<br>对CPU 资源敏感<br>在耗时的并发标记和并发清除的时候，都需要单独一个线程来耗时完成，如果只有2个CPU的话，那么需要占用1个CPU来长时间的GC，程序就会慢</li>
+</ul>
+<p>空间利用率不高<br>因为是标记清除所以有内存碎片，可以设置几次Full GC的时候压缩内存空间，可能因为有大对象没有足够的连续空间而提前触发full GC</p>
+<p>无法处理浮动垃圾<br>也就是并发清除的阶段可能会产生新的垃圾，所以这一阶段产生的垃圾要在下一次GC完成，并且要预留一定的space来存这些对象。如果新增的对象太多，会GC失败，触发Serial Old来重新GC</p>
+<h2 id="G1"><a href="#G1" class="headerlink" title="G1"></a>G1</h2><ul>
+<li>适合多CPU高性能服务器</li>
+<li>管理整个堆区的回收器</li>
+<li>追求吞吐量的同时控制STW的短，灵活的Region回收</li>
+</ul>
+<h1 id="YGC"><a href="#YGC" class="headerlink" title="YGC"></a>YGC</h1><p>java产生的新的对象分配到eden区，当eden区内存不够出发YGC，会GC Roots可达性标记（eden区和S0区),然后标记复制到S1区，如果对象标记超过15次则直接进去老年代，或者新产生的对象过大也会进入老年代，或者S1区装不了这么多的新对象</p>
+<ul>
+<li>默认eden:s0=8：1， 默认存活次数超过15的对象进入老年代<h1 id="FULL-GC触发条件："><a href="#FULL-GC触发条件：" class="headerlink" title="FULL GC触发条件："></a>FULL GC触发条件：</h1></li>
+<li>显示的调用System.gc()，建议JVM做FGC</li>
+<li>老年代空间不足</li>
+<li>YGC产生的进入老年代空间不足</li>
+</ul>
+<h2 id="JVM监控命令"><a href="#JVM监控命令" class="headerlink" title="JVM监控命令"></a>JVM监控命令</h2><ul>
+<li><p>jstat -gc pid<br>当前堆空间使用情况，当前容量多少，用了多少</p>
+</li>
+<li><p>jstat -gcutil pid<br>查看在当前总容量下的实际使用率，当前总容量不一定是设置的最大容量，百分比形式</p>
+</li>
+<li><p>jstat -gccapacity pid<br>查看JVM内存容量分配：最大值、最小值、比例等值</p>
+</li>
+<li><p>jmap -heap 28920<br>描述堆区信息的命令，包括GC回收器的类型，堆区默认参数和使用情况</p>
+</li>
+<li><p>jmap -dump:live,format=b,file=/usr/developer/huangForBackUp/testEnv.bin 20817<br>生成即时的堆区包内存快照信息</p>
+</li>
+<li><p>jinfo pid<br>查看系统参数 和jvm参数</p>
+</li>
+</ul>
+<h1 id="JVM监控工具"><a href="#JVM监控工具" class="headerlink" title="JVM监控工具"></a>JVM监控工具</h1><ul>
+<li>JDK自带VisualVM </li>
+<li>tomcat启动参数生成GC日志和OOM生成Dump文件</li>
+<li>GC Esay在线LOG文件分析</li>
+<li>根据监控命令查看GC情况</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/02/JVM复习/" data-title="JVM复习 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/03/02/Mysql复习/" title="mysql复习">
+  <strong>上一篇：</strong><br/>
+  <span>
+  mysql复习</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/03/02/java集合类复习/"  title="java集合类复习">
+ <strong>下一篇：</strong><br/> 
+ <span>java集合类复习
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/03/02/JVM复习/" data-title="JVM复习" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/02/JVM复习/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#java类的生命周期"><span class="toc-number">1.</span> <span class="toc-text">java类的生命周期</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JVM内存结构"><span class="toc-number">2.</span> <span class="toc-text">JVM内存结构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#垃圾回收"><span class="toc-number">3.</span> <span class="toc-text">垃圾回收</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#垃圾回收的方法："><span class="toc-number">4.</span> <span class="toc-text">垃圾回收的方法：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#垃圾回收器"><span class="toc-number">5.</span> <span class="toc-text">垃圾回收器</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#CMS"><span class="toc-number">5.1.</span> <span class="toc-text">CMS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#G1"><span class="toc-number">5.2.</span> <span class="toc-text">G1</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#YGC"><span class="toc-number">6.</span> <span class="toc-text">YGC</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#FULL-GC触发条件："><span class="toc-number">7.</span> <span class="toc-text">FULL GC触发条件：</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#JVM监控命令"><span class="toc-number">7.1.</span> <span class="toc-text">JVM监控命令</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JVM监控工具"><span class="toc-number">8.</span> <span class="toc-text">JVM监控工具</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+
+  
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
