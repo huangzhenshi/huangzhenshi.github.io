@@ -1,0 +1,679 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>RocketMQ的安装、集群、常用命令 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="学习资料阿里云官方英文、最新的Demo和Guidencehttp://rocketmq.apache.org/docs/transaction-example/ 阿里云的帮助文档啊，超级详细而且有Demohttps://help.aliyun.com/document_detail/29551.html 阿里云在github上的Demos（包括整合Spring 和简单TCP的形式）https://">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RocketMQ的安装、集群、常用命令">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/29/消息队列RocketMQ的安装、集群、常用命令/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="学习资料阿里云官方英文、最新的Demo和Guidencehttp://rocketmq.apache.org/docs/transaction-example/ 阿里云的帮助文档啊，超级详细而且有Demohttps://help.aliyun.com/document_detail/29551.html 阿里云在github上的Demos（包括整合Spring 和简单TCP的形式）https://">
+<meta property="og:updated_time" content="2018-08-29T10:13:33.020Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RocketMQ的安装、集群、常用命令">
+<meta name="twitter:description" content="学习资料阿里云官方英文、最新的Demo和Guidencehttp://rocketmq.apache.org/docs/transaction-example/ 阿里云的帮助文档啊，超级详细而且有Demohttps://help.aliyun.com/document_detail/29551.html 阿里云在github上的Demos（包括整合Spring 和简单TCP的形式）https://">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/08/29/消息队列RocketMQ的安装、集群、常用命令/" title="RocketMQ的安装、集群、常用命令" itemprop="url">RocketMQ的安装、集群、常用命令</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-08-29T02:58:39.233Z" itemprop="datePublished"> Published 2018-08-29</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#学习资料"><span class="toc-number">1.</span> <span class="toc-text">学习资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#RocketMQ和Kafak的区别"><span class="toc-number">2.</span> <span class="toc-text">RocketMQ和Kafak的区别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#对比：Kafka性能最好，但是不支持事务；RabbitMQ对一致性、稳定性和可靠性支持好，但是性能和吞吐量支持一般；rocketMQ兼顾了性能和分布式事务和可靠性。"><span class="toc-number">3.</span> <span class="toc-text">对比：Kafka性能最好，但是不支持事务；RabbitMQ对一致性、稳定性和可靠性支持好，但是性能和吞吐量支持一般；rocketMQ兼顾了性能和分布式事务和可靠性。</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#功能介绍"><span class="toc-number">4.</span> <span class="toc-text">功能介绍</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#rocketmq可视化监控界面"><span class="toc-number">5.</span> <span class="toc-text">rocketmq可视化监控界面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#broker-a的slave配置文件-（brokerName一样，brokerId不一样，brokerRole不一样"><span class="toc-number">6.</span> <span class="toc-text">broker-a的slave配置文件 （brokerName一样，brokerId不一样，brokerRole不一样</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#broker-b的Master配置文件"><span class="toc-number">7.</span> <span class="toc-text">broker-b的Master配置文件</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ifconfig-docker0-down"><span class="toc-number">8.</span> <span class="toc-text">ifconfig docker0 down</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#brctl-delbr-docker0"><span class="toc-number">9.</span> <span class="toc-text">brctl delbr docker0</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="学习资料"><a href="#学习资料" class="headerlink" title="学习资料"></a>学习资料</h1><p>阿里云官方英文、最新的Demo和Guidence<br><a href="http://rocketmq.apache.org/docs/transaction-example/" target="_blank" rel="external">http://rocketmq.apache.org/docs/transaction-example/</a></p>
+<p>阿里云的帮助文档啊，超级详细而且有Demo<br><a href="https://help.aliyun.com/document_detail/29551.html" target="_blank" rel="external">https://help.aliyun.com/document_detail/29551.html</a></p>
+<p>阿里云在github上的Demos（包括整合Spring 和简单TCP的形式）<br><a href="https://github.com/AliwareMQ/mq-demo">https://github.com/AliwareMQ/mq-demo</a></p>
+<p>简单且有Demo的简书博客系列，里面还有Dubbo先关的博客，非常好<br><a href="https://www.jianshu.com/u/8e1110d27153" target="_blank" rel="external">https://www.jianshu.com/u/8e1110d27153</a></p>
+<p>零度的RMQ系列博客<br><a href="https://mp.weixin.qq.com/s/lxzD8HZofMuMRKS-zcP85A" target="_blank" rel="external">https://mp.weixin.qq.com/s/lxzD8HZofMuMRKS-zcP85A</a></p>
+<p>官方API<br><a href="http://rocketmq.apache.org/docs/simple-example/" target="_blank" rel="external">http://rocketmq.apache.org/docs/simple-example/</a></p>
+<p>RocketMQ和Kafak的区别<br><a href="https://mp.weixin.qq.com/s/KfBruI-tOz-eJuM2fgqyew" target="_blank" rel="external">https://mp.weixin.qq.com/s/KfBruI-tOz-eJuM2fgqyew</a></p>
+<p>java快速入门<br><a href="https://www.cnblogs.com/jiangxinlingdu/p/7892593.html" target="_blank" rel="external">https://www.cnblogs.com/jiangxinlingdu/p/7892593.html</a></p>
+<p>RocketMQ 4.3发布，支持分布式事务  还有分布式事务的常见解决方案<br><a href="https://baijiahao.baidu.com/s?id=1607829339793465291&amp;wfr=spider&amp;for=pc" target="_blank" rel="external">https://baijiahao.baidu.com/s?id=1607829339793465291&amp;wfr=spider&amp;for=pc</a></p>
+<p>10分钟超级详细的入门<br><a href="http://jm.taobao.org/2017/01/12/rocketmq-quick-start-in-10-minutes/" target="_blank" rel="external">http://jm.taobao.org/2017/01/12/rocketmq-quick-start-in-10-minutes/</a></p>
+<h1 id="RocketMQ和Kafak的区别"><a href="#RocketMQ和Kafak的区别" class="headerlink" title="RocketMQ和Kafak的区别"></a>RocketMQ和Kafak的区别</h1><ul>
+<li>卡夫卡单机写入TPS 百万级，而RocketMQ为万级别</li>
+<li>卡夫卡消费失败不支持重试，RocketMQ消费失败支持定时重试，每次重试间隔时间顺延</li>
+<li>卡夫卡不支持分布式事务消息，阿里云MQ支持分布式事务消息，未来开源版本的RocketMQ也有计划支持分布式事务消息</li>
+</ul>
+<h1 id="对比：Kafka性能最好，但是不支持事务；RabbitMQ对一致性、稳定性和可靠性支持好，但是性能和吞吐量支持一般；rocketMQ兼顾了性能和分布式事务和可靠性。"><a href="#对比：Kafka性能最好，但是不支持事务；RabbitMQ对一致性、稳定性和可靠性支持好，但是性能和吞吐量支持一般；rocketMQ兼顾了性能和分布式事务和可靠性。" class="headerlink" title="对比：Kafka性能最好，但是不支持事务；RabbitMQ对一致性、稳定性和可靠性支持好，但是性能和吞吐量支持一般；rocketMQ兼顾了性能和分布式事务和可靠性。"></a>对比：Kafka性能最好，但是不支持事务；RabbitMQ对一致性、稳定性和可靠性支持好，但是性能和吞吐量支持一般；rocketMQ兼顾了性能和分布式事务和可靠性。</h1><ol>
+<li>Kafka：基于Pull的模式来处理消息消费</li>
+</ol>
+<ul>
+<li>追求高吞吐量，一开始的目的就是用于日志收集和传输。0.8版本开始支持复制</li>
+<li>不支持事务，对消息的重复、丢失、错误没有严格要求</li>
+<li>适合产生大量数据的互联网服务的数据收集业务。</li>
+</ul>
+<ol>
+<li><p>RocketMQ是阿里开源的消息中间件，纯Java开发，具有高吞吐量、高可用性、适合大规模分布式系统应用的特点它对消息的可靠传输及事务性做了优化</p>
+</li>
+<li><p>RabbitMQ是使用Erlang语言开发的开源消息队列系统，基于AMQP协议来实现。AMQP的主要特征是面向消息、队列、路由（包括点对点和发布/订阅）、可靠性、安全。AMQP协议更多用在企业系统内，对数据一致性、稳定性和可靠性要求很高的场景，对性能和吞吐量的要求还在其次。</p>
+</li>
+</ol>
+<h1 id="功能介绍"><a href="#功能介绍" class="headerlink" title="功能介绍"></a>功能介绍</h1><ul>
+<li>地址解耦，生产者和消费者彼此不需要知道彼此，比如IP</li>
+<li>故障解耦，就算消费者挂了，只要把消息存在消息服务器上，不影响生产者生产，业务照常进行</li>
+<li>肖峰控流，消费者根据自己的能力去从消息服务器取消息，这样不仅节省生产者的线程等待，而且让消费者洪峰时的访问数可控</li>
+<li>消息推送，支持订阅和广播模式，一对多，多对多发送消息</li>
+<li>日志监控，消息服务器自带日志功能</li>
+</ul>
+<h1 id="rocketmq可视化监控界面"><a href="#rocketmq可视化监控界面" class="headerlink" title="rocketmq可视化监控界面"></a>rocketmq可视化监控界面</h1><ul>
+<li>在CSDN上下载已经压缩好的jar包：rocketmq-console-ng-1.0.0.jar</li>
+<li>修改配置文件 application.properties 里面的nameAddress</li>
+<li>启动 ： <figure class="highlight java"><figcaption><span>-jar  rocketmq-console-ng-1.0.0.jar```</span></figcaption><table><tr><td class="code"><pre><div class="line">- 然后locolhost:<span class="number">8082</span> 进行查看</div><div class="line"></div><div class="line"># linux下 rocketmq的安装和使用</div><div class="line">官方的单机安装步骤(坑爹啊，但是windows下不存在这个问题，windows默认 <span class="number">256</span>M的内存）</div><div class="line">http:<span class="comment">//rocketmq.apache.org/docs/quick-start/?_sm_au_=iQVrfSMsRNHDBmMQ</span></div><div class="line">注意事项：</div><div class="line"><span class="number">1</span>. rocketmq的默认的runserver.sh  和runbroker.sh里面都最小<span class="number">4</span>G。需要修改 默认的配置</div></pre></td></tr></table></figure></li>
+</ul>
+<p>JAVA_OPT=”${JAVA_OPT} -server -Xms4g -Xmx4g -Xmn2g -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=320m”<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"></div><div class="line">2. rocketmq里面启动broker的命令也有问题啊，必须要设置 允许自动创建Topic才行啊,或者修改 默认的broker.properties文件里面，设置运行自动创建topic</div></pre></td></tr></table></figure></p>
+<p>nohup sh bin/mqbroker -n localhost:9876 autoCreateTopicEnable=true &amp;<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"></div><div class="line"># linux下，rocketmq集群的搭建</div><div class="line">精品博客</div><div class="line">https://blog.csdn.net/lovesomnus/article/details/51769977</div><div class="line">1. 设置两台机器的 /etc/hosts文件</div></pre></td></tr></table></figure></p>
+<p>虚拟机 origin：192.168.29.129<br>虚拟机 clone ：192.168.29.132</p>
+<p>修改hosts文件： nano /etc/hosts</p>
+<p>192.168.29.129 rocketmq-server1<br>192.168.29.132 rocketmq-server2<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">2. 示例的配置文件</div></pre></td></tr></table></figure></p>
+<p>#broker-a的 Master配置文件</p>
+<p>brokerClusterName = rocketmq-cluster<br>brokerName = broker-a<br>brokerId = 0<br>namesrvAddr = rocketmq-server1:9876;rocketmq-server2:9876<br>deleteWhen = 04<br>fileReservedTime = 48<br>brokerRole = ASYNC_MASTER<br>flushDiskType = ASYNC_FLUSH<br>listenPort = 10911<br>autoCreateTopicEnable = true</p>
+<h1 id="broker-a的slave配置文件-（brokerName一样，brokerId不一样，brokerRole不一样"><a href="#broker-a的slave配置文件-（brokerName一样，brokerId不一样，brokerRole不一样" class="headerlink" title="broker-a的slave配置文件 （brokerName一样，brokerId不一样，brokerRole不一样"></a>broker-a的slave配置文件 （brokerName一样，brokerId不一样，brokerRole不一样</h1><p>brokerClusterName = rocketmq-cluster<br>brokerName = broker-a<br>brokerId = 1<br>namesrvAddr= rocketmq-server1:9876;rocketmq-server2:9876<br>deleteWhen = 04<br>fileReservedTime = 48<br>brokerRole = SLAVE<br>flushDiskType = ASYNC_FLUSH<br>listenPort = 11911<br>autoCreateTopicEnable = true</p>
+<h1 id="broker-b的Master配置文件"><a href="#broker-b的Master配置文件" class="headerlink" title="broker-b的Master配置文件"></a>broker-b的Master配置文件</h1><p>brokerClusterName = rocketmq-cluster<br>brokerName = broker-b<br>brokerId = 0<br>namesrvAddr=rocketmq-server1:9876;rocketmq-server2:9876<br>deleteWhen = 04<br>fileReservedTime = 48<br>brokerRole = ASYNC_MASTER<br>flushDiskType = ASYNC_FLUSH<br>listenPort = 10911</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"></div><div class="line">3. 启动方式</div></pre></td></tr></table></figure>
+<p>分别先启动两台主机的nameServer<br>nohup sh bin/mqnamesrv &amp;</p>
+<p>再分别启动Broker的Master<br>nohup sh bin/mqbroker -c ./conf/broker1.properties  &amp;<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"></div><div class="line">4. 查看运行情况</div></pre></td></tr></table></figure></p>
+<p>最后可以通过查看集群节点<br>sh bin/mqadmin clusterList</p>
+<p>或者通过Console来查看可视化的集群情况<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">## 注意事项：</div><div class="line">1. ifconfig 查看IP，如果有docker0网卡的话，需要删除掉才行，不然两台虚拟机 rmq默认取这个ip</div></pre></td></tr></table></figure></p>
+<h1 id="ifconfig-docker0-down"><a href="#ifconfig-docker0-down" class="headerlink" title="ifconfig docker0 down"></a>ifconfig docker0 down</h1><h1 id="brctl-delbr-docker0"><a href="#brctl-delbr-docker0" class="headerlink" title="brctl delbr docker0"></a>brctl delbr docker0</h1><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">2. 启动的命令一定要注意啊,不能乱指定 nameServer的端口，例如-n 127.0.0.1:9876 ，这里表示只连接本地的nameServer，而不连接其他IP下的nameServer</div></pre></td></tr></table></figure>
+<p>nohup sh bin/mqbroker -c ./conf/broker-a.properties  &amp;<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">3. 不知道出于什么原因，一台虚拟机上只能开启一个Broker</div><div class="line">4. 如果一台机子上能开2个Broker的话，需要设置listenPort，因为默认是10911</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"># 常用命令</div></pre></td></tr></table></figure></p>
+<p>cd /usr/developer/rocketmq/distribution/target/apache-rocketmq</p>
+<p>启动server<br>nohup sh bin/mqnamesrv &amp;</p>
+<p>启动broker<br>nohup sh bin/mqbroker -n localhost:9876 autoCreateTopicEnable=true &amp;</p>
+<p>停止<br>sh bin/mqshutdown broker<br>sh bin/mqshutdown namesrv</p>
+<p>查看集群情况<br>sh bin/mqadmin clusterList</p>
+<p>查看 topic 列表<br>sh bin/mqadmin topicList -n 127.0.0.1:9876</p>
+<p>查看 topic 状态<br>sh bin/mqadmin topicStatus -n 127.0.0.1:9876 -t MyTopic (换成你想查询的 topic)</p>
+<p>查看 topic 路由<br>sh bin/mqadmin topicRoute -n 127.0.0.1:9876 -t MyTopic</p>
+<p>```</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/分布式/">分布式</a>►<a class="article-category-link" href="/categories/分布式/MQ/">MQ</a>►<a class="article-category-link" href="/categories/分布式/MQ/RocketMQ/">RocketMQ</a>
+</div>
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/29/消息队列RocketMQ的安装、集群、常用命令/" data-title="RocketMQ的安装、集群、常用命令 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/08/29/消息队列RocketMQ的发送和读取/" title="RocketMQ的发送和读取">
+  <strong>上一篇：</strong><br/>
+  <span>
+  RocketMQ的发送和读取</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/08/23/Redis消息队列/"  title="Redis消息队列">
+ <strong>下一篇：</strong><br/> 
+ <span>Redis消息队列
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/08/29/消息队列RocketMQ的安装、集群、常用命令/" data-title="RocketMQ的安装、集群、常用命令" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/29/消息队列RocketMQ的安装、集群、常用命令/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#学习资料"><span class="toc-number">1.</span> <span class="toc-text">学习资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#RocketMQ和Kafak的区别"><span class="toc-number">2.</span> <span class="toc-text">RocketMQ和Kafak的区别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#对比：Kafka性能最好，但是不支持事务；RabbitMQ对一致性、稳定性和可靠性支持好，但是性能和吞吐量支持一般；rocketMQ兼顾了性能和分布式事务和可靠性。"><span class="toc-number">3.</span> <span class="toc-text">对比：Kafka性能最好，但是不支持事务；RabbitMQ对一致性、稳定性和可靠性支持好，但是性能和吞吐量支持一般；rocketMQ兼顾了性能和分布式事务和可靠性。</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#功能介绍"><span class="toc-number">4.</span> <span class="toc-text">功能介绍</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#rocketmq可视化监控界面"><span class="toc-number">5.</span> <span class="toc-text">rocketmq可视化监控界面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#broker-a的slave配置文件-（brokerName一样，brokerId不一样，brokerRole不一样"><span class="toc-number">6.</span> <span class="toc-text">broker-a的slave配置文件 （brokerName一样，brokerId不一样，brokerRole不一样</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#broker-b的Master配置文件"><span class="toc-number">7.</span> <span class="toc-text">broker-b的Master配置文件</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ifconfig-docker0-down"><span class="toc-number">8.</span> <span class="toc-text">ifconfig docker0 down</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#brctl-delbr-docker0"><span class="toc-number">9.</span> <span class="toc-text">brctl delbr docker0</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数据结构/HashMap/" title="HashMap">HashMap<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/IO流/" title="IO流">IO流<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/JVM/" title="JVM">JVM<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/" title="MQ">MQ<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Netty/" title="Netty">Netty<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/" title="Redis">Redis<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/RocketMQ/" title="RocketMQ">RocketMQ<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Shiro/" title="Shiro">Shiro<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/" title="分布式">分布式<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/学习资源/" title="学习资源">学习资源<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/并发编程/" title="并发编程">并发编程<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/算法/" title="算法">算法<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/" title="缓存">缓存<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/设计模式/" title="设计模式">设计模式<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/" title="面试题">面试题<sup>11</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/JVM/" title="JVM">JVM<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/分布式/" title="分布式">分布式<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/面试题/" title="面试题">面试题<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/权限管理/" title="权限管理">权限管理<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/集合类/" title="集合类">集合类<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/缓存/" title="缓存">缓存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/IO流/" title="IO流">IO流<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

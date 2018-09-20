@@ -1,0 +1,728 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>面试题-多线程IO并发编程 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="问过的问题锁  java锁机制和运用–&amp;gt; 我说了 Socket编程当中IO流的 线程池使用，还有ConcurrentHashMap中的分段锁和volatile的使用，问CHMap中size()的实现原理(Done) String final类的实现原理 Syncizaer的用法， Object.wait 和notify的使用，可不可以不再Syniczer中使用wait方法，实际不可以，会报错">
+<meta property="og:type" content="article">
+<meta property="og:title" content="面试题-多线程IO并发编程">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/21/面试题-多线程IO并发编程/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="问过的问题锁  java锁机制和运用–&amp;gt; 我说了 Socket编程当中IO流的 线程池使用，还有ConcurrentHashMap中的分段锁和volatile的使用，问CHMap中size()的实现原理(Done) String final类的实现原理 Syncizaer的用法， Object.wait 和notify的使用，可不可以不再Syniczer中使用wait方法，实际不可以，会报错">
+<meta property="og:updated_time" content="2018-09-14T09:27:34.360Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="面试题-多线程IO并发编程">
+<meta name="twitter:description" content="问过的问题锁  java锁机制和运用–&amp;gt; 我说了 Socket编程当中IO流的 线程池使用，还有ConcurrentHashMap中的分段锁和volatile的使用，问CHMap中size()的实现原理(Done) String final类的实现原理 Syncizaer的用法， Object.wait 和notify的使用，可不可以不再Syniczer中使用wait方法，实际不可以，会报错">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/08/21/面试题-多线程IO并发编程/" title="面试题-多线程IO并发编程" itemprop="url">面试题-多线程IO并发编程</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-08-21T05:41:50.696Z" itemprop="datePublished"> Published 2018-08-21</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#问过的问题"><span class="toc-number">1.</span> <span class="toc-text">问过的问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#java锁机制的实际运用"><span class="toc-number">2.</span> <span class="toc-text">java锁机制的实际运用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#synchronized系列（对象锁）"><span class="toc-number">3.</span> <span class="toc-text">synchronized系列（对象锁）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#synchronized的用法"><span class="toc-number">3.1.</span> <span class="toc-text">synchronized的用法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#注意事项："><span class="toc-number">3.2.</span> <span class="toc-text">注意事项：</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#volatile关键字"><span class="toc-number">4.</span> <span class="toc-text">volatile关键字</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#wait-notify-notifyall-sleep-yeild-await-singnal-singnalAll的用法（生产消费模型中-obj-wait-）"><span class="toc-number">5.</span> <span class="toc-text">wait/notify/notifyall sleep yeild await/singnal/singnalAll的用法（生产消费模型中 obj.wait()）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#java-死锁是否会发生以及如何避免死锁"><span class="toc-number">6.</span> <span class="toc-text">java 死锁是否会发生以及如何避免死锁</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#创建线程的3种方式-Thread和Callable接口有返回值）和比较"><span class="toc-number">7.</span> <span class="toc-text">创建线程的3种方式(Thread和Callable接口有返回值）和比较</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3种方式的比较"><span class="toc-number">7.1.</span> <span class="toc-text">3种方式的比较</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Thread的一些常见方法"><span class="toc-number">8.</span> <span class="toc-text">Thread的一些常见方法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ReentrantLock-API"><span class="toc-number">9.</span> <span class="toc-text">ReentrantLock API</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#在Java中Lock接口比synchronized块的优势是什么？"><span class="toc-number">10.</span> <span class="toc-text">在Java中Lock接口比synchronized块的优势是什么？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JUC下的工具类（底层都是基于Lock的操作）"><span class="toc-number">11.</span> <span class="toc-text">JUC下的工具类（底层都是基于Lock的操作）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#线程池的使用"><span class="toc-number">12.</span> <span class="toc-text">线程池的使用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#线程池的关闭"><span class="toc-number">13.</span> <span class="toc-text">线程池的关闭</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="问过的问题"><a href="#问过的问题" class="headerlink" title="问过的问题"></a>问过的问题</h1><p>锁</p>
+<ul>
+<li>java锁机制和运用–&gt; 我说了 Socket编程当中IO流的 线程池使用，还有ConcurrentHashMap中的分段锁和volatile的使用，问CHMap中size()的实现原理(Done)</li>
+<li>String final类的实现原理</li>
+<li>Syncizaer的用法， Object.wait 和notify的使用，可不可以不再Syniczer中使用wait方法，实际不可以，会报错。以及java加锁的时候会不会出现死锁的情况，如何解决？（Done）</li>
+</ul>
+<p>多线程：</p>
+<ul>
+<li>创建线程的几种方式，那种最佳（根据业务场景，不复用的话 内部类、复用的话 Thread重写run方法 ，Runnable接口实现），实际上还有Future等等啊(Done)</li>
+<li>Tomcat的线程管理和如何控制并发，讲了一下JAVA的JUC下的线程池，构造函数，然后他问实际使用场景。</li>
+<li>JUC下的Executors框架熟悉吗？ 不熟悉，那么数据库的线程池熟悉吗？ 超过连接数如何处理</li>
+</ul>
+<h1 id="java锁机制的实际运用"><a href="#java锁机制的实际运用" class="headerlink" title="java锁机制的实际运用"></a>java锁机制的实际运用</h1><ul>
+<li>阻塞队列，ArrayBlockingQueue一个锁、LinkedBlockingQueue两把锁</li>
+<li>ConcurrentHashMap中</li>
+<li>生产和消费场景中，手动实现或者阻塞队列来实现</li>
+</ul>
+<h1 id="synchronized系列（对象锁）"><a href="#synchronized系列（对象锁）" class="headerlink" title="synchronized系列（对象锁）"></a>synchronized系列（对象锁）</h1><h2 id="synchronized的用法"><a href="#synchronized的用法" class="headerlink" title="synchronized的用法"></a>synchronized的用法</h2><ol>
+<li>修饰普通方法，相当于锁当前对象，调用者，也指 this对象</li>
+<li>修饰静态方法，相当于锁当前类对象，也指 Test.class</li>
+<li>修饰代码块，可以缩小锁的范围，提升性能</li>
+<li>锁对象（this,类对象，普通对象）</li>
+</ol>
+<h2 id="注意事项："><a href="#注意事项：" class="headerlink" title="注意事项："></a>注意事项：</h2><ol>
+<li>锁普通方法和锁this的代码块，都是对象锁，锁静态方法和Test.class是类锁。</li>
+<li>有锁方法和无锁方法互相不影响</li>
+<li>类锁和对象锁互相不影响</li>
+<li>释放锁的时候，修改的变量对所有线程可见，满足HB原则，从而实现线程安全</li>
+</ol>
+<h1 id="volatile关键字"><a href="#volatile关键字" class="headerlink" title="volatile关键字"></a>volatile关键字</h1><p>公用的对象存放在主内存当中，每个线程去处理公用对象的时候会拷贝镜像到本地内存当中，在CPU进行读取，修改，写回到本地内存，最后写回到主内存当中，这时候线程之间不可见。volatile关键字会让读取和写的操作的时候，会立刻通知更新主内存同步，并不保证线程安全。</p>
+<ul>
+<li>轻量级的同步机制，实现变量的改变对所有线程可见，并不能避免线程安全</li>
+<li>每次读的时候去读主存上的值而不是本地栈中的值，每次写都写到主存当中</li>
+<li>该方法中禁止指令重排序优化</li>
+</ul>
+<h1 id="wait-notify-notifyall-sleep-yeild-await-singnal-singnalAll的用法（生产消费模型中-obj-wait-）"><a href="#wait-notify-notifyall-sleep-yeild-await-singnal-singnalAll的用法（生产消费模型中-obj-wait-）" class="headerlink" title="wait/notify/notifyall sleep yeild await/singnal/singnalAll的用法（生产消费模型中 obj.wait()）"></a>wait/notify/notifyall sleep yeild await/singnal/singnalAll的用法（生产消费模型中 obj.wait()）</h1><ul>
+<li>三个方法都必须在synchronized 同步关键字所限定的作用域中调用，否则会报错java.lang.IllegalMonitorStateException</li>
+<li>调用wait方法，释放对象所，阻塞当前线程，不会参与CPU的竞争，等待被notify（）</li>
+<li><p>当其他线程调用了wait方法时，该对象的锁被释放，被B线程获取之后，B执行各种操作之后，调用该对象的notify方法，但是不会立刻释放CPU资源，一直到该静态代码块执行完，然后再释放对象锁，A线程被唤醒，继续执行<br>obj.wait（）<br>obj.notify()    仅通知一个obj的等待线程，结束时间是静态代码块执行完，而不是该线程执行完<br>obj.notifyall() 通知所有的obj的等待线程 </p>
+</li>
+<li><p>JUC里面有Lock替代synchronized，所以就需要有condition.await() 来实现object的wait（）功能，否则实现不了线程通讯。</p>
+</li>
+<li>Thread.sleep(1000); 使当前线程睡眠1秒钟，1秒钟后重新开始争夺CPU资源。</li>
+<li>Thread.yeild（） hit调度器出让线程的争夺权，当然也不一定有效</li>
+</ul>
+<h1 id="java-死锁是否会发生以及如何避免死锁"><a href="#java-死锁是否会发生以及如何避免死锁" class="headerlink" title="java 死锁是否会发生以及如何避免死锁"></a>java 死锁是否会发生以及如何避免死锁</h1><ul>
+<li>不同线程同时争抢多个锁的时候，会导致死锁。<br>避免方法：</li>
+</ul>
+<ol>
+<li>创建一个抢锁对象，比如Common.class，先获取到抢锁对象后，再进行多锁的方法操作，可以避免死锁的发生。</li>
+<li>改用juc下面的定时锁，还有trylock，快速返回的，失败就释放当前锁，可以避免</li>
+</ol>
+<h1 id="创建线程的3种方式-Thread和Callable接口有返回值）和比较"><a href="#创建线程的3种方式-Thread和Callable接口有返回值）和比较" class="headerlink" title="创建线程的3种方式(Thread和Callable接口有返回值）和比较"></a>创建线程的3种方式(Thread和Callable接口有返回值）和比较</h1><ol>
+<li>线程类继承并重写 Thread的run方法，然后new出来.start()即可</li>
+<li>实现runnable接口的类，作为new Thread(参数）的参数，调用start()即可</li>
+<li>A类实现Callable接口的call方法，然后作为FutureTask的构造参数，最后加入到线程池里面，或者Thread的构造参数里面启动，然后result.get（）获取返回值<br>匿名内部类也有上面2种不同的实现Thread方式<h2 id="3种方式的比较"><a href="#3种方式的比较" class="headerlink" title="3种方式的比较"></a>3种方式的比较</h2></li>
+<li>runnable接口和callable接口的方式是以实现的方式，java是单继承，所以更好。</li>
+<li>接口实现类作为target可以复用</li>
+<li>runnable有异步的返回值</li>
+</ol>
+<h1 id="Thread的一些常见方法"><a href="#Thread的一些常见方法" class="headerlink" title="Thread的一些常见方法"></a>Thread的一些常见方法</h1><ol>
+<li>join()：父线程创建子线程，并start子线程后，调用 子线程.join()方法，可以阻塞父线程，直到子线程结束，这里面满足 HB原则 </li>
+<li>yeild()：尝试出让cpu的执行权</li>
+<li>wait()：线程调度里面，在一个锁里面，调用 obj.wait方法，放弃当前线程的执行权，让其他线程开始争夺锁。wait方法必须在 锁里面才可以调用，不然报错。notify、notifyAll来唤醒</li>
+<li>sleep()：阻塞当前线程，但是并不释放锁，一定时间后，重新争夺CPU执行权。</li>
+<li>interrupt() ：并不阻塞当前线程，而是修改子线程的打断标志位，可用于线程之间的调度。如果线程不在运行状态，会报错。</li>
+</ol>
+<h1 id="ReentrantLock-API"><a href="#ReentrantLock-API" class="headerlink" title="ReentrantLock API"></a>ReentrantLock API</h1><ol>
+<li>lock(true,false)：无条件地轮询获取锁的方式</li>
+<li>lockInterruptibly()提供了可中断的锁获取方式，争夺锁的过程时，会check 是否中断的状态位，如果true，就抛出异常</li>
+<li>trylock()、 tryLock(timeout)，立刻返回结果，避免死锁</li>
+</ol>
+<h1 id="在Java中Lock接口比synchronized块的优势是什么？"><a href="#在Java中Lock接口比synchronized块的优势是什么？" class="headerlink" title="在Java中Lock接口比synchronized块的优势是什么？"></a>在Java中Lock接口比synchronized块的优势是什么？</h1><p>提供轮询锁避免死锁、定时轮询锁、可中断的锁、锁分块技术CHashMap、公平锁等等高级灵活的功能。但是缺点是一定要在finally里面 unlock()资源才行。不然会一直在。</p>
+<ul>
+<li>实现原理不同，synchronized基于JVM的实现，根据对象的消息头、唯一对应的monitor、线程栈桢中的minitor record来实现的，会根据锁竞争的程度不同，动态的升级 偏向锁、轻量级锁和重量级锁。而JUC下的Lock是基于JDK实现的，实现了更多的灵活的功能。</li>
+<li>使用方法不同，synchronized的使用多种方式，修饰方法、修饰代码块，锁this对象、obj、类对象，而且无需手动释放，相对而言，面向开发人员更简约。Lock用法lock的API很多，unlock等操作。</li>
+<li>ReentrantLock实现了synchronized的公平队列功能，而Synch都是非公平锁</li>
+<li>ReentrantReadWriteLock类实现了读写锁的功能，而synchronized做不到</li>
+<li>ReentrantLock提供了trylock（）  和 trylock（tryTimes）的功能，不等待或者限定时间等待获取锁，更灵活。可以避免死锁的发生。</li>
+<li>ReentrantLock提供了lockInterruptibly（）的功能，可以中断争夺锁的操作</li>
+<li>ReentrantLock提供了比Sync更精准的线程调度工具，Condition，一个lock可以有多个Condition，但是Synizer只要一个WaitSet</li>
+</ul>
+<h1 id="JUC下的工具类（底层都是基于Lock的操作）"><a href="#JUC下的工具类（底层都是基于Lock的操作）" class="headerlink" title="JUC下的工具类（底层都是基于Lock的操作）"></a>JUC下的工具类（底层都是基于Lock的操作）</h1><ol>
+<li>BlockQueue：多种策略实现方式，解决有界的生产和消费队列问题</li>
+<li>CountDownLatch:2种方法配合，主要解决阻塞主线程，需要等待多个子线程都完成某一操作时，主线程再执行某一个操作，比如下载多sheet的文件。</li>
+<li>CyclicBarrier：1个方法，主要解决类似于集合的业务场景，指定数量的线程调用await方法时，所有的阻塞线程再同时执行某一操作，比如跑步开枪比赛，所有人到齐才开始跑。</li>
+<li>Semaphore：2个方法配合，主要解决有限资源无限竞争，比如多个人抢5个茅坑，一次最多5个人上一样，其它等待。</li>
+</ol>
+<h1 id="线程池的使用"><a href="#线程池的使用" class="headerlink" title="线程池的使用"></a>线程池的使用</h1><ol>
+<li><p>5层继承关系:Executor顶层接口(execute方法) |ExcutorService接口类（submit、terminate) |AbstractExecutorService |ThreadPoolExecutor |ScheduledThreadPoolExecutor</p>
+</li>
+<li><p>ThreadPoolExcutor的7个核心参数（coresize、maxSize、BlockingQueue、Time、Union、ThreadFactory、抛弃策略）</p>
+</li>
+<li><p>Excutors类的常见的4个实现类（结合阻塞队列)</p>
+</li>
+</ol>
+<ul>
+<li>FixedThreadPool（无界的LinkedBlockingQueue）</li>
+<li>SingleThreadPool（无界的LinkedBlockingQueue，不仅单个线程，而且是严格有序的执行）</li>
+<li>CachedThreadPool，同步线程池,coreSize=0,SynchronousQueue</li>
+<li>ScheduledThreadPool,构造函数用到ScheduledThreadPoolExecutor</li>
+</ul>
+<ol>
+<li>线程池的管理：执行、关闭、执行状态查询和结果获取</li>
+</ol>
+<ul>
+<li>两种执行方式:execute 不会返回线程执行是否成功,submit 返回一个future对象可以阻塞获取某线程的执行情况</li>
+<li>shutdown或shutdownNow方法来关闭线程池</li>
+<li>submit返回Future，查询线程执行情况：cancel（）、isCancel()、isDone()、get()</li>
+</ul>
+<h1 id="线程池的关闭"><a href="#线程池的关闭" class="headerlink" title="线程池的关闭"></a>线程池的关闭</h1><p>shutdown或shutdownNow方法来关闭线程池，但是它们的实现原理不同，</p>
+<ul>
+<li>shutdown的原理是只是将线程池的状态设置成SHUTDOWN状态，然后中断所有没有正在执行任务的线程。</li>
+<li>shutdownNow的原理是遍历线程池中的工作线程，然后逐个调用线程的interrupt方法来中断线程，所以无法响应中断的任务可能永远无法终止。shutdownNow会首先将线程池的状态设置成STOP，然后尝试停止所有的正在执行或暂停任务的线程，并返回等待执行任务的列表。</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/面试题/">面试题</a>
+</div>
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/21/面试题-多线程IO并发编程/" data-title="面试题-多线程IO并发编程 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/08/22/并发编程-工具类/" title="并发编程-工具类">
+  <strong>上一篇：</strong><br/>
+  <span>
+  并发编程-工具类</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/08/21/面试题-算法和数据结构/"  title="面试题-算法和数据结构">
+ <strong>下一篇：</strong><br/> 
+ <span>面试题-算法和数据结构
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/08/21/面试题-多线程IO并发编程/" data-title="面试题-多线程IO并发编程" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/21/面试题-多线程IO并发编程/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#问过的问题"><span class="toc-number">1.</span> <span class="toc-text">问过的问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#java锁机制的实际运用"><span class="toc-number">2.</span> <span class="toc-text">java锁机制的实际运用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#synchronized系列（对象锁）"><span class="toc-number">3.</span> <span class="toc-text">synchronized系列（对象锁）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#synchronized的用法"><span class="toc-number">3.1.</span> <span class="toc-text">synchronized的用法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#注意事项："><span class="toc-number">3.2.</span> <span class="toc-text">注意事项：</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#volatile关键字"><span class="toc-number">4.</span> <span class="toc-text">volatile关键字</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#wait-notify-notifyall-sleep-yeild-await-singnal-singnalAll的用法（生产消费模型中-obj-wait-）"><span class="toc-number">5.</span> <span class="toc-text">wait/notify/notifyall sleep yeild await/singnal/singnalAll的用法（生产消费模型中 obj.wait()）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#java-死锁是否会发生以及如何避免死锁"><span class="toc-number">6.</span> <span class="toc-text">java 死锁是否会发生以及如何避免死锁</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#创建线程的3种方式-Thread和Callable接口有返回值）和比较"><span class="toc-number">7.</span> <span class="toc-text">创建线程的3种方式(Thread和Callable接口有返回值）和比较</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3种方式的比较"><span class="toc-number">7.1.</span> <span class="toc-text">3种方式的比较</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Thread的一些常见方法"><span class="toc-number">8.</span> <span class="toc-text">Thread的一些常见方法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ReentrantLock-API"><span class="toc-number">9.</span> <span class="toc-text">ReentrantLock API</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#在Java中Lock接口比synchronized块的优势是什么？"><span class="toc-number">10.</span> <span class="toc-text">在Java中Lock接口比synchronized块的优势是什么？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JUC下的工具类（底层都是基于Lock的操作）"><span class="toc-number">11.</span> <span class="toc-text">JUC下的工具类（底层都是基于Lock的操作）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#线程池的使用"><span class="toc-number">12.</span> <span class="toc-text">线程池的使用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#线程池的关闭"><span class="toc-number">13.</span> <span class="toc-text">线程池的关闭</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数据结构/HashMap/" title="HashMap">HashMap<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/IO流/" title="IO流">IO流<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/JVM/" title="JVM">JVM<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/" title="MQ">MQ<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Netty/" title="Netty">Netty<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/" title="Redis">Redis<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/RocketMQ/" title="RocketMQ">RocketMQ<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Shiro/" title="Shiro">Shiro<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/" title="分布式">分布式<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/学习资源/" title="学习资源">学习资源<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/并发编程/" title="并发编程">并发编程<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/算法/" title="算法">算法<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/" title="缓存">缓存<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/设计模式/" title="设计模式">设计模式<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/" title="面试题">面试题<sup>11</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/JVM/" title="JVM">JVM<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/分布式/" title="分布式">分布式<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/面试题/" title="面试题">面试题<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/权限管理/" title="权限管理">权限管理<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/集合类/" title="集合类">集合类<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/缓存/" title="缓存">缓存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/IO流/" title="IO流">IO流<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

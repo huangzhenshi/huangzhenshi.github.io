@@ -1,0 +1,662 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>ReentrantLock | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="参考资料http://cmsblogs.com/?p=2210 特性 支持公平锁和非公平锁：默认是非公平锁，性能更好，也可以设置为公平锁 非公平锁也只是有几次CAS插队的机会，而不会一直自旋，不会过多的浪费CPU资源 支持锁的可重入性，每次重入，锁的状态为+1，每次释放锁，状态为-1  使用public class MyService &amp;#123;    private Lock lock = n">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ReentrantLock">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/09/06/并发编程-ReentrantLock/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="参考资料http://cmsblogs.com/?p=2210 特性 支持公平锁和非公平锁：默认是非公平锁，性能更好，也可以设置为公平锁 非公平锁也只是有几次CAS插队的机会，而不会一直自旋，不会过多的浪费CPU资源 支持锁的可重入性，每次重入，锁的状态为+1，每次释放锁，状态为-1  使用public class MyService &amp;#123;    private Lock lock = n">
+<meta property="og:updated_time" content="2018-09-11T07:38:11.956Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ReentrantLock">
+<meta name="twitter:description" content="参考资料http://cmsblogs.com/?p=2210 特性 支持公平锁和非公平锁：默认是非公平锁，性能更好，也可以设置为公平锁 非公平锁也只是有几次CAS插队的机会，而不会一直自旋，不会过多的浪费CPU资源 支持锁的可重入性，每次重入，锁的状态为+1，每次释放锁，状态为-1  使用public class MyService &amp;#123;    private Lock lock = n">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/09/06/并发编程-ReentrantLock/" title="ReentrantLock" itemprop="url">ReentrantLock</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-09-06T06:51:58.033Z" itemprop="datePublished"> Published 2018-09-06</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#特性"><span class="toc-number">2.</span> <span class="toc-text">特性</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#使用"><span class="toc-number">3.</span> <span class="toc-text">使用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#lock原理"><span class="toc-number">4.</span> <span class="toc-text">lock原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#非公平锁获取锁的步骤"><span class="toc-number">4.1.</span> <span class="toc-text">非公平锁获取锁的步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#公平锁的获取方式"><span class="toc-number">4.2.</span> <span class="toc-text">公平锁的获取方式</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#解锁"><span class="toc-number">5.</span> <span class="toc-text">解锁</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#AQS中Node的waitStatus"><span class="toc-number">6.</span> <span class="toc-text">AQS中Node的waitStatus</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><a href="http://cmsblogs.com/?p=2210" target="_blank" rel="external">http://cmsblogs.com/?p=2210</a></p>
+<h1 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h1><ol>
+<li>支持公平锁和非公平锁：默认是非公平锁，性能更好，也可以设置为公平锁</li>
+<li>非公平锁也只是有几次CAS插队的机会，而不会一直自旋，不会过多的浪费CPU资源</li>
+<li>支持锁的可重入性，每次重入，锁的状态为+1，每次释放锁，状态为-1</li>
+</ol>
+<h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class MyService &#123;</div><div class="line">    private Lock lock = new ReentrantLock();</div><div class="line"></div><div class="line">    public void testMethod() &#123;</div><div class="line">        lock.lock();</div><div class="line">		try &#123;</div><div class="line">	             for (int i = 0; i &lt; 5; i++) &#123;</div><div class="line">	           			 System.out.println(&quot;ThreadName=&quot; + Thread.currentThread().getName()+ (&quot; &quot; + (i + 1)));</div><div class="line">	        	 &#125;</div><div class="line">            &#125; finally &#123;</div><div class="line">                lock.unlock();</div><div class="line">            &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="lock原理"><a href="#lock原理" class="headerlink" title="lock原理"></a>lock原理</h1><h2 id="非公平锁获取锁的步骤"><a href="#非公平锁获取锁的步骤" class="headerlink" title="非公平锁获取锁的步骤"></a>非公平锁获取锁的步骤</h2><ol>
+<li>第一次尝试快速获取锁，CAS的方式(compareAndSetState(0, 1))</li>
+<li>如果获取失败，会读取当前锁的状态，如果是未锁定，则再次尝试快速获取锁，如果已经锁定，check一下，是否满足重入的条件(int c = getState(); if (c == 0) {}else{})</li>
+<li>如果获取失败，则会将当前线程作为节点追加到AQS队列的尾部(addWaiter(Node.EXCLUSIVE))</li>
+<li>开始进行自旋( for (;;) {})，自旋的时候会做调用3个方法</li>
+</ol>
+<ul>
+<li>判断当前节点的前节点是否是head节点，是的话，就CAS抢一次</li>
+<li>尝试标记前节点的状态为SIGNAL</li>
+<li>标记成功之后就停止自旋，安心park待命</li>
+</ul>
+<ol>
+<li>每次自旋时会对前置节点做状态判断,并最终修改为SIGNAL状态</li>
+</ol>
+<ul>
+<li>如果前置节点的Node状态为SIGNAL，那么返回true（等待park）</li>
+<li>如果前置节点的Node状态&gt;0，那么说明该前置节点已经取消或者异常了，则需要从AQS队列当中剔除出去，然后，继续往前找（剔除队列中异常线程）</li>
+<li>如果前置节点处于其他状态，那么就CAS操作，尝试把前置节点的状态设置为SIGNAL</li>
+</ul>
+<ol>
+<li>前置节点状态修改成功后，就park当前线程，并且乖乖的Thread.interrupted()，停止自旋，等待被上一个节点叫醒为止。</li>
+<li>没抢到锁的下场如下所示<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">private final boolean parkAndCheckInterrupt() &#123;</div><div class="line">    LockSupport.park(this);</div><div class="line">    return Thread.interrupted();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>完整的抢锁的一些核心代码如下<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"></div><div class="line">final void lock() &#123;</div><div class="line">           if (compareAndSetState(0, 1))</div><div class="line">               setExclusiveOwnerThread(Thread.currentThread());</div><div class="line">           else</div><div class="line">               acquire(1);</div><div class="line">       &#125;</div><div class="line"></div><div class="line"></div><div class="line">   public final void acquire(int arg) &#123;</div><div class="line">       if (!tryAcquire(arg) &amp;&amp;acquireQueued(addWaiter(Node.EXCLUSIVE), arg))</div><div class="line">           selfInterrupt();</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   protected final boolean tryAcquire(int acquires) &#123;</div><div class="line">       return nonfairTryAcquire(acquires);</div><div class="line">   &#125;</div><div class="line"></div><div class="line">final boolean nonfairTryAcquire(int acquires) &#123;</div><div class="line">           final Thread current = Thread.currentThread();</div><div class="line">           int c = getState();</div><div class="line">           if (c == 0) &#123;</div><div class="line">               if (compareAndSetState(0, acquires)) &#123;</div><div class="line">                   setExclusiveOwnerThread(current);</div><div class="line">                   return true;</div><div class="line">               &#125;</div><div class="line">           &#125;</div><div class="line">           else if (current == getExclusiveOwnerThread()) &#123;</div><div class="line">               int nextc = c + acquires;</div><div class="line">               if (nextc &lt; 0) // overflow</div><div class="line">                   throw new Error(&quot;Maximum lock count exceeded&quot;);</div><div class="line">               setState(nextc);</div><div class="line">               return true;</div><div class="line">           &#125;</div><div class="line">           return false;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">final boolean acquireQueued(final Node node, int arg) &#123;</div><div class="line">       boolean failed = true;</div><div class="line">       try &#123;</div><div class="line">           boolean interrupted = false;</div><div class="line">           for (;;) &#123;</div><div class="line">               final Node p = node.predecessor();</div><div class="line">               if (p == head &amp;&amp; tryAcquire(arg)) &#123;</div><div class="line">                   setHead(node);</div><div class="line">                   p.next = null; // help GC</div><div class="line">                   failed = false;</div><div class="line">                   return interrupted;</div><div class="line">               &#125;</div><div class="line">               if (shouldParkAfterFailedAcquire(p, node) &amp;&amp;parkAndCheckInterrupt())</div><div class="line">                   interrupted = true;</div><div class="line">           &#125;</div><div class="line">       &#125; finally &#123;</div><div class="line">           if (failed)</div><div class="line">               cancelAcquire(node);</div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure></p>
+<h2 id="公平锁的获取方式"><a href="#公平锁的获取方式" class="headerlink" title="公平锁的获取方式"></a>公平锁的获取方式</h2><ol>
+<li>先读取锁的状态（当前锁为0且AQS队列中没有别人时，得锁；重入得锁；否则都进入排队）</li>
+</ol>
+<ul>
+<li>如果为0，多了一个判断AQS队列里面是否已经有不是自己的节点，不是的话，则CAS尝试占有锁，失败就进入排队</li>
+<li>如果不为0，则判断是否可以重入</li>
+</ul>
+<ol>
+<li>进入排队之后，就跟非公平锁一样了，自旋，设置前置节点等待状态，等待。<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">   final void lock() &#123;</div><div class="line">       acquire(1);</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   public final void acquire(int arg) &#123;</div><div class="line">       if (!tryAcquire(arg) &amp;&amp;acquireQueued(addWaiter(Node.EXCLUSIVE), arg))</div><div class="line">           selfInterrupt();</div><div class="line">   &#125;</div><div class="line"></div><div class="line">先读取锁的状态</div><div class="line">	protected final boolean tryAcquire(int acquires) &#123;</div><div class="line">           final Thread current = Thread.currentThread();</div><div class="line">           int c = getState();</div><div class="line">           if (c == 0) &#123;</div><div class="line">               if (!hasQueuedPredecessors() &amp;&amp;</div><div class="line">                   compareAndSetState(0, acquires)) &#123;</div><div class="line">                   setExclusiveOwnerThread(current);</div><div class="line">                   return true;</div><div class="line">               &#125;</div><div class="line">           &#125;</div><div class="line">           else if (current == getExclusiveOwnerThread()) &#123;</div><div class="line">               int nextc = c + acquires;</div><div class="line">               if (nextc &lt; 0)</div><div class="line">                   throw new Error(&quot;Maximum lock count exceeded&quot;);</div><div class="line">               setState(nextc);</div><div class="line">               return true;</div><div class="line">           &#125;</div><div class="line">           return false;</div><div class="line">       &#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="解锁"><a href="#解锁" class="headerlink" title="解锁"></a>解锁</h1><ol>
+<li>先把该锁的status自减，如果是重入锁的话，说明暂时还不能释放锁，如果是非重入锁，则返回true，可以释放锁</li>
+<li>如果释放锁，先判断一下当前的状态，如果waitStatus！=0，理论上应该是处于Signal，就可以调用unpak方法，如果后续无监听结点，则无需unpark</li>
+<li>获取到next结点， LockSupport.unpark(s.thread);</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public final boolean release(int arg) &#123;</div><div class="line">    if (tryRelease(arg)) &#123;</div><div class="line">        Node h = head;</div><div class="line">        if (h != null &amp;&amp; h.waitStatus != 0)</div><div class="line">            unparkSuccessor(h);</div><div class="line">        return true;</div><div class="line">    &#125;</div><div class="line">    return false;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="AQS中Node的waitStatus"><a href="#AQS中Node的waitStatus" class="headerlink" title="AQS中Node的waitStatus"></a>AQS中Node的waitStatus</h1><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">static final int CANCELLED =  1;（取消了或者被打断了)</div><div class="line">static final int SIGNAL    = -1;（表示该节点有后续节点在排队）</div><div class="line">static final int CONDITION = -2;</div><div class="line">static final int PROPAGATE = -3;</div><div class="line">None of the above          =  0;（表示该节点未初始化）</div></pre></td></tr></table></figure>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/并发编程/">并发编程</a>
+</div>
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/09/06/并发编程-ReentrantLock/" data-title="ReentrantLock | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/09/12/并发编程-线程协同/" title="线程协同">
+  <strong>上一篇：</strong><br/>
+  <span>
+  线程协同</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/09/04/类的加载模型/"  title="类的加载模型">
+ <strong>下一篇：</strong><br/> 
+ <span>类的加载模型
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/09/06/并发编程-ReentrantLock/" data-title="ReentrantLock" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/09/06/并发编程-ReentrantLock/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#特性"><span class="toc-number">2.</span> <span class="toc-text">特性</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#使用"><span class="toc-number">3.</span> <span class="toc-text">使用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#lock原理"><span class="toc-number">4.</span> <span class="toc-text">lock原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#非公平锁获取锁的步骤"><span class="toc-number">4.1.</span> <span class="toc-text">非公平锁获取锁的步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#公平锁的获取方式"><span class="toc-number">4.2.</span> <span class="toc-text">公平锁的获取方式</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#解锁"><span class="toc-number">5.</span> <span class="toc-text">解锁</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#AQS中Node的waitStatus"><span class="toc-number">6.</span> <span class="toc-text">AQS中Node的waitStatus</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数据结构/HashMap/" title="HashMap">HashMap<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/IO流/" title="IO流">IO流<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/JVM/" title="JVM">JVM<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/" title="MQ">MQ<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Netty/" title="Netty">Netty<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/" title="Redis">Redis<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/RocketMQ/" title="RocketMQ">RocketMQ<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Shiro/" title="Shiro">Shiro<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/" title="分布式">分布式<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/学习资源/" title="学习资源">学习资源<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/并发编程/" title="并发编程">并发编程<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/算法/" title="算法">算法<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/" title="缓存">缓存<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/设计模式/" title="设计模式">设计模式<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/" title="面试题">面试题<sup>11</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/JVM/" title="JVM">JVM<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/分布式/" title="分布式">分布式<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/面试题/" title="面试题">面试题<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/权限管理/" title="权限管理">权限管理<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/集合类/" title="集合类">集合类<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/缓存/" title="缓存">缓存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/IO流/" title="IO流">IO流<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

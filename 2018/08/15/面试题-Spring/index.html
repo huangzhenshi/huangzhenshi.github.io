@@ -1,0 +1,664 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>面试题和答案Spring | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="事务5大隔离级别 ISOLATION_DEFAULT 默认和数据库隔离级别一样 ISOLATION_READ_UNCOMMITTED 允许脏读取 ISOLATION_READ_COMMITTED 读取提交后数据，这种事务隔离级别可以避免脏读出现，但是可能会出现不可重复读和幻像读。 ISOLATION_REPEATABLE_READ 可重复读，可能出现幻读。 ISOLATION_SERIALIZAB">
+<meta name="keywords" content="面试题">
+<meta property="og:type" content="article">
+<meta property="og:title" content="面试题和答案Spring">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/15/面试题-Spring/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="事务5大隔离级别 ISOLATION_DEFAULT 默认和数据库隔离级别一样 ISOLATION_READ_UNCOMMITTED 允许脏读取 ISOLATION_READ_COMMITTED 读取提交后数据，这种事务隔离级别可以避免脏读出现，但是可能会出现不可重复读和幻像读。 ISOLATION_REPEATABLE_READ 可重复读，可能出现幻读。 ISOLATION_SERIALIZAB">
+<meta property="og:updated_time" content="2018-08-21T23:57:01.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="面试题和答案Spring">
+<meta name="twitter:description" content="事务5大隔离级别 ISOLATION_DEFAULT 默认和数据库隔离级别一样 ISOLATION_READ_UNCOMMITTED 允许脏读取 ISOLATION_READ_COMMITTED 读取提交后数据，这种事务隔离级别可以避免脏读出现，但是可能会出现不可重复读和幻像读。 ISOLATION_REPEATABLE_READ 可重复读，可能出现幻读。 ISOLATION_SERIALIZAB">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/08/15/面试题-Spring/" title="面试题和答案Spring" itemprop="url">面试题和答案Spring</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-08-15T01:55:51.299Z" itemprop="datePublished"> Published 2018-08-15</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#事务5大隔离级别"><span class="toc-number">1.</span> <span class="toc-text">事务5大隔离级别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#事务7大传播级别"><span class="toc-number">2.</span> <span class="toc-text">事务7大传播级别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring-IOC原理"><span class="toc-number">3.</span> <span class="toc-text">Spring IOC原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SpringBoot习惯优于配置原理"><span class="toc-number">4.</span> <span class="toc-text">SpringBoot习惯优于配置原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring-AOP原理"><span class="toc-number">5.</span> <span class="toc-text">Spring AOP原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring-MVC原理"><span class="toc-number">6.</span> <span class="toc-text">Spring MVC原理</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="事务5大隔离级别"><a href="#事务5大隔离级别" class="headerlink" title="事务5大隔离级别"></a>事务5大隔离级别</h1><ol>
+<li>ISOLATION_DEFAULT 默认和数据库隔离级别一样</li>
+<li>ISOLATION_READ_UNCOMMITTED 允许脏读取</li>
+<li>ISOLATION_READ_COMMITTED 读取提交后数据，这种事务隔离级别可以避免脏读出现，但是可能会出现不可重复读和幻像读。</li>
+<li>ISOLATION_REPEATABLE_READ 可重复读，可能出现幻读。</li>
+<li>ISOLATION_SERIALIZABLE 最可靠的事务隔离级别</li>
+</ol>
+<h1 id="事务7大传播级别"><a href="#事务7大传播级别" class="headerlink" title="事务7大传播级别"></a>事务7大传播级别</h1><ul>
+<li><p>PROPAGATION_REQUIRED ，默认的spring事务传播级别。如果上下文中已经存在事务，那么就加入到事务中执行，如果不存在事务则新建。A或者B失败，都会全部回滚。</p>
+</li>
+<li><p>PROPAGATION_REQUIRES_NEW ，每次都会新建一个事务，并且同时将上下文中的事务挂起，执行当前新建事务完成以后，上下文事务恢复再执行。B成功，直接提交；B失败，Invoker A仍然成功，两个独立的事务。</p>
+</li>
+<li><p>PROPAGATION_NESTED 嵌套级别事务。该传播级别特征是，如果上下文中存在事务，则嵌套事务执行，如果不存在事务，则新建事务。涉及到 savepoint概念，B成功A不成功，都不提交，B失败，A会把事务回滚到调用B的savepoint之前，A成功的话，会单独提交A事务中的数据，而不提交B事务的数据。</p>
+</li>
+<li><p>PROPAGATION_SUPPORTS ，从字面意思就知道，supports，支持，该传播级别的特点是，如果上下文存在事务，则支持事务加入事务，如果没有事务，则使用非事务的方式执行。</p>
+</li>
+<li><p>PROPAGATION_NOT_SUPPORTED ，这个也可以从字面得知，not supported ，不支持，当前级别的特点就是上下文中存在事务，则挂起事务，执行当前逻辑，结束后恢复上下文的事务。<br>这个级别有什么好处？可以帮助你将事务极可能的缩小。我们知道一个事务越大，它存在的风险也就越多。所以在处理事务的过程中，要保证尽可能的缩小范围。比如一段代码，是每次逻辑操作都必须调用的，比如循环1000次的某个非核心业务逻辑操作。这样的代码如果包在事务中，势必造成事务太大，导致出现一些难以考虑周全的异常情况。所以这个事务这个级别的传播级别就派上用场了。用当前级别的事务模板抱起来就可以了。</p>
+</li>
+<li><p>PROPAGATION_MANDATORY ， 该级别的事务要求上下文中必须要存在事务，否则就会抛出异常！配置该方式的传播级别是有效的控制上下文调用代码遗漏添加事务控制的保证手段。比如一段代码不能单独被调用执行，但是一旦被调用，就必须有事务包含的情况，就可以使用这个传播级别。</p>
+</li>
+<li><p>PROPAGATION_NEVER ，该事务更严格，上面一个事务传播级别只是不支持而已，有事务就挂起，而PROPAGATION_NEVER传播级别要求上下文中不能存在事务，一旦有事务，就抛出runtime异常，强制停止执行</p>
+</li>
+</ul>
+<h1 id="Spring-IOC原理"><a href="#Spring-IOC原理" class="headerlink" title="Spring IOC原理"></a>Spring IOC原理</h1><p>核心原理：</p>
+<ul>
+<li>解耦，类之间的依赖关系摆脱了传统的new的方式，而是通过xml配置、注解、Config注入等方式注册在Spring容器当中，类与类不直接联系，通过Spring容器来获取</li>
+<li>缓存类，Spring容器会把创建过的单例的类缓存起来，方便复用</li>
+<li>利用反射，通过全限定名来创建类对象</li>
+<li>BeanFactory是顶层接口，Spring默认的懒加载机制，而在tomcat容器当中使用，是初始化全部加载，缓存的形式</li>
+</ul>
+<h1 id="SpringBoot习惯优于配置原理"><a href="#SpringBoot习惯优于配置原理" class="headerlink" title="SpringBoot习惯优于配置原理"></a>SpringBoot习惯优于配置原理</h1><ol>
+<li>启动类有@SpringBootApplication注解（ComponentScan、AutoConfiguration、@EnableAutoConfiguration）组成</li>
+<li>其中@EnableAutoConfiguration由@import注解组成</li>
+<li>会加载spring-boot-autoConfig.jar包里面的spring.factories文件，系统会根据配置去根据里面的全限定名通过反射生成常用的Bean，并且这些Bean都有默认的配置属性</li>
+</ol>
+<h1 id="Spring-AOP原理"><a href="#Spring-AOP原理" class="headerlink" title="Spring AOP原理"></a>Spring AOP原理</h1><ol>
+<li>JDK动态代理原理：接口类+反射+接口类的Handler实现类的invoke方法，实现接口类的接口方法的代理。（通过反射获取接口类的构造器，然后向构造器里面注入Handler，再利用注入后的构造器newInstance代理类，当调用接口类的接口方法时，会触发Handler的invoke()方法）</li>
+<li>CGLib代理原理: 通过类的集成，获取target的所有方法，然后对代理类所有的方法做一个拦截加工。</li>
+</ol>
+<h1 id="Spring-MVC原理"><a href="#Spring-MVC原理" class="headerlink" title="Spring MVC原理"></a>Spring MVC原理</h1><ul>
+<li>DispatcherServlet：作为前端控制器，整个流程控制的中心，控制其它组件执行，统一调度，降低组件之间的耦合性，提高每个组件的扩展性。</li>
+<li>HandlerMapping：通过扩展处理器映射器实现不同的映射方式，例如：配置文件方式，实现接口方式，注解方式等。 </li>
+<li>HandlAdapter：通过扩展处理器适配器，支持更多类型的处理器。</li>
+<li>ViewResolver：通过扩展视图解析器，支持更多类型的视图解析，例如：jsp、freemarker、pdf、excel等。</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/面试题/">面试题</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/面试题/">面试题</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/15/面试题-Spring/" data-title="面试题和答案Spring | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/08/16/面试题-分布式/" title="面试题和答案分布式">
+  <strong>上一篇：</strong><br/>
+  <span>
+  面试题和答案分布式</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/08/14/分布式锁的3种实现/"  title="分布式锁的3种实现">
+ <strong>下一篇：</strong><br/> 
+ <span>分布式锁的3种实现
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/08/15/面试题-Spring/" data-title="面试题和答案Spring" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/15/面试题-Spring/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#事务5大隔离级别"><span class="toc-number">1.</span> <span class="toc-text">事务5大隔离级别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#事务7大传播级别"><span class="toc-number">2.</span> <span class="toc-text">事务7大传播级别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring-IOC原理"><span class="toc-number">3.</span> <span class="toc-text">Spring IOC原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SpringBoot习惯优于配置原理"><span class="toc-number">4.</span> <span class="toc-text">SpringBoot习惯优于配置原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring-AOP原理"><span class="toc-number">5.</span> <span class="toc-text">Spring AOP原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring-MVC原理"><span class="toc-number">6.</span> <span class="toc-text">Spring MVC原理</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数据结构/HashMap/" title="HashMap">HashMap<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/IO流/" title="IO流">IO流<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/JVM/" title="JVM">JVM<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/" title="MQ">MQ<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Netty/" title="Netty">Netty<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/" title="Redis">Redis<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/RocketMQ/" title="RocketMQ">RocketMQ<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Shiro/" title="Shiro">Shiro<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/" title="分布式">分布式<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/学习资源/" title="学习资源">学习资源<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/并发编程/" title="并发编程">并发编程<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/算法/" title="算法">算法<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/" title="缓存">缓存<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/设计模式/" title="设计模式">设计模式<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/" title="面试题">面试题<sup>11</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/JVM/" title="JVM">JVM<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/分布式/" title="分布式">分布式<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/面试题/" title="面试题">面试题<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/权限管理/" title="权限管理">权限管理<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/集合类/" title="集合类">集合类<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/缓存/" title="缓存">缓存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/IO流/" title="IO流">IO流<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

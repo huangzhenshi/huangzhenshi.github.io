@@ -1,0 +1,677 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Synchronized原理 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="参考资料https://blog.csdn.net/javazejian/article/details/72828483死磕javahttp://cmsblogs.com/?p=2071 synchronized的用法 修饰普通方法，相当于锁当前对象，调用者，也指 this对象 修饰静态方法，相当于锁当前类对象，也指 Test.class 修饰代码块，可以缩小锁的范围，提升性能 锁对象（this">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Synchronized原理">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/09/13/并发编程-Synchronized原理/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="参考资料https://blog.csdn.net/javazejian/article/details/72828483死磕javahttp://cmsblogs.com/?p=2071 synchronized的用法 修饰普通方法，相当于锁当前对象，调用者，也指 this对象 修饰静态方法，相当于锁当前类对象，也指 Test.class 修饰代码块，可以缩小锁的范围，提升性能 锁对象（this">
+<meta property="og:updated_time" content="2018-09-14T06:37:28.915Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Synchronized原理">
+<meta name="twitter:description" content="参考资料https://blog.csdn.net/javazejian/article/details/72828483死磕javahttp://cmsblogs.com/?p=2071 synchronized的用法 修饰普通方法，相当于锁当前对象，调用者，也指 this对象 修饰静态方法，相当于锁当前类对象，也指 Test.class 修饰代码块，可以缩小锁的范围，提升性能 锁对象（this">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/09/13/并发编程-Synchronized原理/" title="Synchronized原理" itemprop="url">Synchronized原理</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-09-13T08:52:01.710Z" itemprop="datePublished"> Published 2018-09-13</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#synchronized的用法"><span class="toc-number">2.</span> <span class="toc-text">synchronized的用法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#注意事项："><span class="toc-number">3.</span> <span class="toc-text">注意事项：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3种锁竞争的对比"><span class="toc-number">4.</span> <span class="toc-text">3种锁竞争的对比</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实现的作用："><span class="toc-number">5.</span> <span class="toc-text">实现的作用：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#偏向锁的原理"><span class="toc-number">6.</span> <span class="toc-text">偏向锁的原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#竞争的逻辑"><span class="toc-number">6.1.</span> <span class="toc-text">竞争的逻辑</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#偏向锁的好处"><span class="toc-number">6.2.</span> <span class="toc-text">偏向锁的好处</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#轻量级锁原理"><span class="toc-number">7.</span> <span class="toc-text">轻量级锁原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#轻量级锁的优势"><span class="toc-number">7.1.</span> <span class="toc-text">轻量级锁的优势</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Synchronized-重量级锁的实现原理"><span class="toc-number">8.</span> <span class="toc-text">Synchronized 重量级锁的实现原理</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><a href="https://blog.csdn.net/javazejian/article/details/72828483" target="_blank" rel="external">https://blog.csdn.net/javazejian/article/details/72828483</a><br>死磕java<br><a href="http://cmsblogs.com/?p=2071" target="_blank" rel="external">http://cmsblogs.com/?p=2071</a></p>
+<h1 id="synchronized的用法"><a href="#synchronized的用法" class="headerlink" title="synchronized的用法"></a>synchronized的用法</h1><ol>
+<li>修饰普通方法，相当于锁当前对象，调用者，也指 this对象</li>
+<li>修饰静态方法，相当于锁当前类对象，也指 Test.class</li>
+<li>修饰代码块，可以缩小锁的范围，提升性能</li>
+<li>锁对象（this,类对象，普通对象）</li>
+</ol>
+<h1 id="注意事项："><a href="#注意事项：" class="headerlink" title="注意事项："></a>注意事项：</h1><ol>
+<li>锁普通方法和锁this的代码块，都是对象锁，锁静态方法和Test.class是类锁。</li>
+<li>有锁方法和无锁方法互相不影响</li>
+<li>类锁和对象锁互相不影响</li>
+<li>释放锁的时候，修改的变量对所有线程可见，满足HB原则，从而实现线程安全</li>
+</ol>
+<h1 id="3种锁竞争的对比"><a href="#3种锁竞争的对比" class="headerlink" title="3种锁竞争的对比"></a>3种锁竞争的对比</h1><ol>
+<li>没有同时竞争一把锁的时候，利用偏向锁，减少甚至不需要CAS就能成功获取一把锁，效率高（程序运行时没有竞争，一个线程重复复用锁，或者一个时间段只会有一个线程占有锁）</li>
+<li>可以短时间内获取到锁的时候，包括占有锁的时间短，同时竞争的线程不是很多，通过自旋一定次数CAS获取轻量级锁，避免了线程阻塞的切换，提升了相应速度，又兼顾了CPU的性能</li>
+<li>竞争激烈，多个线程同时争夺一把锁，可能长时间都抢不到锁，重量级锁</li>
+</ol>
+<h1 id="实现的作用："><a href="#实现的作用：" class="headerlink" title="实现的作用："></a>实现的作用：</h1><ul>
+<li>通过锁同一个对象，实现多个线程对公有变量进行操作的时候，保证线程安全。</li>
+<li>当一个线程访问同步代码块时，它首先是需要得到锁才能执行同步代码，当退出或者抛出异常时必须要释放锁<br>任何对象都有一个monitor与之相关联，当且一个monitor被持有之后，他将处于锁定状态。线程执行到monitorenter指令时，将会尝试获取对象所对应的monitor所有权，即尝试获取对象的锁； </li>
+</ul>
+<h1 id="偏向锁的原理"><a href="#偏向锁的原理" class="headerlink" title="偏向锁的原理"></a>偏向锁的原理</h1><h2 id="竞争的逻辑"><a href="#竞争的逻辑" class="headerlink" title="竞争的逻辑"></a>竞争的逻辑</h2><ol>
+<li>偏向锁状态的消息头结构： 消息头锁标志位01、是否是偏向锁0 1、偏向线程ID</li>
+<li>如果3个条件都满足，锁标志位– 01，是否是偏向锁 –1，偏向线程ID – 当前线程，则直接获取到锁，不需要任何CAS操作，而且执行完同步代码块后，并不会修改这3个条件</li>
+<li>如果一个新的线程尝试获取锁（但是未竞争，之前的线程已经使用完了），发现锁标志位– 01，是否是偏向锁 –1，偏向线程ID –不是自己，则会触发一个check，old线程的锁是否使用完了，如果使用完了，则不存在竞争，CAS把偏向线程ID指向自己，这个对象锁就归自己所有了</li>
+<li>如果一个新的线程尝试获取锁（竞争态），锁标志位– 01，是否是偏向锁 –1,偏向线程不是自己，且check发现还在使用，竞争成立，则挂起当前线程，并达到安全点后（old线程执行完了），该对象锁升级为轻量级锁</li>
+<li>偏向锁的释放采用了一种只有竞争才会释放锁的机制，线程是不会主动去释放偏向锁，需要等待其他线程来竞争</li>
+</ol>
+<h2 id="偏向锁的好处"><a href="#偏向锁的好处" class="headerlink" title="偏向锁的好处"></a>偏向锁的好处</h2><ol>
+<li>如果不存在多线程同时竞争一把锁的时候，减少CAS操作</li>
+</ol>
+<ul>
+<li>老线程重复使用锁，无需任何CAS操作</li>
+<li>新线程获取偏向锁，但是没有竞争，只需要在满足条件的时候CAS偏向线程ID即可</li>
+</ul>
+<ol>
+<li>完美支持重入功能，而且没有任何CAS操作 </li>
+</ol>
+<h1 id="轻量级锁原理"><a href="#轻量级锁原理" class="headerlink" title="轻量级锁原理"></a>轻量级锁原理</h1><ol>
+<li>check消息头的状态：是否处于无锁状态（偏向锁状态结束了，因为存在竞争，等安全点后释放锁了，就是无锁状态）</li>
+<li>是的话，所有争夺的线程都会拷贝一份消息头到各自的线程栈的 lock record中，叫做displace Mark Word，并且会记录自己的唯一线程标识符</li>
+<li>CAS 把公有的消息头，变成指向自己线程标识符，这个时候消息头的数据结构发生改变，变成线程引用</li>
+<li>CAS成功的线程会，执行同步操作</li>
+<li>最后把displace Mark Word 写回到 公有消息头里面，释放锁</li>
+<li>重入的时候，无需要任何的操作，只需要在自己的displace Mark Word中标记一下</li>
+<li>CAS争夺锁失败的线程会发生自旋，自旋一定次数后还是失败的话，会修改消息头的状态为重量级锁，并且自身进入阻塞状态，等待拥有锁的线程执行结束。<h2 id="轻量级锁的优势"><a href="#轻量级锁的优势" class="headerlink" title="轻量级锁的优势"></a>轻量级锁的优势</h2>在获取锁的耗时不长的时候（比如锁的执行时间短、或者争抢的线程不多可以很快获得锁），通过一定次数的自旋，避免了重量级锁的线程阻塞和切换，提升了响应速度也兼顾了CPU的性能。</li>
+</ol>
+<h1 id="Synchronized-重量级锁的实现原理"><a href="#Synchronized-重量级锁的实现原理" class="headerlink" title="Synchronized 重量级锁的实现原理"></a>Synchronized 重量级锁的实现原理</h1><ol>
+<li>每个对象都有一个对象头（Mark Word)</li>
+<li>对象头的存储结构会跟随者该对象的锁定状态而发生改变。锁的状态包括（无锁、偏向锁、轻量级锁、重量级锁）（轻量级锁和偏向锁是Java 6 对 synchronized 锁进行优化后新增加的）</li>
+<li>重量级锁（Synchronized的对象锁)会绑定一个唯一的monitor对象</li>
+<li>monitor对象里面包括：</li>
+</ol>
+<ul>
+<li>Owner（如果未NULL，表示该对象处于非锁定状态，或者指向拥有该锁的线程）</li>
+<li>Count（用来重入计数）</li>
+<li>WaitSet （记录处于wait状态的线程)，调用notify方法，就是从waitSet中随机选一个线程，nitifyAll就是全部进行操作，让他们进入EntryList</li>
+<li>EntryList（记录处于block状态的线程)</li>
+</ul>
+<ol>
+<li>每个线程会在自己的栈针中创建一份 monitor record</li>
+</ol>
+<p>当多个线程同时访问一段同步代码时，首先会进入 _EntryList 集合，当线程获取到对象的monitor 后进入 _Owner 区域并把monitor中的owner变量设置为当前线程同时monitor中的计数器count加1，若线程调用 wait() 方法，将释放当前持有的monitor，owner变量恢复为null，count自减1，同时该线程进入 WaitSe t集合中等待被唤醒。若当前线程执行完毕也将释放monitor(锁)并复位变量的值，以便其他线程进入获取monitor(锁)</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/并发编程/">并发编程</a>
+</div>
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/09/13/并发编程-Synchronized原理/" data-title="Synchronized原理 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/09/17/IO流-总篇和对比/" title="IO流-总篇和对比">
+  <strong>上一篇：</strong><br/>
+  <span>
+  IO流-总篇和对比</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/09/12/并发编程-线程协同/"  title="线程协同">
+ <strong>下一篇：</strong><br/> 
+ <span>线程协同
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/09/13/并发编程-Synchronized原理/" data-title="Synchronized原理" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/09/13/并发编程-Synchronized原理/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#synchronized的用法"><span class="toc-number">2.</span> <span class="toc-text">synchronized的用法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#注意事项："><span class="toc-number">3.</span> <span class="toc-text">注意事项：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3种锁竞争的对比"><span class="toc-number">4.</span> <span class="toc-text">3种锁竞争的对比</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实现的作用："><span class="toc-number">5.</span> <span class="toc-text">实现的作用：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#偏向锁的原理"><span class="toc-number">6.</span> <span class="toc-text">偏向锁的原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#竞争的逻辑"><span class="toc-number">6.1.</span> <span class="toc-text">竞争的逻辑</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#偏向锁的好处"><span class="toc-number">6.2.</span> <span class="toc-text">偏向锁的好处</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#轻量级锁原理"><span class="toc-number">7.</span> <span class="toc-text">轻量级锁原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#轻量级锁的优势"><span class="toc-number">7.1.</span> <span class="toc-text">轻量级锁的优势</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Synchronized-重量级锁的实现原理"><span class="toc-number">8.</span> <span class="toc-text">Synchronized 重量级锁的实现原理</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数据结构/HashMap/" title="HashMap">HashMap<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/IO流/" title="IO流">IO流<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/JVM/" title="JVM">JVM<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/" title="MQ">MQ<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Netty/" title="Netty">Netty<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/" title="Redis">Redis<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/RocketMQ/" title="RocketMQ">RocketMQ<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Shiro/" title="Shiro">Shiro<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/" title="分布式">分布式<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/学习资源/" title="学习资源">学习资源<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/并发编程/" title="并发编程">并发编程<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/算法/" title="算法">算法<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/" title="缓存">缓存<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/设计模式/" title="设计模式">设计模式<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/" title="面试题">面试题<sup>11</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/JVM/" title="JVM">JVM<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/分布式/" title="分布式">分布式<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/面试题/" title="面试题">面试题<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/权限管理/" title="权限管理">权限管理<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/集合类/" title="集合类">集合类<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/缓存/" title="缓存">缓存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/IO流/" title="IO流">IO流<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

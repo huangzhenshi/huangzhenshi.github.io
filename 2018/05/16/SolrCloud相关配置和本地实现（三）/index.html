@@ -48,7 +48,7 @@
 				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
 				<h2 class="blog-motto">Happy Coding</h2>
 			</div>
-			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
 			</a></div>
 			<nav class="animated">
 				<ul>
@@ -62,7 +62,7 @@
  					
 					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
 						<label>Search</label>
-						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
 						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
 					</form>
 					
@@ -85,14 +85,14 @@
 		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
 		
   <p class="article-time">
-    <time datetime="2018-05-16T03:58:48.052Z" itemprop="datePublished"> 发表于 2018-05-16</time>
+    <time datetime="2018-05-16T03:58:48.052Z" itemprop="datePublished"> Published 2018-05-16</time>
     
   </p>
 </header>
 	<div class="article-content">
 		
 		<div id="toc" class="toc-article">
-			<strong class="toc-title">文章目录</strong>
+			<strong class="toc-title">Contents</strong>
 		
 			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#文档"><span class="toc-number">1.</span> <span class="toc-text">文档</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SolrCloud集群的优点"><span class="toc-number">2.</span> <span class="toc-text">SolrCloud集群的优点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#原理"><span class="toc-number">3.</span> <span class="toc-text">原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#zookeeper的安装和日志配置"><span class="toc-number">4.</span> <span class="toc-text">zookeeper的安装和日志配置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#zk伪集群的创建"><span class="toc-number">4.1.</span> <span class="toc-text">zk伪集群的创建</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#solr-node的配置"><span class="toc-number">5.</span> <span class="toc-text">solr_node的配置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#搜索引擎配置注意事项"><span class="toc-number">5.1.</span> <span class="toc-text">搜索引擎配置注意事项</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置不同tomcat的监听端口"><span class="toc-number">5.2.</span> <span class="toc-text">配置不同tomcat的监听端口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置-catelina-bat启动参数（JDK-1-7至少）"><span class="toc-number">5.3.</span> <span class="toc-text">配置 catelina.bat启动参数（JDK 1.7至少）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置jetty的监听端口"><span class="toc-number">5.4.</span> <span class="toc-text">配置jetty的监听端口</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Solrj和spring集成"><span class="toc-number">6.</span> <span class="toc-text">Solrj和spring集成</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#碰到的问题"><span class="toc-number">7.</span> <span class="toc-text">碰到的问题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#zookeeper报错-len-error，单node存储的空间超过默认的1M"><span class="toc-number">7.1.</span> <span class="toc-text">zookeeper报错 len error，单node存储的空间超过默认的1M</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SolrCloud的迁移"><span class="toc-number">8.</span> <span class="toc-text">SolrCloud的迁移</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#重装zookeeper集群："><span class="toc-number">8.1.</span> <span class="toc-text">重装zookeeper集群：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#重新copy-solr，且清空data文件夹，按照顺序启动"><span class="toc-number">8.2.</span> <span class="toc-text">重新copy solr，且清空data文件夹，按照顺序启动</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修改配置后，数据重新导入"><span class="toc-number">8.3.</span> <span class="toc-text">修改配置后，数据重新导入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#其它备用方案（用一个单节点来实现solr的功能）"><span class="toc-number">8.4.</span> <span class="toc-text">其它备用方案（用一个单节点来实现solr的功能）</span></a></li></ol></li></ol>
 		
@@ -216,22 +216,22 @@
 
 
 </div>  
-      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
 
   <div id="toc" class="toc-aside">
-  <strong class="toc-title">文章目录</strong>
+  <strong class="toc-title">Contents</strong>
  
  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#文档"><span class="toc-number">1.</span> <span class="toc-text">文档</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SolrCloud集群的优点"><span class="toc-number">2.</span> <span class="toc-text">SolrCloud集群的优点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#原理"><span class="toc-number">3.</span> <span class="toc-text">原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#zookeeper的安装和日志配置"><span class="toc-number">4.</span> <span class="toc-text">zookeeper的安装和日志配置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#zk伪集群的创建"><span class="toc-number">4.1.</span> <span class="toc-text">zk伪集群的创建</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#solr-node的配置"><span class="toc-number">5.</span> <span class="toc-text">solr_node的配置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#搜索引擎配置注意事项"><span class="toc-number">5.1.</span> <span class="toc-text">搜索引擎配置注意事项</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置不同tomcat的监听端口"><span class="toc-number">5.2.</span> <span class="toc-text">配置不同tomcat的监听端口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置-catelina-bat启动参数（JDK-1-7至少）"><span class="toc-number">5.3.</span> <span class="toc-text">配置 catelina.bat启动参数（JDK 1.7至少）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置jetty的监听端口"><span class="toc-number">5.4.</span> <span class="toc-text">配置jetty的监听端口</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Solrj和spring集成"><span class="toc-number">6.</span> <span class="toc-text">Solrj和spring集成</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#碰到的问题"><span class="toc-number">7.</span> <span class="toc-text">碰到的问题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#zookeeper报错-len-error，单node存储的空间超过默认的1M"><span class="toc-number">7.1.</span> <span class="toc-text">zookeeper报错 len error，单node存储的空间超过默认的1M</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SolrCloud的迁移"><span class="toc-number">8.</span> <span class="toc-text">SolrCloud的迁移</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#重装zookeeper集群："><span class="toc-number">8.1.</span> <span class="toc-text">重装zookeeper集群：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#重新copy-solr，且清空data文件夹，按照顺序启动"><span class="toc-number">8.2.</span> <span class="toc-text">重新copy solr，且清空data文件夹，按照顺序启动</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修改配置后，数据重新导入"><span class="toc-number">8.3.</span> <span class="toc-text">修改配置后，数据重新导入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#其它备用方案（用一个单节点来实现solr的功能）"><span class="toc-number">8.4.</span> <span class="toc-text">其它备用方案（用一个单节点来实现solr的功能）</span></a></li></ol></li></ol>
  
   </div>
 
 <div id="asidepart">
-<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
 <aside class="clearfix">
 
   
 <div class="github-card">
-<p class="asidetitle">Github 名片</p>
+<p class="asidetitle">Github Card</p>
 <div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
 <script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
 </div>
@@ -240,8 +240,186 @@
 
 
   
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数据结构/HashMap/" title="HashMap">HashMap<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/IO流/" title="IO流">IO流<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/JVM/" title="JVM">JVM<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/" title="MQ">MQ<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Netty/" title="Netty">Netty<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/" title="Redis">Redis<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/RocketMQ/" title="RocketMQ">RocketMQ<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Shiro/" title="Shiro">Shiro<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/" title="分布式">分布式<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/学习资源/" title="学习资源">学习资源<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/并发编程/" title="并发编程">并发编程<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/算法/" title="算法">算法<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/" title="缓存">缓存<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/设计模式/" title="设计模式">设计模式<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/" title="面试题">面试题<sup>11</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
 
   
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/JVM/" title="JVM">JVM<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/分布式/" title="分布式">分布式<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/面试题/" title="面试题">面试题<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/权限管理/" title="权限管理">权限管理<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/集合类/" title="集合类">集合类<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/缓存/" title="缓存">缓存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/IO流/" title="IO流">IO流<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
 
 </aside>
 </div>
@@ -477,7 +655,7 @@ var _hmt = _hmt || [];
 <!-- Totop Begin -->
 
 	<div id="totop">
-	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
 	</div>
 	<script src="/js/totop.js"></script>
 

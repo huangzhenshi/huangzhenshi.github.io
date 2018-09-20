@@ -1,0 +1,724 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>并发编程-工具类 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="参考资料BlockQueue详细介绍https://blog.csdn.net/qq_38872310/article/details/80832703 BlockQueue接口解决的问题：在一个容量有限的仓库里面，实现满了就挂起生产线程，空了就挂起消费线程的兼顾性能和安全的数据结构 – 阻塞队列定义了插入抽象方法：add()、   put()、 offer()、offer(time） 分别是：失">
+<meta property="og:type" content="article">
+<meta property="og:title" content="并发编程-工具类">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/22/并发编程-工具类/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="参考资料BlockQueue详细介绍https://blog.csdn.net/qq_38872310/article/details/80832703 BlockQueue接口解决的问题：在一个容量有限的仓库里面，实现满了就挂起生产线程，空了就挂起消费线程的兼顾性能和安全的数据结构 – 阻塞队列定义了插入抽象方法：add()、   put()、 offer()、offer(time） 分别是：失">
+<meta property="og:updated_time" content="2018-09-13T08:21:31.196Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="并发编程-工具类">
+<meta name="twitter:description" content="参考资料BlockQueue详细介绍https://blog.csdn.net/qq_38872310/article/details/80832703 BlockQueue接口解决的问题：在一个容量有限的仓库里面，实现满了就挂起生产线程，空了就挂起消费线程的兼顾性能和安全的数据结构 – 阻塞队列定义了插入抽象方法：add()、   put()、 offer()、offer(time） 分别是：失">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/08/22/并发编程-工具类/" title="并发编程-工具类" itemprop="url">并发编程-工具类</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-08-22T05:51:28.458Z" itemprop="datePublished"> Published 2018-08-22</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#BlockQueue接口"><span class="toc-number">2.</span> <span class="toc-text">BlockQueue接口</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#ArrayBlockQueue"><span class="toc-number">2.1.</span> <span class="toc-text">ArrayBlockQueue</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LinkedBlockQueue"><span class="toc-number">2.2.</span> <span class="toc-text">LinkedBlockQueue</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SynchronousQueue（同步队列）"><span class="toc-number">2.3.</span> <span class="toc-text">SynchronousQueue（同步队列）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PriorityBlockingQueue"><span class="toc-number">2.4.</span> <span class="toc-text">PriorityBlockingQueue</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DelayQueue"><span class="toc-number">2.5.</span> <span class="toc-text">DelayQueue</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ConcurrentHashMap"><span class="toc-number">3.</span> <span class="toc-text">ConcurrentHashMap</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CopyOnWriteArrayList"><span class="toc-number">4.</span> <span class="toc-text">CopyOnWriteArrayList</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#lock（）-lockInterruptibly（）"><span class="toc-number">5.</span> <span class="toc-text">lock（）  lockInterruptibly（）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#并发工具类-基于ReentrantLock实现的工具类"><span class="toc-number">6.</span> <span class="toc-text">并发工具类(基于ReentrantLock实现的工具类)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#CountDownLatch（分页下载，2个方法配合）"><span class="toc-number">6.1.</span> <span class="toc-text">CountDownLatch（分页下载，2个方法配合）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CyclicBarrier（操场集合到齐后开始比赛，一个方法await）"><span class="toc-number">6.2.</span> <span class="toc-text">CyclicBarrier（操场集合到齐后开始比赛，一个方法await）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#semaphore-信号量，10个人，5个茅坑，挨个排队上厕所，acquire-阻塞等待-和release-释放资源"><span class="toc-number">6.3.</span> <span class="toc-text">semaphore(信号量，10个人，5个茅坑，挨个排队上厕所，acquire() 阻塞等待 和release()释放资源)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#AQS原理"><span class="toc-number">7.</span> <span class="toc-text">AQS原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#公平锁（独占锁）"><span class="toc-number">7.1.</span> <span class="toc-text">公平锁（独占锁）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#非公平锁（独占锁）"><span class="toc-number">7.2.</span> <span class="toc-text">非公平锁（独占锁）</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ThreadLocal"><span class="toc-number">8.</span> <span class="toc-text">ThreadLocal</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p>BlockQueue详细介绍<br><a href="https://blog.csdn.net/qq_38872310/article/details/80832703" target="_blank" rel="external">https://blog.csdn.net/qq_38872310/article/details/80832703</a></p>
+<h1 id="BlockQueue接口"><a href="#BlockQueue接口" class="headerlink" title="BlockQueue接口"></a>BlockQueue接口</h1><p>解决的问题：在一个容量有限的仓库里面，实现满了就挂起生产线程，空了就挂起消费线程的兼顾性能和安全的数据结构 – 阻塞队列<br>定义了插入抽象方法：<br>add()、   put()、 offer()、offer(time） 分别是：失败抛出异常、失败线程阻塞直到成功、快速返回无论是否成功、定时尝试插入<br>remove()、take()、pull（）、pull(timeout)</p>
+<h2 id="ArrayBlockQueue"><a href="#ArrayBlockQueue" class="headerlink" title="ArrayBlockQueue"></a>ArrayBlockQueue</h2><p>疑问：</p>
+<ul>
+<li>插入和删除是否可以并行进行？</li>
+<li>size函数加锁吗？</li>
+</ul>
+<ol>
+<li><p>基于定长数组的有界队列，初始化的时候必须制定队列的大小，1个锁，2个condition对象</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">final Object[] items;</div><div class="line">int takeIndex;</div><div class="line">int putIndex;</div><div class="line">int count;</div><div class="line">final ReentrantLock lock;</div><div class="line">private final Condition notEmpty;</div><div class="line">private final Condition notFull;</div></pre></td></tr></table></figure>
+</li>
+<li><p>严格的先进先出队列，基于takeIndex、putIndex、length、count等参数实现FIFO<br>实现原理：就是一个封装了的一个Lock，2个condition，套路一样：</p>
+</li>
+</ol>
+<ul>
+<li>第一步加锁</li>
+<li>第二步while循环判断是否满足生产条件，不满足就阻塞，满足就生产</li>
+<li>第三步调用signal()消费线程</li>
+<li>第四步释放锁<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public void put(E e) throws InterruptedException &#123;</div><div class="line">       checkNotNull(e);</div><div class="line">       final ReentrantLock lock = this.lock;</div><div class="line">	- 第一步加锁</div><div class="line">       lock.lockInterruptibly();</div><div class="line">       try &#123;</div><div class="line">		- 第二步while循环判断是否满足生产条件，不满足就阻塞，满足就生产</div><div class="line">           while (count == items.length)</div><div class="line">               notFull.await();</div><div class="line">           insert(e);</div><div class="line">       &#125; finally &#123;</div><div class="line">		- 第四步释放锁</div><div class="line">           lock.unlock();</div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   private void insert(E x) &#123;</div><div class="line">       items[putIndex] = x;</div><div class="line">       putIndex = inc(putIndex);</div><div class="line">       ++count;</div><div class="line">	- 第三步调用signal()消费线程</div><div class="line">       notEmpty.signal();</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="LinkedBlockQueue"><a href="#LinkedBlockQueue" class="headerlink" title="LinkedBlockQueue"></a>LinkedBlockQueue</h2><ol>
+<li>LinkedBlockQueue内部是基于单向链表的队列，可以设置capacity来实现有界队列，也可以不设置，默认是无界队列。无界队列的时候，put、add、offer就是一样的啊，因为没有限制，所以插入肯定成功.</li>
+<li>内部的实现机制是2把锁，各有一个condition，通过AtomicInteger来指定库存，CAS操作来自增或者自减库存，从而实现线程安全</li>
+<li>生产线程和消费线程可以并行的进行操作，提升性能</li>
+<li><p>生产线程和消费线程的交互和常规的方式不一样，生产线程只在当前库存为0的时候，才会触发 消费线程的signal()，进行了性能优化，因为当库存不为0的时候，不会有消费线程阻塞。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">static class Node&lt;E&gt; &#123;</div><div class="line">        E item;</div><div class="line">        Node&lt;E&gt; next;</div><div class="line">        Node(E x) &#123; item = x; &#125;</div><div class="line">    &#125;</div><div class="line">private transient Node&lt;E&gt; head;</div><div class="line">private transient Node&lt;E&gt; last;</div><div class="line">private final int capacity;</div><div class="line">private final AtomicInteger count = new AtomicInteger(0);</div><div class="line">private final ReentrantLock takeLock = new ReentrantLock();</div><div class="line">private final Condition notEmpty = takeLock.newCondition();</div><div class="line">private final ReentrantLock putLock = new ReentrantLock();</div><div class="line">private final Condition notFull = putLock.newCondition();</div><div class="line"></div><div class="line">private void enqueue(Node&lt;E&gt; node) &#123;</div><div class="line">        last = last.next = node;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>put的过程</p>
+</li>
+</ol>
+<ul>
+<li>对putLock加锁</li>
+<li>while循环判断是否库存满了，满了就阻塞，未满就入队，然后CAS的方式自增并返回老的库存值</li>
+<li>如果新库存仍然未满，会触发其它的生产线程生产</li>
+<li>释放putLock锁</li>
+<li>如果原库存为0，会触发其它的消费线程开始消费</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public void put(E e) throws InterruptedException &#123;</div><div class="line">        if (e == null) throw new NullPointerException();</div><div class="line">        int c = -1;</div><div class="line">        Node&lt;E&gt; node = new Node(e);</div><div class="line">        final ReentrantLock putLock = this.putLock;</div><div class="line">        final AtomicInteger count = this.count;</div><div class="line">        putLock.lockInterruptibly();</div><div class="line">        try &#123;</div><div class="line">            while (count.get() == capacity) &#123;</div><div class="line">                notFull.await();</div><div class="line">            &#125;</div><div class="line">            enqueue(node);</div><div class="line">            c = count.getAndIncrement();</div><div class="line">            if (c + 1 &lt; capacity)</div><div class="line">                notFull.signal();</div><div class="line">        &#125; finally &#123;</div><div class="line">            putLock.unlock();</div><div class="line">        &#125;</div><div class="line">        if (c == 0)</div><div class="line">            signalNotEmpty();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h2 id="SynchronousQueue（同步队列）"><a href="#SynchronousQueue（同步队列）" class="headerlink" title="SynchronousQueue（同步队列）"></a>SynchronousQueue（同步队列）</h2><ol>
+<li>没有容量的一个特殊队列</li>
+<li>执行阻塞的方法 put 和 take的时候正常，所有的put方法有一个阻塞的公平队列或者非公平队列，所有的take操作也有一个类似的队列</li>
+<li>执行非阻塞的方法 add()和remove()方法时，必须有对应的take和put方法阻塞着，不然就会报错</li>
+<li>peek(返回首位但是不删除元素)永远返回null，因为不存储元素<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public static void main(String[] args) throws Exception &#123;</div><div class="line">		</div><div class="line">		final SynchronousQueue&lt;String&gt; queue = new SynchronousQueue&lt;String&gt;();//初始化不能带长度</div><div class="line">		Thread t1 = new Thread(new Runnable() &#123;		</div><div class="line">		    @Override</div><div class="line">		    public void run() &#123;</div><div class="line">			try &#123;</div><div class="line">				String str = queue.take();   //线程1在获取，这是阻塞的，当线程2一添加，线程1就获取，因为SynchronousQueue是没有容量的</div><div class="line">				System.out.println(str);</div><div class="line">			&#125; catch (InterruptedException e) &#123;</div><div class="line">				e.printStackTrace();</div><div class="line">			&#125;</div><div class="line">		    &#125;</div><div class="line">		&#125;);</div><div class="line">		t1.start();</div><div class="line">				</div><div class="line">		Thread t2 = new Thread(new Runnable() &#123;	</div><div class="line">		    @Override</div><div class="line">		    public void run() &#123;</div><div class="line">			queue.add(&quot;abcd&quot;);  //线程2往队列里添加元素</div><div class="line">		    &#125;</div><div class="line">		&#125;);</div><div class="line">		t2.start();</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="PriorityBlockingQueue"><a href="#PriorityBlockingQueue" class="headerlink" title="PriorityBlockingQueue"></a>PriorityBlockingQueue</h2><ol>
+<li>有优先级但是无界的阻塞队列，类似于List，支持自动扩容，可以指定初始化大小，也可以不指定。实际是一个Arr[]</li>
+<li>内部有一个最小堆，插入和取出的时候，都要构建堆有序</li>
+<li>add()的时候不会报错，因为容量无限</li>
+<li>支持元素实现Compare接口，或者PriorityBlockingQueue初始化的时候传入一个Compare接口实现类，两种方式进行比较优先级<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">PriorityBlockingQueue&lt;Task&gt; queue = new PriorityBlockingQueue&lt;Task&gt;(); //因为是无界队列，初始化可以不定义长度</div><div class="line">		Task t1 = new Task();</div><div class="line">		t1.setId(1);</div><div class="line">		t1.setName(&quot;任务 1&quot;);</div><div class="line">		</div><div class="line">		Task t2 = new Task();</div><div class="line">		t2.setId(4);</div><div class="line">		t2.setName(&quot;任务 2&quot;);</div><div class="line">		</div><div class="line">		Task t3 = new Task();</div><div class="line">		t3.setId(3);</div><div class="line">		t3.setName(&quot;任务 3&quot;);</div><div class="line"></div><div class="line">		</div><div class="line">		queue.add(t2);</div><div class="line">		queue.add(t3);</div><div class="line">		queue.add(t1);</div><div class="line"></div><div class="line">		queue.take(); // 取出来最小的 t1 ，任务1</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="DelayQueue"><a href="#DelayQueue" class="headerlink" title="DelayQueue"></a>DelayQueue</h2><ol>
+<li>内部有一个PriorityBlockingQueue，最先到期的元素放在堆顶。</li>
+<li>里面的元素必须要实现Delayed接口<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">入队等待线程</div><div class="line">DelayQueue&lt; Student&gt; students = new DelayQueue&lt;Student&gt;();</div><div class="line">students.put(new Student(&quot;student&quot;+(i+1), 30+random.nextInt(120),countDownLatch));</div><div class="line"></div><div class="line">出队消费线程</div><div class="line">while(!Thread.interrupted())&#123;</div><div class="line">               students.take().run();&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="ConcurrentHashMap"><a href="#ConcurrentHashMap" class="headerlink" title="ConcurrentHashMap"></a>ConcurrentHashMap</h1><p>绝对的线程安全同时支持并发的读写</p>
+<ul>
+<li>分段锁技术，支持不同段的并发写</li>
+<li>写的时候，默认非公平锁，锁一个分段，提升效率，锁的过程是先tryLock（） 失败一定次数后，再调用阻塞的lock()期间会遍历</li>
+<li>读的时候是都volatle值，保证是最新的数据</li>
+</ul>
+<h1 id="CopyOnWriteArrayList"><a href="#CopyOnWriteArrayList" class="headerlink" title="CopyOnWriteArrayList"></a>CopyOnWriteArrayList</h1><p>对比的特点</p>
+<ul>
+<li>ArrayList 是线程不安全的，比如两个线程同时修改一个数据，会导致修改被覆盖的问题</li>
+<li>Vector是追求绝对的线程安全和所见即所得，插入的时候枷锁，读的时候也加锁，确保当前没有其他线程在修改这个数组</li>
+<li>CopyOnWriteArrayList对插入加锁，但是读的时候要求没那么严格，只是确保最终一致性，也就是其他线程提交完之后的重新读取是最新值</li>
+</ul>
+<p>自身的特点：</p>
+<ul>
+<li>消耗内存，需要一个相同的拷贝数组</li>
+<li>不能确保查询的时候是即时最新的数据</li>
+</ul>
+<h1 id="lock（）-lockInterruptibly（）"><a href="#lock（）-lockInterruptibly（）" class="headerlink" title="lock（）  lockInterruptibly（）"></a>lock（）  lockInterruptibly（）</h1><p>区别：lockInterruptibly（）会更好的响应中断操作而不是急于获取锁，程序对lockInterruptibly锁的控制性更强。</p>
+<ul>
+<li><p>lock加锁过程是：先CAS尝试获取锁，获取失败之后，再忙等待阻塞式尝试获取锁，直到获取成功后，再check这个等待过程中是否有被中断的操作做出相应的响应</p>
+</li>
+<li><p>lockInterruptibly（） 方法是尝试获取锁的每个过程当中都去检查该线程是否有被终端操作，有就抛出异常，没有就继续尝试获取锁</p>
+</li>
+</ul>
+<h1 id="并发工具类-基于ReentrantLock实现的工具类"><a href="#并发工具类-基于ReentrantLock实现的工具类" class="headerlink" title="并发工具类(基于ReentrantLock实现的工具类)"></a>并发工具类(基于ReentrantLock实现的工具类)</h1><p><a href="http://www.importnew.com/21889.html" target="_blank" rel="external">http://www.importnew.com/21889.html</a></p>
+<h2 id="CountDownLatch（分页下载，2个方法配合）"><a href="#CountDownLatch（分页下载，2个方法配合）" class="headerlink" title="CountDownLatch（分页下载，2个方法配合）"></a>CountDownLatch（分页下载，2个方法配合）</h2><p>await方法阻塞一个或者多个线程，countDown()计数到一定次数后，所有阻塞线程再一起执行。</p>
+<ol>
+<li>比如主线程开启4个页面的sheet下载操作，直到4个独立的线程都执行完毕后再回到主线程打印，下载完毕</li>
+<li>比如主线程调用 countdownLatch.await方法，阻塞主线程，一直到所有子线程完成某种初始化后，主线程再往下执行<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public static void main(String[] args) &#123;</div><div class="line">		//所有线程阻塞，然后统一开始</div><div class="line">	final	CountDownLatch begin = new CountDownLatch(1);</div><div class="line">		//主线程阻塞，直到所有分线程执行完毕</div><div class="line">	final	CountDownLatch end = new CountDownLatch(5);</div><div class="line">		for(int i = 0; i &lt; 5; i++)&#123;</div><div class="line">			Thread thread = new Thread(new Runnable() &#123;</div><div class="line">				</div><div class="line">				@Override</div><div class="line">				public void run() &#123;</div><div class="line">					try &#123;</div><div class="line">						begin.await();</div><div class="line">						System.out.println(Thread.currentThread().getName() + &quot; 起跑&quot;);</div><div class="line">						Thread.sleep(1000);</div><div class="line">						System.out.println(Thread.currentThread().getName() + &quot; 到达终点&quot;);</div><div class="line">						end.countDown();</div><div class="line">					&#125; catch (InterruptedException e) &#123;</div><div class="line">						e.printStackTrace();</div><div class="line">					&#125;</div><div class="line">					</div><div class="line">				&#125;</div><div class="line">			&#125;);</div><div class="line">			</div><div class="line">			thread.start();</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		try &#123;</div><div class="line">			System.out.println(&quot;1秒后统一开始&quot;);</div><div class="line">			Thread.sleep(1000);</div><div class="line">			begin.countDown();</div><div class="line"> </div><div class="line">			end.await();</div><div class="line">			System.out.println(&quot;停止比赛&quot;);</div><div class="line">		&#125; catch (InterruptedException e) &#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="CyclicBarrier（操场集合到齐后开始比赛，一个方法await）"><a href="#CyclicBarrier（操场集合到齐后开始比赛，一个方法await）" class="headerlink" title="CyclicBarrier（操场集合到齐后开始比赛，一个方法await）"></a>CyclicBarrier（操场集合到齐后开始比赛，一个方法await）</h2><p>阻塞引用的所有的子线程，直到满足一定的条件，所有的子线程才回复工作。但是和CDL不同，更简洁，子线程调用 CyclicBarrier.await()的时候，不仅阻塞当前子线程，而且计数会减少1。不需要额外调用别的方法。<br>通过它可以实现让一组线程等待至某个状态之后再全部同时执行。这个阻塞的是所有的子线程，一直到都完成大家在一起往下执行。而不是阻塞主线程<br>支持回调方法<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"></div><div class="line">@Override</div><div class="line">public void run() &#123;</div><div class="line">	try&#123;</div><div class="line">		System.out.println(&quot;子线程： 子任务&quot;+taskCode+&quot;已准备就绪，等待其他子任务就绪。。。&quot;);</div><div class="line">		begin_cyclicBarrier.await();</div><div class="line">		System.out.println(&quot;子线程：  子任务&quot;+taskCode+&quot;开始执行&quot;);</div><div class="line">		Thread.sleep(1000);</div><div class="line">		count.addAndGet(Integer.valueOf(taskCode));</div><div class="line">		System.out.println(&quot;子线程：  子任务&quot;+taskCode+&quot;执行完成&quot;);</div><div class="line">		end_cyclicBarrier.await();</div><div class="line">	&#125;catch(Exception e)&#123;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="semaphore-信号量，10个人，5个茅坑，挨个排队上厕所，acquire-阻塞等待-和release-释放资源"><a href="#semaphore-信号量，10个人，5个茅坑，挨个排队上厕所，acquire-阻塞等待-和release-释放资源" class="headerlink" title="semaphore(信号量，10个人，5个茅坑，挨个排队上厕所，acquire() 阻塞等待 和release()释放资源)"></a>semaphore(信号量，10个人，5个茅坑，挨个排队上厕所，acquire() 阻塞等待 和release()释放资源)</h2><p>限制最多N个线程同时运行，超出的线程争夺会阻塞，直到有线程release。这和线程池的maxCore类似但是不一样。<br><a href="http://blog.csdn.net/sinat_36246371/article/details/53872412" target="_blank" rel="external">http://blog.csdn.net/sinat_36246371/article/details/53872412</a><br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">    //最多运行10个线程运行机器生产工作</div><div class="line">	public static void main(String[] args) throws Exception &#123;</div><div class="line">		final Semaphore semaphore=new Semaphore(10);</div><div class="line">		for(int i=0;i&lt;50;i++)&#123;</div><div class="line">			TestThread thread=new TestThread(semaphore,i+1);</div><div class="line">			thread.start();</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line"></div><div class="line">public class TestThread extends Thread&#123;</div><div class="line">	Semaphore semaphore;</div><div class="line">	int number=0;</div><div class="line">	TestThread(Semaphore semaphore,int number)&#123;</div><div class="line">		this.semaphore=semaphore;</div><div class="line">		this.number=number;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	 @Override</div><div class="line">     public void run() &#123;</div><div class="line">		 try &#123;</div><div class="line">			semaphore.acquire();</div><div class="line">			System.out.println(&quot;工人&quot;+this.number+&quot;占用一个机器在生产...&quot;);  </div><div class="line">		     Thread.sleep(2000);  </div><div class="line">		     System.out.println(&quot;工人&quot;+this.number+&quot;释放出机器&quot;);  </div><div class="line">		     semaphore.release();  </div><div class="line">		&#125; catch (InterruptedException e) &#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125;  </div><div class="line">     &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="AQS原理"><a href="#AQS原理" class="headerlink" title="AQS原理"></a>AQS原理</h1><ul>
+<li>AQS是锁的实现者，通过用AQS简化了锁的实现屏蔽了同步状态管理，线程的排队，等待唤醒的底层操作。简而言之，锁是面向使用者，AQS是锁的具体实现者。</li>
+<li>AQS通过trylock方法差异化实现公平锁和非公平锁的争夺策略</li>
+<li>AQS通过参数EXCLUSIVE和SHARE来实现共享锁(CountLockDown)和独占锁（ReentraintLock)</li>
+<li>有一个FIFO的双向链表队列，只要进入到该队列当中不管是不是公平锁，都只有header节点有机会争夺锁的权利</li>
+<li>维护一个status的volitile的字段，标志当前锁的状态</li>
+</ul>
+<h2 id="公平锁（独占锁）"><a href="#公平锁（独占锁）" class="headerlink" title="公平锁（独占锁）"></a>公平锁（独占锁）</h2><p>获取锁的过程：先trylock获取锁，当锁state=0且队列前没有人排队 或者该锁的拥有者是自己重入时直接获取锁。获取锁失败的话，则把自己加入到CLH队列当中，并且轮询式继续反复trylock过程。<br>相当于整个CLH队列的所有对象都在各自的线程中轮询尝试：有没有到我这个过程</p>
+<h2 id="非公平锁（独占锁）"><a href="#非公平锁（独占锁）" class="headerlink" title="非公平锁（独占锁）"></a>非公平锁（独占锁）</h2><p>在进入CHL之前有2次机会进行插队的CAS争夺锁，都失败进入CLH队列当中时，就必须等到自己成了头结点时才有机会争夺锁 </p>
+<h1 id="ThreadLocal"><a href="#ThreadLocal" class="headerlink" title="ThreadLocal"></a>ThreadLocal</h1><ol>
+<li><p>如果多个线程之间为了传递运行时参数可以通过引用相同的Runnable实现类，在实现类里面定义公用的变量，从而实现运行时的参数传递<br>例如下面的，100个线程，只允许10个线程自增number，通过引用相同的runnable实现类 test，从而实现运行时的参数传递number，从而可以动态的协调线程的执行逻辑，同时公用的变量是线程不安全的。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">	public static void main(String[] args) throws Exception &#123;</div><div class="line">		Test2 test=new Test2(0);</div><div class="line">		for(int i=0;i&lt;100;i++)&#123;</div><div class="line">			new Thread(test).start();</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line"></div><div class="line">public class Test2 implements Runnable&#123;</div><div class="line">	int number=0;</div><div class="line">	Test2(int number)&#123;</div><div class="line">		this.number=number;</div><div class="line">	&#125;</div><div class="line">	 @Override</div><div class="line">     public void run() &#123;</div><div class="line">			 if(number==10)&#123;</div><div class="line">				 System.out.println(&quot;i am full&quot;);</div><div class="line">			 &#125;else&#123;</div><div class="line">				 number++;</div><div class="line">				 System.out.println(Thread.currentThread().getName()+&quot;number is&quot;+number);</div><div class="line">			 &#125;</div><div class="line">     &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>为了解决公用变量不安全的情况，可以通过ThreadLocal来定义某些变量为线程独有的，从而实现线程隔离<br>例如下面的，对线程私有变量 number进行threadlocal处理，对于公用变量 sharedNumber不做处理，实现线程共享传递参数</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class SeqCount &#123;</div><div class="line">	    private static ThreadLocal&lt;Integer&gt; number = new ThreadLocal&lt;Integer&gt;()&#123;</div><div class="line">	        public Integer initialValue() &#123;</div><div class="line">	            return 0;</div><div class="line">	        &#125;</div><div class="line">	    &#125;;</div><div class="line">	    int sharedNumber=0;</div><div class="line">	    public int nextSeq()&#123;</div><div class="line">	    	number.set(number.get() + 1);</div><div class="line"></div><div class="line">	        return number.get();</div><div class="line">	    &#125;</div><div class="line"></div><div class="line">	    public static void main(String[] args)&#123;</div><div class="line">	        SeqCount seqCount = new SeqCount();</div><div class="line">	        for(int i=0;i&lt;4;i++)&#123;</div><div class="line">	        	 new SeqThread(seqCount).start();</div><div class="line">	        &#125;</div><div class="line">	    &#125;</div><div class="line"></div><div class="line">	    private static class SeqThread extends Thread&#123;</div><div class="line">	        private SeqCount seqCount;</div><div class="line"></div><div class="line">	        SeqThread(SeqCount seqCount)&#123;</div><div class="line">	            this.seqCount = seqCount;</div><div class="line">	        &#125;</div><div class="line"></div><div class="line">	        public void run() &#123;</div><div class="line">	            for(int i = 0 ; i &lt; 3 ; i++)&#123;</div><div class="line">	                System.out.println(Thread.currentThread().getName() + &quot; seqCount :&quot; + seqCount.nextSeq());</div><div class="line">	                </div><div class="line">	                seqCount.sharedNumber++;</div><div class="line">	                System.out.println(Thread.currentThread().getName() + &quot; shareNumber :&quot; + seqCount.sharedNumber);</div><div class="line">	            &#125;</div><div class="line">	        &#125;</div><div class="line">	    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>ThreadLocal实现线程隔离原理：每个Thread独立拥有一个ThreadLocalMap，实现线程之间变量的隔壁，然后set、get都是对这个ThreadLocalMap进行操作，其中的key就是申明的ThreadLocal，线性探测法实现的HashMap的数据结构</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">Thread ：每个Thread只有一个独立绑定的ThreadLocalMap，线程独享</div><div class="line">	Thread t = Thread.currentThread();</div><div class="line">	ThreadLocalMap map = getMap(t);</div><div class="line"></div><div class="line">ThreadLocalMap：每个ThreadLocalMap拥有一个线性探测的HashMap结构，每个Entry的key就是一个ThreadLocal</div><div class="line">  	private Entry getEntry(ThreadLocal key) &#123;</div><div class="line">            int i = key.threadLocalHashCode &amp; (table.length - 1);</div><div class="line">            Entry e = table[i];</div><div class="line">            if (e != null &amp;&amp; e.get() == key)</div><div class="line">                return e;</div><div class="line">            else</div><div class="line">                return getEntryAfterMiss(key, i, e);</div><div class="line">     &#125;</div><div class="line"></div><div class="line">ThreadLocal : 每个Thread可以定义多个ThreadLocal</div><div class="line"></div><div class="line">	    private static ThreadLocal&lt;Integer&gt; number = new ThreadLocal&lt;Integer&gt;()&#123;</div><div class="line">	        public Integer initialValue() &#123;</div><div class="line">	            return 0;</div><div class="line">	        &#125;</div><div class="line">	    &#125;;</div><div class="line">	    </div><div class="line">	    private static ThreadLocal&lt;Integer&gt; number2 = new ThreadLocal&lt;Integer&gt;()&#123;</div><div class="line">	        public Integer initialValue() &#123;</div><div class="line">	            return 1;</div><div class="line">	        &#125;</div><div class="line">	    &#125;;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/并发编程/">并发编程</a>
+</div>
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/22/并发编程-工具类/" data-title="并发编程-工具类 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/08/23/面试题-项目和工作/" title="面试题-项目和工作">
+  <strong>上一篇：</strong><br/>
+  <span>
+  面试题-项目和工作</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/08/21/面试题-多线程IO并发编程/"  title="面试题-多线程IO并发编程">
+ <strong>下一篇：</strong><br/> 
+ <span>面试题-多线程IO并发编程
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/08/22/并发编程-工具类/" data-title="并发编程-工具类" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/22/并发编程-工具类/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#BlockQueue接口"><span class="toc-number">2.</span> <span class="toc-text">BlockQueue接口</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#ArrayBlockQueue"><span class="toc-number">2.1.</span> <span class="toc-text">ArrayBlockQueue</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LinkedBlockQueue"><span class="toc-number">2.2.</span> <span class="toc-text">LinkedBlockQueue</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SynchronousQueue（同步队列）"><span class="toc-number">2.3.</span> <span class="toc-text">SynchronousQueue（同步队列）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PriorityBlockingQueue"><span class="toc-number">2.4.</span> <span class="toc-text">PriorityBlockingQueue</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DelayQueue"><span class="toc-number">2.5.</span> <span class="toc-text">DelayQueue</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ConcurrentHashMap"><span class="toc-number">3.</span> <span class="toc-text">ConcurrentHashMap</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CopyOnWriteArrayList"><span class="toc-number">4.</span> <span class="toc-text">CopyOnWriteArrayList</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#lock（）-lockInterruptibly（）"><span class="toc-number">5.</span> <span class="toc-text">lock（）  lockInterruptibly（）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#并发工具类-基于ReentrantLock实现的工具类"><span class="toc-number">6.</span> <span class="toc-text">并发工具类(基于ReentrantLock实现的工具类)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#CountDownLatch（分页下载，2个方法配合）"><span class="toc-number">6.1.</span> <span class="toc-text">CountDownLatch（分页下载，2个方法配合）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CyclicBarrier（操场集合到齐后开始比赛，一个方法await）"><span class="toc-number">6.2.</span> <span class="toc-text">CyclicBarrier（操场集合到齐后开始比赛，一个方法await）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#semaphore-信号量，10个人，5个茅坑，挨个排队上厕所，acquire-阻塞等待-和release-释放资源"><span class="toc-number">6.3.</span> <span class="toc-text">semaphore(信号量，10个人，5个茅坑，挨个排队上厕所，acquire() 阻塞等待 和release()释放资源)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#AQS原理"><span class="toc-number">7.</span> <span class="toc-text">AQS原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#公平锁（独占锁）"><span class="toc-number">7.1.</span> <span class="toc-text">公平锁（独占锁）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#非公平锁（独占锁）"><span class="toc-number">7.2.</span> <span class="toc-text">非公平锁（独占锁）</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ThreadLocal"><span class="toc-number">8.</span> <span class="toc-text">ThreadLocal</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数据结构/HashMap/" title="HashMap">HashMap<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/IO流/" title="IO流">IO流<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/JVM/" title="JVM">JVM<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/" title="MQ">MQ<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Netty/" title="Netty">Netty<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/" title="Redis">Redis<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/RocketMQ/" title="RocketMQ">RocketMQ<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Shiro/" title="Shiro">Shiro<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/" title="分布式">分布式<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/学习资源/" title="学习资源">学习资源<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/并发编程/" title="并发编程">并发编程<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/算法/" title="算法">算法<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/" title="缓存">缓存<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/设计模式/" title="设计模式">设计模式<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/" title="面试题">面试题<sup>11</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/JVM/" title="JVM">JVM<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/分布式/" title="分布式">分布式<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/面试题/" title="面试题">面试题<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/权限管理/" title="权限管理">权限管理<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/集合类/" title="集合类">集合类<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/缓存/" title="缓存">缓存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/IO流/" title="IO流">IO流<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

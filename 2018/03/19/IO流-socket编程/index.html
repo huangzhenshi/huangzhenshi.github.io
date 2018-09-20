@@ -1,0 +1,675 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Socket编程 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="参考我的github源码实现https://github.com/huangzhenshi/IO_NIO_NIO2Demo 代码精华https://blog.csdn.net/anxpp/article/details/51512200 非常详细很深刻的IO socket博客专栏http://blog.csdn.net/column/details/18326.html 阻塞式多线程TCPsock">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Socket编程">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/19/IO流-socket编程/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="参考我的github源码实现https://github.com/huangzhenshi/IO_NIO_NIO2Demo 代码精华https://blog.csdn.net/anxpp/article/details/51512200 非常详细很深刻的IO socket博客专栏http://blog.csdn.net/column/details/18326.html 阻塞式多线程TCPsock">
+<meta property="og:updated_time" content="2018-09-19T04:05:10.962Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Socket编程">
+<meta name="twitter:description" content="参考我的github源码实现https://github.com/huangzhenshi/IO_NIO_NIO2Demo 代码精华https://blog.csdn.net/anxpp/article/details/51512200 非常详细很深刻的IO socket博客专栏http://blog.csdn.net/column/details/18326.html 阻塞式多线程TCPsock">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/03/19/IO流-socket编程/" title="Socket编程" itemprop="url">Socket编程</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-03-19T04:11:32.455Z" itemprop="datePublished"> Published 2018-03-19</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考"><span class="toc-number">1.</span> <span class="toc-text">参考</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#阻塞式多线程TCPsocket编程原理"><span class="toc-number">2.</span> <span class="toc-text">阻塞式多线程TCPsocket编程原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#BIO"><span class="toc-number">3.</span> <span class="toc-text">BIO</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#NIO"><span class="toc-number">4.</span> <span class="toc-text">NIO</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#相关代码"><span class="toc-number">4.1.</span> <span class="toc-text">相关代码</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#AIO-Socket编程"><span class="toc-number">5.</span> <span class="toc-text">AIO Socket编程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#服务端："><span class="toc-number">5.1.</span> <span class="toc-text">服务端：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#客户端"><span class="toc-number">5.2.</span> <span class="toc-text">客户端</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>我的github源码实现<br><a href="https://github.com/huangzhenshi/IO_NIO_NIO2Demo">https://github.com/huangzhenshi/IO_NIO_NIO2Demo</a></p>
+<p>代码精华<br><a href="https://blog.csdn.net/anxpp/article/details/51512200" target="_blank" rel="external">https://blog.csdn.net/anxpp/article/details/51512200</a></p>
+<p>非常详细很深刻的IO socket博客专栏<br><a href="http://blog.csdn.net/column/details/18326.html" target="_blank" rel="external">http://blog.csdn.net/column/details/18326.html</a></p>
+<h1 id="阻塞式多线程TCPsocket编程原理"><a href="#阻塞式多线程TCPsocket编程原理" class="headerlink" title="阻塞式多线程TCPsocket编程原理"></a>阻塞式多线程TCPsocket编程原理</h1><ul>
+<li>ServerSocket创建TCP的服务器，调用阻塞式的accept()方法监听连接的客户端。</li>
+<li>客户端和服务端通过Socket对象的输入流、输出流进行内容交互 socket.getInputStream()和socket.getOutputStream()  </li>
+</ul>
+<h1 id="BIO"><a href="#BIO" class="headerlink" title="BIO"></a>BIO</h1><p>服务器端：用线程池去管理多个接入的客户端，把接收到的客户端Socket作为参数，用处理类在单独的线程里面和客户端交互</p>
+<ol>
+<li>初始化服务端</li>
+<li>while(true）+ socket.accept的方式，阻塞式的等待新客户的接入</li>
+<li>一旦有一个先Clinet接入的话，则从线程池中创建一个线程，来和Client交互，一般是读取信息，也可以输出固定的信息，比如服务器已经收到</li>
+<li>工作子线程也是while(true）+buf.readLine()，阻塞和循环式的读取Clinet发过来的消息<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"> public static void main(String[] args) &#123;</div><div class="line"> 	ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(10);</div><div class="line">     try &#123;</div><div class="line">         ServerSocket socket = new ServerSocket(5000);</div><div class="line">         while (true) &#123;</div><div class="line">             Socket client = socket.accept();</div><div class="line">             newFixedThreadPool.execute(new ClientHandler(client));</div><div class="line">         &#125;  </div><div class="line">     &#125;</div><div class="line">     catch (IOException ioe) &#123;</div><div class="line">         ioe.printStackTrace();</div><div class="line">     &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>交互类：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class ClientHandler  implements Runnable &#123;</div><div class="line">	 private Socket client = null;</div><div class="line">	    private String address;</div><div class="line">		//通过构造函数注入接收到的客户端Socket对象</div><div class="line">	    public ClientHandler(Socket client) &#123;</div><div class="line">	        this.client = client;</div><div class="line">	    &#125;</div><div class="line">	    </div><div class="line">	    @Override</div><div class="line">		public void run() &#123;</div><div class="line">			try &#123;</div><div class="line">	            String host = client.getInetAddress().toString();</div><div class="line">	            String port = Integer.toString(client.getPort());</div><div class="line"></div><div class="line">	            PrintStream out = new PrintStream(client.getOutputStream());</div><div class="line">	            System.out.println(&quot;Get Connection&quot;);</div><div class="line">	            BufferedReader buf = new BufferedReader(new InputStreamReader(client.getInputStream()));</div><div class="line"></div><div class="line">	            address = host + &quot;:&quot; + port;</div><div class="line">	            System.out.println(&quot;get connection from&quot; + address);</div><div class="line"></div><div class="line">	            while (true) &#123;</div><div class="line">	            	//阻塞式遍历读取客户端发过来的消息</div><div class="line">	               String str = buf.readLine();</div><div class="line">	               System.out.println(str);</div><div class="line">	                if (str != null) &#123;</div><div class="line">	                    out.println(str);</div><div class="line">	                    out.flush();</div><div class="line">	                &#125;</div><div class="line">	            &#125;</div><div class="line"></div><div class="line">	        &#125; catch (Exception e) &#123;</div><div class="line">	            e.printStackTrace();</div><div class="line">	        &#125;</div><div class="line">		&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>客户端:<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class TcpClient1 &#123;</div><div class="line">	public static void main(String[] args) throws IOException &#123;</div><div class="line">		//尝试连接服务端 127.0.1.1:5000的服务器</div><div class="line">        Socket client = new Socket(&quot;127.0.0.1&quot;, 5000);</div><div class="line">        //获取输出流，往服务端写数据</div><div class="line">        PrintStream out = new PrintStream(client.getOutputStream());</div><div class="line">        BufferedReader buf =  new BufferedReader(new InputStreamReader(client.getInputStream()));</div><div class="line">        String[] msgs = &#123;&quot;你好，我是client1&quot;&#125;;</div><div class="line">        for (String msg : msgs) &#123;</div><div class="line">            out.println(msg);</div><div class="line">            out.flush();</div><div class="line">            while (true) &#123;</div><div class="line">                String echo = buf.readLine();</div><div class="line">                if (echo != null) &#123;</div><div class="line">                    System.out.println(echo);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="NIO"><a href="#NIO" class="headerlink" title="NIO"></a>NIO</h1><p>NIO server端的代码逻辑</p>
+<ol>
+<li>创建和初始化Selector和ServerSocketChannel，给Server绑定Accept事件</li>
+<li>主线程While(true） 从selector中读取发生的事件，一旦获取到就触发监听</li>
+<li>如果阻塞过程中触发了事件，就遍历事件按照事件的类型来处理（连接事件、读取事件、写事件），处理完成删除</li>
+<li>处理连接操作，就可以从key里面获取到Server，从Server.accept返回ClientChannel，就可以和客户端端交互了</li>
+</ol>
+<p>服务端的操作（读取客户端的消息，和往客户端的Channel里面写消息）</p>
+<ol>
+<li>获取到ClientChannel需要首先注册READ的监听，就可以读取到客户端发过来的消息，socketChannel.register(key.selector(), SelectionKey.OP_READ, ByteBuffer.allocate(bufSize));</li>
+<li>也可以直接往clientChannel里面写内容， socketChannel.write(ByteBuffer.wrap((“welcome”.getBytes())));</li>
+</ol>
+<p>客户端的操作：</p>
+<ul>
+<li>初始化客户端和Selector，类似的绑定OP_CONNECT的监听，需要在监听事件中 finishConnect()的方法才算连接成功</li>
+<li>连接成功之后，要在Client端绑定OP_READ监听，这样如果Server往里面写数据，就可以读取到。 socketChannel.register(key.selector(), SelectionKey.OP_READ, ByteBuffer);</li>
+<li>也可以直接往Channel里面写数据，这样服务端也可以收的到 channel.write(ByteBuffer.wrap(new String(“say hi from client”).getBytes()));<h2 id="相关代码"><a href="#相关代码" class="headerlink" title="相关代码"></a>相关代码</h2></li>
+</ul>
+<ol>
+<li><p>服务端代码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public static void main(String[] args) throws IOException &#123;</div><div class="line">    Selector selector = Selector.open();</div><div class="line">    ServerSocketChannel serverSocketChannel=ServerSocketChannel.open();</div><div class="line">    serverSocketChannel.bind(new InetSocketAddress(10083));</div><div class="line">    serverSocketChannel.configureBlocking(false);</div><div class="line">    serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);</div><div class="line">    ServerSelectorProtocol protocol = new ServerSelectorProtocol(BUFF_SIZE); </div><div class="line">    while (true) &#123;</div><div class="line">    	selector.select();</div><div class="line">        Iterator&lt;SelectionKey&gt; keyIter = selector.selectedKeys().iterator();</div><div class="line">        while (keyIter.hasNext()) &#123;</div><div class="line">            SelectionKey key = keyIter.next(); </div><div class="line">            keyIter.remove(); </div><div class="line">            if (key.isAcceptable())&#123;  </div><div class="line">                protocol.handleAccept(key);  </div><div class="line">            &#125;  </div><div class="line">            if (key.isReadable())&#123;  </div><div class="line">                protocol.handleRead(key);  </div><div class="line">            &#125;  </div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>服务端处理类ServerSelectorProtocol</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">   public void handleAccept(SelectionKey key) throws IOException &#123;</div><div class="line">       System.out.println(&quot;Accept&quot;);</div><div class="line">       //根据key.channel() 获取Server，再根据Server.accept()获取Clinet</div><div class="line">       SocketChannel socketChannel = ((ServerSocketChannel)key.channel()).accept();</div><div class="line">       socketChannel.configureBlocking(false);</div><div class="line">       //附着一个ByteBuffer，把接收到的客户端socketChannel也注册在selector上，监听客户端channel的read操作</div><div class="line">       socketChannel.register(key.selector(), SelectionKey.OP_READ, ByteBuffer.allocate(bufSize));</div><div class="line">       System.out.println(&quot;create new session from &quot;+socketChannel.getRemoteAddress()+&quot;\n&quot;);</div><div class="line">       //往ClinetChannle里面写数据</div><div class="line">       socketChannel.write(ByteBuffer.wrap((&quot;welcome&quot;.getBytes())));</div><div class="line">   &#125;</div><div class="line"></div><div class="line">public void handleRead(SelectionKey key) throws IOException &#123;</div><div class="line">       SocketChannel clntChan = (SocketChannel) key.channel();  </div><div class="line">       //获取该信道所关联的附件，这里为缓冲区  </div><div class="line">       ByteBuffer buf = (ByteBuffer) key.attachment();</div><div class="line">       buf.clear();</div><div class="line">       long bytesRead = clntChan.read(buf);</div><div class="line">       //如果read（）方法返回-1，说明客户端关闭了连接，那么客户端已经接收到了与自己发送字节数相等的数据，可以安全地关闭  </div><div class="line">       if (bytesRead == -1)&#123;   </div><div class="line">           clntChan.close();  </div><div class="line">       &#125;else if(bytesRead &gt; 0)&#123;</div><div class="line">       	buf.flip();</div><div class="line">       	String result = &quot;&quot;;</div><div class="line">       	while(bytesRead&gt;0)&#123;</div><div class="line">       		 byte[] data = buf.array();</div><div class="line">                result+=new String(data);</div><div class="line">                bytesRead = clntChan.read(buf);</div><div class="line">       	&#125;</div><div class="line">       	System.out.println(result);</div><div class="line">       &#125;  </div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>客户端代码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public static void main(String[] args) throws IOException &#123;</div><div class="line">    SocketChannel clientChannel = SocketChannel.open();</div><div class="line">    Selector selector = Selector.open();</div><div class="line">    ClientHandler handler=new ClientHandler();</div><div class="line">    clientChannel.configureBlocking(false);</div><div class="line">    clientChannel.connect(new InetSocketAddress(&quot;127.0.0.1&quot;, 10083));</div><div class="line">    clientChannel.register(selector, SelectionKey.OP_CONNECT);</div><div class="line">    while (true) &#123;</div><div class="line">    	selector.select();</div><div class="line">        Iterator&lt;SelectionKey&gt; keyIter = selector.selectedKeys().iterator();</div><div class="line">        while (keyIter.hasNext()) &#123;</div><div class="line">            SelectionKey key = keyIter.next(); </div><div class="line">            keyIter.remove(); </div><div class="line">            if (key.isConnectable())&#123;  </div><div class="line">            	handler.handleConnect(key);  </div><div class="line">            &#125;  </div><div class="line">            if (key.isReadable())&#123;  </div><div class="line">            	handler.handleRead(key);  </div><div class="line">            &#125;  </div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>客户端Handler</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public void handleConnect(SelectionKey key) throws IOException &#123;</div><div class="line">   	 SocketChannel channel=(SocketChannel)key.channel();</div><div class="line">        //如果正在连接，则完成连接</div><div class="line">        if(channel.isConnectionPending())&#123;</div><div class="line">            channel.finishConnect();</div><div class="line">        &#125;</div><div class="line">       System.out.println(&quot;Connected&quot;);</div><div class="line">       //ServerChannel的key，有accept接入</div><div class="line">       SocketChannel socketChannel = (SocketChannel) key.channel();</div><div class="line">       socketChannel.configureBlocking(false);</div><div class="line">       //附着一个ByteBuffer，把接收到的客户端socketChannel也注册在selector上，监听客户端channel的read操作</div><div class="line">       socketChannel.register(key.selector(), SelectionKey.OP_READ, ByteBuffer.allocate(BUFF_SIZE));</div><div class="line">       channel.write(ByteBuffer.wrap(new String(&quot;say hi from client&quot;).getBytes()));</div><div class="line">   &#125;</div><div class="line">   </div><div class="line">   public void handleRead(SelectionKey key) throws IOException &#123;</div><div class="line">   	 SocketChannel channel = (SocketChannel)key.channel();</div><div class="line">        ByteBuffer buffer = ByteBuffer.allocate(200);</div><div class="line">        channel.read(buffer);</div><div class="line">        byte[] data = buffer.array();</div><div class="line">        String message = new String(data);</div><div class="line">        System.out.println(&quot;recevie message from server:, size:&quot; + buffer.position() + &quot; msg: &quot; + message);</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="AIO-Socket编程"><a href="#AIO-Socket编程" class="headerlink" title="AIO Socket编程"></a>AIO Socket编程</h1><ol>
+<li>AIO Socket编程支持2种方式，将来式和回调式，我演示的是回调式</li>
+<li>参与的类比较多，但是职责单一，AcceptHandler监听客户的连接行为，ReadHandler监听客户的写入行为，WriteHandler没什么用，只是作为服务端向客户端写消息成功后，系统调用成功的反馈</li>
+<li>因为服务端的行为很多都是要重复的，而回调函数都是一次性的，比如异步监听客户端的accept、read行为，所以每次回调之后都需要重复绑定<h2 id="服务端："><a href="#服务端：" class="headerlink" title="服务端："></a>服务端：</h2></li>
+</ol>
+<ul>
+<li>Server 服务创建和初始化AsynchronousServerSocketChannel，并且绑定AcceptHandler，监听客户的连接行为</li>
+<li>AcceptHandler 监听到客户连接后，获取到客户的AsynchronousSocketChannel，然后对客户绑定ReadHandler</li>
+<li>ReadHandler 监听客户往服务端发消息，读取到之后，会发起一个反馈消息，告知客户端已经收到你的消息，此时服务端写消息，需要绑定一个WriteHandler作为写入完成的反馈</li>
+<li>WriteHandler 因为服务端要往客户端写反馈消息，该写入操作需要有个异步回调操作，WriteHandler 里面输出 “写入完成”<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class Server &#123;</div><div class="line">	public final static int PORT = 8001;</div><div class="line">	public final static String IP = &quot;127.0.0.1&quot;;</div><div class="line">	public static void main(String[] args) throws IOException &#123;</div><div class="line">		AsynchronousServerSocketChannel server = AsynchronousServerSocketChannel.open().bind(new InetSocketAddress(IP,PORT));</div><div class="line">		System.out.println(&quot;Server listen on &quot;+PORT);</div><div class="line">		server.accept(null,new AcceptHandler(server));</div><div class="line">		while(true)&#123;</div><div class="line">			try &#123;</div><div class="line">				Thread.sleep(1000);</div><div class="line">			&#125; catch (InterruptedException e) &#123;</div><div class="line">				e.printStackTrace();</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public class AcceptHandler implements CompletionHandler&lt;AsynchronousSocketChannel, Server&gt; &#123;</div><div class="line">	final ByteBuffer buffer = ByteBuffer.allocate(1024);</div><div class="line">	private AsynchronousServerSocketChannel server = null;</div><div class="line">	AcceptHandler(AsynchronousServerSocketChannel server)&#123;</div><div class="line">		this.server=server;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	public void completed(AsynchronousSocketChannel socket, Server attachment) &#123;</div><div class="line">		server.accept(null,this);</div><div class="line">		try &#123;</div><div class="line">			System.out.println(&quot;有客户端连接:&quot; +  socket.getRemoteAddress().toString());</div><div class="line">		</div><div class="line">		&#125; catch (IOException e1) &#123;</div><div class="line">			e1.printStackTrace();</div><div class="line">		&#125;  </div><div class="line">		startRead(socket);</div><div class="line">	&#125;</div><div class="line"></div><div class="line"></div><div class="line">	@Override</div><div class="line">	public void failed(Throwable exc, Server attachment) &#123;&#125;</div><div class="line">	</div><div class="line">	 public void startRead(AsynchronousSocketChannel socket) &#123;   </div><div class="line">	        ByteBuffer clientBuffer = ByteBuffer.allocate(1024);   </div><div class="line">	        ReadHandler rd=new ReadHandler(socket);  </div><div class="line">	        socket.read(clientBuffer, clientBuffer, rd);   </div><div class="line">	        try &#123;               </div><div class="line">	        &#125; catch (Exception e) &#123;   </div><div class="line">	            e.printStackTrace();   </div><div class="line">	        &#125;   </div><div class="line">	    &#125;   </div><div class="line">&#125;</div><div class="line"></div><div class="line">public class ReadHandler implements CompletionHandler&lt;Integer,ByteBuffer&gt;&#123;   </div><div class="line">    private AsynchronousSocketChannel socket;   </div><div class="line">    public  String msg;  </div><div class="line">    public ReadHandler(AsynchronousSocketChannel socket) &#123;   </div><div class="line">        this.socket = socket;   </div><div class="line">    &#125;       </div><div class="line">    private CharsetDecoder decoder = Charset.forName(&quot;UTF-8&quot;).newDecoder();    </div><div class="line">    </div><div class="line">    //回调函数里面的buf参数，就是Client写的内容，调用 msg=decoder.decode(buf).toString(); 读取客户端的内容</div><div class="line">    @Override  </div><div class="line">    public void completed(Integer i, ByteBuffer buf) &#123;   </div><div class="line">        if (i &gt; 0) &#123;   </div><div class="line">        	socket.read(buf, buf, this);</div><div class="line">            buf.flip();   </div><div class="line">            try &#123;   </div><div class="line">                msg=decoder.decode(buf).toString();  </div><div class="line">                System.out.println(&quot;收到&quot; +socket.getRemoteAddress().toString() + &quot;的消息:&quot; + msg);   </div><div class="line">                buf.compact();   </div><div class="line">            &#125; catch (CharacterCodingException e) &#123;   </div><div class="line">                e.printStackTrace();   </div><div class="line">            &#125; catch (IOException e) &#123;   </div><div class="line">                e.printStackTrace();   </div><div class="line">            &#125;   </div><div class="line">               </div><div class="line">            try &#123;  </div><div class="line">                write(socket);  </div><div class="line">            &#125; catch (UnsupportedEncodingException ex) &#123;  </div><div class="line">                Logger.getLogger(ReadHandler.class.getName()).log(Level.SEVERE, null, ex);  </div><div class="line">            &#125;  </div><div class="line">        &#125; else if (i == -1) &#123;   </div><div class="line">            try &#123;   </div><div class="line">                System.out.println(&quot;客户端断线:&quot; + socket.getRemoteAddress().toString());   </div><div class="line">                buf = null;   </div><div class="line">            &#125; catch (IOException e) &#123;   </div><div class="line">                e.printStackTrace();   </div><div class="line">            &#125;   </div><div class="line">        &#125;   </div><div class="line">    &#125;   </div><div class="line">  </div><div class="line">    @Override  </div><div class="line">    public void failed(Throwable exc, ByteBuffer attachment) &#123; &#125;  </div><div class="line">     </div><div class="line">    public void write(AsynchronousSocketChannel socket) throws UnsupportedEncodingException&#123;  </div><div class="line">        String sendString=&quot;server recieve your message:&quot;+msg;  </div><div class="line">        ByteBuffer clientBuffer=ByteBuffer.wrap(sendString.getBytes(&quot;UTF-8&quot;));   </div><div class="line">        socket.write(clientBuffer, clientBuffer, new WriteHandler(socket));  </div><div class="line">    &#125;  </div><div class="line">&#125;  </div><div class="line"></div><div class="line">public class WriteHandler implements CompletionHandler&lt;Integer,ByteBuffer&gt;  &#123;   </div><div class="line">    private AsynchronousSocketChannel socket;   </div><div class="line">    public WriteHandler(AsynchronousSocketChannel socket) &#123;   </div><div class="line">        this.socket = socket;   </div><div class="line">    &#125;   </div><div class="line">    @Override  </div><div class="line">    public void completed(Integer i, ByteBuffer buf) &#123;  </div><div class="line">        if (i &gt; 0) &#123;   </div><div class="line">        	System.out.println(&quot;往客户端发送消息成功&quot;);</div><div class="line">        &#125; else if (i == -1) &#123;   </div><div class="line">            try &#123;   </div><div class="line">                System.out.println(&quot;对端断线:&quot; + socket.getRemoteAddress().toString());   </div><div class="line">                buf = null;   </div><div class="line">            &#125; catch (IOException e) &#123;   </div><div class="line">                e.printStackTrace();   </div><div class="line">            &#125;   </div><div class="line">        &#125;   </div><div class="line">    &#125;  </div><div class="line">    @Override  </div><div class="line">    public void failed(Throwable exc, ByteBuffer attachment) &#123;&#125;   </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h2><p>相对来说比较简单，直接用匿名内部类来解决，connect事件绑定一个回调，连接成功后写入一段话，写入成功后，再绑一个read的监听，来接受客户端的消息<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public static void main(String[] args) throws IOException &#123;</div><div class="line">	final AsynchronousSocketChannel client = AsynchronousSocketChannel.open();</div><div class="line">	InetSocketAddress serverAddress = new InetSocketAddress(&quot;127.0.0.1&quot;,8001);</div><div class="line">	CompletionHandler&lt;Void, ? super Object&gt; handler = new CompletionHandler&lt;Void,Object&gt;()&#123;</div><div class="line">		@Override</div><div class="line">		public void completed(Void result, Object attachment) &#123;</div><div class="line">			client.write(ByteBuffer.wrap(&quot;Hello&quot;.getBytes()),null, </div><div class="line">					new CompletionHandler&lt;Integer,Object&gt;()&#123;</div><div class="line">						@Override</div><div class="line">						public void completed(Integer result,Object attachment) &#123;</div><div class="line">							final ByteBuffer buffer = ByteBuffer.allocate(1024);</div><div class="line">							client.read(buffer,buffer,new CompletionHandler&lt;Integer,ByteBuffer&gt;()&#123;</div><div class="line">								@Override</div><div class="line">								public void completed(Integer result,</div><div class="line">										ByteBuffer attachment) &#123;</div><div class="line">									buffer.flip();</div><div class="line">									System.out.println(new String(buffer.array()));</div><div class="line">									try &#123;</div><div class="line">										client.close();</div><div class="line">									&#125; catch (IOException e) &#123;</div><div class="line">										e.printStackTrace();</div><div class="line">									&#125;</div><div class="line">								&#125;</div><div class="line">								@Override</div><div class="line">								public void failed(Throwable exc,ByteBuffer attachment) &#123;&#125;</div><div class="line">							&#125;);</div><div class="line">						&#125;</div><div class="line">						@Override</div><div class="line">						public void failed(Throwable exc, Object attachment) &#123;&#125;</div><div class="line">			&#125;);</div><div class="line">		&#125;</div><div class="line">		@Override</div><div class="line">		public void failed(Throwable exc, Object attachment) &#123;&#125;</div><div class="line">	&#125;;</div><div class="line">	client.connect(serverAddress, null, handler);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/IO流/">IO流</a>
+</div>
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/19/IO流-socket编程/" data-title="Socket编程 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/03/20/IO流-AIO/" title="AIO">
+  <strong>上一篇：</strong><br/>
+  <span>
+  AIO</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/03/18/并发编程线程池/"  title="并发编程线程池">
+ <strong>下一篇：</strong><br/> 
+ <span>并发编程线程池
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/03/19/IO流-socket编程/" data-title="Socket编程" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/19/IO流-socket编程/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考"><span class="toc-number">1.</span> <span class="toc-text">参考</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#阻塞式多线程TCPsocket编程原理"><span class="toc-number">2.</span> <span class="toc-text">阻塞式多线程TCPsocket编程原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#BIO"><span class="toc-number">3.</span> <span class="toc-text">BIO</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#NIO"><span class="toc-number">4.</span> <span class="toc-text">NIO</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#相关代码"><span class="toc-number">4.1.</span> <span class="toc-text">相关代码</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#AIO-Socket编程"><span class="toc-number">5.</span> <span class="toc-text">AIO Socket编程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#服务端："><span class="toc-number">5.1.</span> <span class="toc-text">服务端：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#客户端"><span class="toc-number">5.2.</span> <span class="toc-text">客户端</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数据结构/HashMap/" title="HashMap">HashMap<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/IO流/" title="IO流">IO流<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/JVM/" title="JVM">JVM<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/" title="MQ">MQ<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Netty/" title="Netty">Netty<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/" title="Redis">Redis<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/RocketMQ/" title="RocketMQ">RocketMQ<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Shiro/" title="Shiro">Shiro<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/" title="分布式">分布式<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/学习资源/" title="学习资源">学习资源<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/并发编程/" title="并发编程">并发编程<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/算法/" title="算法">算法<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/" title="缓存">缓存<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/设计模式/" title="设计模式">设计模式<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/" title="面试题">面试题<sup>11</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/JVM/" title="JVM">JVM<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/分布式/" title="分布式">分布式<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/面试题/" title="面试题">面试题<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/权限管理/" title="权限管理">权限管理<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/集合类/" title="集合类">集合类<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/缓存/" title="缓存">缓存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/IO流/" title="IO流">IO流<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

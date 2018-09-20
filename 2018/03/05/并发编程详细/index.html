@@ -17,7 +17,7 @@
 <meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/05/并发编程详细/index.html">
 <meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
 <meta property="og:description" content="干货参考：  概括类的总结：http://blog.csdn.net/Thousa_Ho/article/details/77131074  15个并发编程的问题http://ifeve.com/15-java-faq/  非常好的一个系列，有讲解和说明 并发的原则http://ifeve.com/java-concurrency-thread-directory/  大厂面试题并发相关http:">
-<meta property="og:updated_time" content="2018-07-30T09:41:51.807Z">
+<meta property="og:updated_time" content="2018-09-11T07:49:29.807Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="并发编程详细">
 <meta name="twitter:description" content="干货参考：  概括类的总结：http://blog.csdn.net/Thousa_Ho/article/details/77131074  15个并发编程的问题http://ifeve.com/15-java-faq/  非常好的一个系列，有讲解和说明 并发的原则http://ifeve.com/java-concurrency-thread-directory/  大厂面试题并发相关http:">
@@ -48,7 +48,7 @@
 				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
 				<h2 class="blog-motto">Happy Coding</h2>
 			</div>
-			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
 			</a></div>
 			<nav class="animated">
 				<ul>
@@ -62,7 +62,7 @@
  					
 					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
 						<label>Search</label>
-						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
 						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
 					</form>
 					
@@ -85,16 +85,16 @@
 		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
 		
   <p class="article-time">
-    <time datetime="2018-03-05T03:21:39.166Z" itemprop="datePublished"> 发表于 2018-03-05</time>
+    <time datetime="2018-03-05T03:21:39.166Z" itemprop="datePublished"> Published 2018-03-05</time>
     
   </p>
 </header>
 	<div class="article-content">
 		
 		<div id="toc" class="toc-article">
-			<strong class="toc-title">文章目录</strong>
+			<strong class="toc-title">Contents</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#JMM"><span class="toc-number">1.</span> <span class="toc-text">JMM</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#可见性问题"><span class="toc-number">2.</span> <span class="toc-text">可见性问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#并发关键字"><span class="toc-number">3.</span> <span class="toc-text">并发关键字</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#synchronized"><span class="toc-number">3.1.</span> <span class="toc-text">synchronized:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#volatile关键字"><span class="toc-number">3.2.</span> <span class="toc-text">volatile关键字</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#java重排序："><span class="toc-number">4.</span> <span class="toc-text">java重排序：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#happens-before原则："><span class="toc-number">5.</span> <span class="toc-text">happens-before原则：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CAS（Compare-and-Swap）技术"><span class="toc-number">6.</span> <span class="toc-text">CAS（Compare and Swap）技术</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#wait-notify-notifyall-sleep-yeild-await-singnal-singnalAll"><span class="toc-number">7.</span> <span class="toc-text">wait/notify/notifyall sleep yeild await/singnal/singnalAll</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Thread-interrupt"><span class="toc-number">8.</span> <span class="toc-text">Thread.interrupt();</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#BlockQueue"><span class="toc-number">9.</span> <span class="toc-text">BlockQueue</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#ArratBlockQueue"><span class="toc-number">9.1.</span> <span class="toc-text">ArratBlockQueue</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LinkedBlockQueue"><span class="toc-number">9.2.</span> <span class="toc-text">LinkedBlockQueue</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ConcurrentHashMap"><span class="toc-number">10.</span> <span class="toc-text">ConcurrentHashMap</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CopyOnWriteArrayList"><span class="toc-number">11.</span> <span class="toc-text">CopyOnWriteArrayList</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#lock（）-lockInterruptibly（）"><span class="toc-number">12.</span> <span class="toc-text">lock（）  lockInterruptibly（）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#并发工具类"><span class="toc-number">13.</span> <span class="toc-text">并发工具类</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#CountDownLatch"><span class="toc-number">13.1.</span> <span class="toc-text">CountDownLatch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CyclicBarrier"><span class="toc-number">13.2.</span> <span class="toc-text">CyclicBarrier</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#semaphore-信号量"><span class="toc-number">13.3.</span> <span class="toc-text">semaphore(信号量)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#AQS原理"><span class="toc-number">14.</span> <span class="toc-text">AQS原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#公平锁（独占锁）"><span class="toc-number">14.1.</span> <span class="toc-text">公平锁（独占锁）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#非公平锁（独占锁）"><span class="toc-number">14.2.</span> <span class="toc-text">非公平锁（独占锁）</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#创建新线程的三个方法-继承、实现、匿名内部类"><span class="toc-number">15.</span> <span class="toc-text">创建新线程的三个方法:继承、实现、匿名内部类</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#经典面试题："><span class="toc-number">16.</span> <span class="toc-text">经典面试题：</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#JMM"><span class="toc-number">1.</span> <span class="toc-text">JMM</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#可见性问题"><span class="toc-number">2.</span> <span class="toc-text">可见性问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#并发关键字"><span class="toc-number">3.</span> <span class="toc-text">并发关键字</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#synchronized"><span class="toc-number">3.1.</span> <span class="toc-text">synchronized:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#volatile关键字"><span class="toc-number">3.2.</span> <span class="toc-text">volatile关键字</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#java重排序："><span class="toc-number">4.</span> <span class="toc-text">java重排序：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#happens-before原则："><span class="toc-number">5.</span> <span class="toc-text">happens-before原则：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CAS（Compare-and-Swap）技术"><span class="toc-number">6.</span> <span class="toc-text">CAS（Compare and Swap）技术</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#创建线程的3种方式-Thread和Callable接口有返回值"><span class="toc-number">7.</span> <span class="toc-text">创建线程的3种方式(Thread和Callable接口有返回值)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3种方式的比较"><span class="toc-number">7.1.</span> <span class="toc-text">3种方式的比较</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#经典面试题："><span class="toc-number">8.</span> <span class="toc-text">经典面试题：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Thread的一些常见方法"><span class="toc-number">9.</span> <span class="toc-text">Thread的一些常见方法</span></a></li></ol>
 		
 		</div>
 		
@@ -106,7 +106,8 @@
 </li>
 <li><p>非常好的一个系列，有讲解和说明 并发的原则<br><a href="http://ifeve.com/java-concurrency-thread-directory/" target="_blank" rel="external">http://ifeve.com/java-concurrency-thread-directory/</a></p>
 </li>
-<li>大厂面试题并发相关<br><a href="http://blog.csdn.net/xiaole0313/article/details/62056612" target="_blank" rel="external">http://blog.csdn.net/xiaole0313/article/details/62056612</a></li>
+<li><p>大厂面试题并发相关<br><a href="http://blog.csdn.net/xiaole0313/article/details/62056612" target="_blank" rel="external">http://blog.csdn.net/xiaole0313/article/details/62056612</a></p>
+</li>
 </ul>
 <h1 id="JMM"><a href="#JMM" class="headerlink" title="JMM"></a>JMM</h1><p>java内存模型<br><a href="https://www.zhihu.com/search?type=content&amp;q=java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B" target="_blank" rel="external">https://www.zhihu.com/search?type=content&amp;q=java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B</a></p>
 <ul>
@@ -151,7 +152,17 @@
 <li>所以不存在 x和y同时为0的情况发生<br>除非重排序，先执行x=b=0的时候，再切换线程y=a=0，的时候才会出现这种情况</li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class Test &#123;</div><div class="line">	static int x = 0, y = 0;</div><div class="line">	static int a = 0, b = 0;</div><div class="line"></div><div class="line">	public static void main(String[] args) throws InterruptedException &#123;</div><div class="line">	    while(true)&#123;</div><div class="line">	    	x=y=a=b=0;</div><div class="line">	    	test();</div><div class="line">	    &#125;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	public static void test() throws InterruptedException&#123;</div><div class="line">		Thread one = new Thread(new Runnable() &#123;</div><div class="line">	        public void run() &#123;</div><div class="line">	            a = 1;</div><div class="line">	            x = b;</div><div class="line">	        &#125;</div><div class="line">	    &#125;);</div><div class="line"></div><div class="line">	    Thread other = new Thread(new Runnable() &#123;</div><div class="line">	        public void run() &#123;</div><div class="line">	            b = 1;</div><div class="line">	            y = a;</div><div class="line">	        &#125;</div><div class="line">	    &#125;);</div><div class="line">	    one.start();other.start();</div><div class="line">	    one.join();other.join();</div><div class="line">	    if(x+y==0)&#123;</div><div class="line">	    	System.out.println(&quot;a:&quot; + a +&quot;,x:&quot; + x + &quot;,b:&quot; + b +&quot;)&quot;+ &quot;,y:&quot; + y +&quot;)&quot;);</div><div class="line">	    &#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h1 id="happens-before原则："><a href="#happens-before原则：" class="headerlink" title="happens-before原则："></a>happens-before原则：</h1><ol>
+<h1 id="happens-before原则："><a href="#happens-before原则：" class="headerlink" title="happens-before原则："></a>happens-before原则：</h1><p>7个场景总结：</p>
+<ul>
+<li>子线程.start()</li>
+<li>子线程.join()</li>
+<li>volatile</li>
+<li>lock</li>
+<li>传递性</li>
+<li>初始化</li>
+<li>单一线程前后性</li>
+</ul>
+<ol>
 <li><p>Each action in a thread happens-before every subsequent action in that thread.<br>在一个线程当中 先执行的代码结果 对随后进行的代码可见。（废话，一个线程公用一个本地缓存)</p>
 </li>
 <li><p>An unlock on a monitor happens-before every subsequent lock on that monitor<br>对一个监视器进行解锁时的所有操作，对下一个锁的代码是可见的，比如在线程A中改了共有变量n的值，现在线程B获取了相同的锁，它是可以看见改变后n的值的。</p>
@@ -170,90 +181,29 @@
 </li>
 </ol>
 <h1 id="CAS（Compare-and-Swap）技术"><a href="#CAS（Compare-and-Swap）技术" class="headerlink" title="CAS（Compare and Swap）技术"></a>CAS（Compare and Swap）技术</h1><p>乐观锁策略，就是调用本地方法操作内存，实现比较成功就swap的原子性的一个操作。<br>运用在AotimcInteger包的getAndIncrement方法里。<br>synchronized其实就是悲观锁，涉及并发的时候，就悲观的认为会不安全，锁住对象。一直到用完才释放。</p>
-<h1 id="wait-notify-notifyall-sleep-yeild-await-singnal-singnalAll"><a href="#wait-notify-notifyall-sleep-yeild-await-singnal-singnalAll" class="headerlink" title="wait/notify/notifyall sleep yeild await/singnal/singnalAll"></a>wait/notify/notifyall sleep yeild await/singnal/singnalAll</h1><ul>
-<li>必须在静态代码块中使用，而且是锁着该对象，然后调用wait方法，释放对象所，阻塞当前线程，不会参与CPU的竞争，等待被notify（）</li>
-<li>当其他线程调用了wait方法时，该对象的锁被释放，被B线程获取之后，B执行各种操作之后，调用该对象的notify方法，但是不会立刻释放CPU资源，一直到该静态代码块执行完，然后再释放对象锁，A线程被唤醒，继续执行<br>obj.wait（）<br>obj.notify()    仅通知一个obj的等待线程，结束时间是静态代码块执行完，而不是该线程执行完<br>obj.notifyall() 通知所有的obj的等待线程 </li>
-</ul>
-<p>JUC里面有Lock替代synchronized，所以就需要有condition.await() 来实现object的wait（）功能，否则实现不了线程通讯。</p>
-<p>Thread.sleep(1000); 使当前线程睡眠1秒钟，1秒钟后重新开始争夺CPU资源。</p>
-<p>Thread.yeild（） hit调度器出让线程的争夺权，当然也不一定有效</p>
-<h1 id="Thread-interrupt"><a href="#Thread-interrupt" class="headerlink" title="Thread.interrupt();"></a>Thread.interrupt();</h1><p>通过这两种方式就可以确保被通知的线程无论当前处于什么状态都有机会去check自身是否被要求中断了</p>
-<ul>
-<li>调用该方法会修改对应线程的isInterrupted()返回值，但不会立刻打断该线程，只有该线程去check值时，主动退出才会停止线程。</li>
-<li>如果被打断的线程正在await()  sleep()等处于阻塞状态会抛出InterruptedException</li>
-</ul>
-<h1 id="BlockQueue"><a href="#BlockQueue" class="headerlink" title="BlockQueue"></a>BlockQueue</h1><p>解决的问题：在一个容量有限的仓库里面，实现满了就挂起生产线程，空了就挂起消费线程的兼顾性能和安全的数据结构 – 阻塞队列</p>
-<h2 id="ArratBlockQueue"><a href="#ArratBlockQueue" class="headerlink" title="ArratBlockQueue"></a>ArratBlockQueue</h2><ul>
-<li><p>put(E e)，强势插入，无论如何一定要put进去，满了我就等待时机。但是用的lockInterruptibly锁，如果满了就以await的方式挂起当前线程，如果未满就插入元素并且通知notEmpty</p>
-</li>
-<li><p>offer(E e)，尝试插入，插的进去就再看是否满了，一旦有不顺利就返回失败。<br>类似于 trylock，先锁住，再比对队列是否满了，满了的话，就结束当前线程，不满就插入队列当中去。返回 true或者false，而不是抛出异常</p>
-</li>
-<li><p>offer(E e，Time time） 定时轮询尝试插入</p>
-</li>
-<li>get poll 相反</li>
-</ul>
-<h2 id="LinkedBlockQueue"><a href="#LinkedBlockQueue" class="headerlink" title="LinkedBlockQueue"></a>LinkedBlockQueue</h2><ul>
-<li>基于链表的实现，而不是数组，功能几乎一样</li>
-<li>LBQ用的是2个锁 putLock  和 getLock</li>
-<li>LBQ默认长度是MAX.Integer，而ABQ构造的时候必须指定大小</li>
-</ul>
-<h1 id="ConcurrentHashMap"><a href="#ConcurrentHashMap" class="headerlink" title="ConcurrentHashMap"></a>ConcurrentHashMap</h1><p>绝对的线程安全同时支持并发的读写</p>
-<ul>
-<li>分段锁技术，支持不同段的并发写</li>
-<li>写的时候，默认非公平锁，锁一个分段，提升效率，锁的过程是先tryLock（） 失败一定次数后，再调用阻塞的lock()期间会遍历</li>
-<li>读的时候是都volatle值，保证是最新的数据</li>
-</ul>
-<h1 id="CopyOnWriteArrayList"><a href="#CopyOnWriteArrayList" class="headerlink" title="CopyOnWriteArrayList"></a>CopyOnWriteArrayList</h1><p>对比的特点</p>
-<ul>
-<li>ArrayList 是线程不安全的，比如两个线程同时修改一个数据，会导致修改被覆盖的问题</li>
-<li>Vector是追求绝对的线程安全和所见即所得，插入的时候枷锁，读的时候也加锁，确保当前没有其他线程在修改这个数组</li>
-<li>CopyOnWriteArrayList对插入加锁，但是读的时候要求没那么严格，只是确保最终一致性，也就是其他线程提交完之后的重新读取是最新值</li>
-</ul>
-<p>自身的特点：</p>
-<ul>
-<li>消耗内存，需要一个相同的拷贝数组</li>
-<li>不能确保查询的时候是即时最新的数据</li>
-</ul>
-<h1 id="lock（）-lockInterruptibly（）"><a href="#lock（）-lockInterruptibly（）" class="headerlink" title="lock（）  lockInterruptibly（）"></a>lock（）  lockInterruptibly（）</h1><p>区别：lockInterruptibly（）会更好的响应中断操作而不是急于获取锁，程序对lockInterruptibly锁的控制性更强。</p>
-<ul>
-<li><p>lock加锁过程是：先CAS尝试获取锁，获取失败之后，再忙等待阻塞式尝试获取锁，直到获取成功后，再check这个等待过程中是否有被中断的操作做出相应的响应</p>
-</li>
-<li><p>lockInterruptibly（） 方法是尝试获取锁的每个过程当中都去检查该线程是否有被终端操作，有就抛出异常，没有就继续尝试获取锁</p>
-<h1 id="并发工具类"><a href="#并发工具类" class="headerlink" title="并发工具类"></a>并发工具类</h1><p><a href="http://www.importnew.com/21889.html" target="_blank" rel="external">http://www.importnew.com/21889.html</a></p>
-<h2 id="CountDownLatch"><a href="#CountDownLatch" class="headerlink" title="CountDownLatch"></a>CountDownLatch</h2><p>阻塞当前主线程一直到：多子线程中执行完特定数量的线程后再通知主线程执行某操作<br>比如主线程开启4个页面的sheet下载操作，直到4个独立的线程都执行完毕后再回到主线程打印，下载完毕</p>
-</li>
-</ul>
-<h2 id="CyclicBarrier"><a href="#CyclicBarrier" class="headerlink" title="CyclicBarrier"></a>CyclicBarrier</h2><p>通过它可以实现让一组线程等待至某个状态之后再全部同时执行。这个阻塞的是所有的子线程，一直到都完成大家在一起往下执行。而不是阻塞主线程<br>支持回调方法</p>
-<h2 id="semaphore-信号量"><a href="#semaphore-信号量" class="headerlink" title="semaphore(信号量)"></a>semaphore(信号量)</h2><p>可以控制对某资源争夺的线程Max值，例如阻塞队列中，如果不做限制，可以有无数个线程去调用生产方法，但是套上信号量之后，最多只允许有N个线程去争夺某个锁，就是实现线程池max指的原理<br><a href="http://blog.csdn.net/sinat_36246371/article/details/53872412" target="_blank" rel="external">http://blog.csdn.net/sinat_36246371/article/details/53872412</a></p>
-<h1 id="AQS原理"><a href="#AQS原理" class="headerlink" title="AQS原理"></a>AQS原理</h1><ul>
-<li>AQS是锁的实现者，通过用AQS简化了锁的实现屏蔽了同步状态管理，线程的排队，等待唤醒的底层操作。简而言之，锁是面向使用者，AQS是锁的具体实现者。</li>
-<li>AQS通过trylock方法差异化实现公平锁和非公平锁的争夺策略</li>
-<li>AQS通过参数EXCLUSIVE和SHARE来实现共享锁(CountLockDown)和独占锁（ReentraintLock)</li>
-<li>有一个FIFO的双向链表队列，只要进入到该队列当中不管是不是公平锁，都只有header节点有机会争夺锁的权利</li>
-<li>维护一个status的volitile的字段，标志当前锁的状态</li>
-</ul>
-<h2 id="公平锁（独占锁）"><a href="#公平锁（独占锁）" class="headerlink" title="公平锁（独占锁）"></a>公平锁（独占锁）</h2><p>获取锁的过程：先trylock获取锁，当锁state=0且队列前没有人排队 或者该锁的拥有者是自己重入时直接获取锁。获取锁失败的话，则把自己加入到CLH队列当中，并且轮询式继续反复trylock过程。<br>相当于整个CLH队列的所有对象都在各自的线程中轮询尝试：有没有到我这个过程</p>
-<h2 id="非公平锁（独占锁）"><a href="#非公平锁（独占锁）" class="headerlink" title="非公平锁（独占锁）"></a>非公平锁（独占锁）</h2><p>在进入CHL之前有2次机会进行插队的CAS争夺锁，都失败进入CLH队列当中时，就必须等到自己成了头结点时才有机会争夺锁 </p>
-<h1 id="创建新线程的三个方法-继承、实现、匿名内部类"><a href="#创建新线程的三个方法-继承、实现、匿名内部类" class="headerlink" title="创建新线程的三个方法:继承、实现、匿名内部类"></a>创建新线程的三个方法:继承、实现、匿名内部类</h1><ul>
-<li><p>继承Thread类重写run方法，然后别的类new后调用start()方法。缺点是java是单继承。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">class MusicThread extends Thread&#123;  </div><div class="line">    //2):在A类中覆盖Thread类中的run方法.  </div><div class="line">    public void run() &#123;  </div><div class="line">        //3):在run方法中编写需要执行的操作  </div><div class="line">        for(int i = 0; i &lt; 50; i ++)&#123;  </div><div class="line">            System.out.println(&quot;播放音乐&quot;+i);  </div><div class="line">        &#125;  </div><div class="line">    &#125;  </div><div class="line">&#125; </div><div class="line"></div><div class="line">public class ExtendsThreadDemo &#123;  </div><div class="line">    public static void main(String[] args) &#123;  </div><div class="line">                MusicThread music = new MusicThread();  </div><div class="line"> 				music.start();</div><div class="line">        &#125;  </div><div class="line">    &#125;  </div><div class="line">  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>类实现Runnable接口，实现run()方法，然后利用new Thread（类）.start（）启动一个线程</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">class MusicImplements implements Runnable&#123;  </div><div class="line">    public void run() &#123;  </div><div class="line">            System.out.println(&quot;播放音乐&quot;+i);  </div><div class="line">    &#125;  </div><div class="line">&#125;</div><div class="line">public class ImplementsRunnableDemo &#123;  </div><div class="line">    public static void main(String[] args) &#123;  </div><div class="line">                MusicImplements mi = new MusicImplements();  </div><div class="line">                Thread t = new Thread(mi);  </div><div class="line">                t.start();            </div><div class="line">    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>匿名内部类实现多线程，无法复用但是简洁，不需要写2个类</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">void java_thread()  </div><div class="line">&#123;  </div><div class="line">     Thread t = new Thread(new Runnable()&#123;  </div><div class="line">            public void run()&#123;  </div><div class="line">				**** </div><div class="line">            &#125;&#125;);  </div><div class="line">        t.start();  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-</ul>
+<h1 id="创建线程的3种方式-Thread和Callable接口有返回值"><a href="#创建线程的3种方式-Thread和Callable接口有返回值" class="headerlink" title="创建线程的3种方式(Thread和Callable接口有返回值)"></a>创建线程的3种方式(Thread和Callable接口有返回值)</h1><ol>
+<li>线程类继承并重写 Thread的run方法，然后new出来.start()即可</li>
+<li>实现runnable接口的类，作为new Thread(参数）的参数，调用start()即可</li>
+<li>A类实现Callable接口的call方法，然后作为FutureTask的构造参数，最后加入到线程池里面，或者Thread的构造参数里面启动，然后result.get（）获取返回值<br>匿名内部类也有上面2种不同的实现Thread方式<h2 id="3种方式的比较"><a href="#3种方式的比较" class="headerlink" title="3种方式的比较"></a>3种方式的比较</h2></li>
+<li>runnable接口和callable接口的方式是以实现的方式，java是单继承，所以更好。</li>
+<li>接口实现类作为target可以复用</li>
+<li>runnable有异步的返回值</li>
+</ol>
 <h1 id="经典面试题："><a href="#经典面试题：" class="headerlink" title="经典面试题："></a>经典面试题：</h1><ol>
-<li><p>在java中wait和sleep方法的不同？<br>共同点：都会造成当前线程的停止，但是sleep是给当前线程调用的，wait是用来做线程间通讯的，会释放锁。</p>
+<li><p>在java中wait和sleep方法的不同？<br>共同点：都会造成当前线程的停止，但是sleep是给当前线程调用的，延缓当前线程的操作，wait是用来做线程间通讯的，会释放锁。</p>
 </li>
 <li><p>为什么我们调用start()方法时会执行run()方法，为什么我们不能直接调用run()方法？<br>当你调用start()方法时你将创建新的线程，并且执行在run()方法里的代码。但是如果你直接调用run()方法，它不会创建新的线程也不会执行调用线程的代码</p>
 </li>
-<li><p>如何阻塞当前线程？<br>join()  wait()  sleep（）</p>
+<li><p>如何阻塞当前线程？  </p>
 </li>
-<li><p>在Java中Lock接口比synchronized块的优势是什么？<br>提供轮询锁避免死锁、定时轮询锁、可中断的锁、锁分块技术CHashMap、公平锁等等高级灵活的功能。但是缺点是一定要在finally里面 unlock()资源才行。不然会一直在。</p>
-</li>
+</ol>
+<ul>
+<li>sonThread.join() </li>
+<li>CurrentThread.sleep()</li>
+<li>obj.wait()</li>
+</ul>
+<ol>
+<li>在Java中Lock接口比synchronized块的优势是什么？<br>提供轮询锁避免死锁、定时轮询锁、可中断的锁、锁分块技术CHashMap、公平锁等等高级灵活的功能。但是缺点是一定要在finally里面 unlock()资源才行。不然会一直在。</li>
 </ol>
 <ul>
 <li>ReentrantLock实现了synchronized的公平队列功能</li>
@@ -271,10 +221,22 @@
 <li><p>monitor Object 设计模式<br>堆中的所有对象都绑定了一个内置的锁，实现多线程操作的时候，保证只有1个线程可以进行同步操作。<br>所以就有了 wait sleep notify 方法</p>
 </li>
 </ol>
+<h1 id="Thread的一些常见方法"><a href="#Thread的一些常见方法" class="headerlink" title="Thread的一些常见方法"></a>Thread的一些常见方法</h1><ol>
+<li>join()：父线程创建子线程，并start子线程后，调用 子线程.join()方法，可以阻塞父线程，直到子线程结束，这里面满足 HB原则 </li>
+<li>yeild()：尝试出让cpu的执行权</li>
+<li>wait()：线程调度里面，在一个锁里面，调用 obj.wait方法，放弃当前线程的执行权，让其他线程开始争夺锁。wait方法必须在 锁里面才可以调用，不然报错。notify、notifyAll来唤醒</li>
+<li>sleep()：阻塞当前线程，但是并不释放锁，一定时间后，重新争夺CPU执行权。</li>
+<li>interrupt() ：并不阻塞当前线程，而是修改子线程的打断标志位，可用于线程之间的调度。</li>
+</ol>
   
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/并发编程/">并发编程</a>
+</div>
 
 
 </div>
@@ -322,22 +284,22 @@
 
 
 </div>  
-      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
 
   <div id="toc" class="toc-aside">
-  <strong class="toc-title">文章目录</strong>
+  <strong class="toc-title">Contents</strong>
  
- <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#JMM"><span class="toc-number">1.</span> <span class="toc-text">JMM</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#可见性问题"><span class="toc-number">2.</span> <span class="toc-text">可见性问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#并发关键字"><span class="toc-number">3.</span> <span class="toc-text">并发关键字</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#synchronized"><span class="toc-number">3.1.</span> <span class="toc-text">synchronized:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#volatile关键字"><span class="toc-number">3.2.</span> <span class="toc-text">volatile关键字</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#java重排序："><span class="toc-number">4.</span> <span class="toc-text">java重排序：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#happens-before原则："><span class="toc-number">5.</span> <span class="toc-text">happens-before原则：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CAS（Compare-and-Swap）技术"><span class="toc-number">6.</span> <span class="toc-text">CAS（Compare and Swap）技术</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#wait-notify-notifyall-sleep-yeild-await-singnal-singnalAll"><span class="toc-number">7.</span> <span class="toc-text">wait/notify/notifyall sleep yeild await/singnal/singnalAll</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Thread-interrupt"><span class="toc-number">8.</span> <span class="toc-text">Thread.interrupt();</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#BlockQueue"><span class="toc-number">9.</span> <span class="toc-text">BlockQueue</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#ArratBlockQueue"><span class="toc-number">9.1.</span> <span class="toc-text">ArratBlockQueue</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LinkedBlockQueue"><span class="toc-number">9.2.</span> <span class="toc-text">LinkedBlockQueue</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ConcurrentHashMap"><span class="toc-number">10.</span> <span class="toc-text">ConcurrentHashMap</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CopyOnWriteArrayList"><span class="toc-number">11.</span> <span class="toc-text">CopyOnWriteArrayList</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#lock（）-lockInterruptibly（）"><span class="toc-number">12.</span> <span class="toc-text">lock（）  lockInterruptibly（）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#并发工具类"><span class="toc-number">13.</span> <span class="toc-text">并发工具类</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#CountDownLatch"><span class="toc-number">13.1.</span> <span class="toc-text">CountDownLatch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CyclicBarrier"><span class="toc-number">13.2.</span> <span class="toc-text">CyclicBarrier</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#semaphore-信号量"><span class="toc-number">13.3.</span> <span class="toc-text">semaphore(信号量)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#AQS原理"><span class="toc-number">14.</span> <span class="toc-text">AQS原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#公平锁（独占锁）"><span class="toc-number">14.1.</span> <span class="toc-text">公平锁（独占锁）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#非公平锁（独占锁）"><span class="toc-number">14.2.</span> <span class="toc-text">非公平锁（独占锁）</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#创建新线程的三个方法-继承、实现、匿名内部类"><span class="toc-number">15.</span> <span class="toc-text">创建新线程的三个方法:继承、实现、匿名内部类</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#经典面试题："><span class="toc-number">16.</span> <span class="toc-text">经典面试题：</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#JMM"><span class="toc-number">1.</span> <span class="toc-text">JMM</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#可见性问题"><span class="toc-number">2.</span> <span class="toc-text">可见性问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#并发关键字"><span class="toc-number">3.</span> <span class="toc-text">并发关键字</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#synchronized"><span class="toc-number">3.1.</span> <span class="toc-text">synchronized:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#volatile关键字"><span class="toc-number">3.2.</span> <span class="toc-text">volatile关键字</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#java重排序："><span class="toc-number">4.</span> <span class="toc-text">java重排序：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#happens-before原则："><span class="toc-number">5.</span> <span class="toc-text">happens-before原则：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CAS（Compare-and-Swap）技术"><span class="toc-number">6.</span> <span class="toc-text">CAS（Compare and Swap）技术</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#创建线程的3种方式-Thread和Callable接口有返回值"><span class="toc-number">7.</span> <span class="toc-text">创建线程的3种方式(Thread和Callable接口有返回值)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3种方式的比较"><span class="toc-number">7.1.</span> <span class="toc-text">3种方式的比较</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#经典面试题："><span class="toc-number">8.</span> <span class="toc-text">经典面试题：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Thread的一些常见方法"><span class="toc-number">9.</span> <span class="toc-text">Thread的一些常见方法</span></a></li></ol>
  
   </div>
 
 <div id="asidepart">
-<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
 <aside class="clearfix">
 
   
 <div class="github-card">
-<p class="asidetitle">Github 名片</p>
+<p class="asidetitle">Github Card</p>
 <div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
 <script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
 </div>
@@ -346,8 +308,186 @@
 
 
   
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数据结构/HashMap/" title="HashMap">HashMap<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/IO流/" title="IO流">IO流<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/JVM/" title="JVM">JVM<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/" title="MQ">MQ<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Netty/" title="Netty">Netty<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/" title="Redis">Redis<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/RocketMQ/" title="RocketMQ">RocketMQ<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Shiro/" title="Shiro">Shiro<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/" title="分布式">分布式<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/学习资源/" title="学习资源">学习资源<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/并发编程/" title="并发编程">并发编程<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/算法/" title="算法">算法<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/" title="缓存">缓存<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/设计模式/" title="设计模式">设计模式<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/" title="面试题">面试题<sup>11</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
 
   
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/JVM/" title="JVM">JVM<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/分布式/" title="分布式">分布式<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/面试题/" title="面试题">面试题<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/权限管理/" title="权限管理">权限管理<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/集合类/" title="集合类">集合类<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/缓存/" title="缓存">缓存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/IO流/" title="IO流">IO流<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
 
 </aside>
 </div>
@@ -583,7 +723,7 @@ var _hmt = _hmt || [];
 <!-- Totop Begin -->
 
 	<div id="totop">
-	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
 	</div>
 	<script src="/js/totop.js"></script>
 

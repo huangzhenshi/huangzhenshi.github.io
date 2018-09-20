@@ -1,0 +1,695 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Redis持久化和内存管理 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="https://blog.csdn.net/guweiyu_thinker/article/details/78816071 rdb 定时快照持久化 将Reids在内存中的数据库记录定时 dump到磁盘上的RDB持久化， 正常退出会执行一次生成快照，但是kill进程的方式则不会触发退出时生成快照实际操作过程是fork一个子进程，先将数据集写入临时文件，写入成功后，再替换之前的文件，用二进制压缩存储">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis持久化和内存管理">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/11/Redis持久化和内存管理/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="https://blog.csdn.net/guweiyu_thinker/article/details/78816071 rdb 定时快照持久化 将Reids在内存中的数据库记录定时 dump到磁盘上的RDB持久化， 正常退出会执行一次生成快照，但是kill进程的方式则不会触发退出时生成快照实际操作过程是fork一个子进程，先将数据集写入临时文件，写入成功后，再替换之前的文件，用二进制压缩存储">
+<meta property="og:updated_time" content="2018-08-17T10:15:17.024Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis持久化和内存管理">
+<meta name="twitter:description" content="https://blog.csdn.net/guweiyu_thinker/article/details/78816071 rdb 定时快照持久化 将Reids在内存中的数据库记录定时 dump到磁盘上的RDB持久化， 正常退出会执行一次生成快照，但是kill进程的方式则不会触发退出时生成快照实际操作过程是fork一个子进程，先将数据集写入临时文件，写入成功后，再替换之前的文件，用二进制压缩存储">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/08/11/Redis持久化和内存管理/" title="Redis持久化和内存管理" itemprop="url">Redis持久化和内存管理</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-08-11T03:22:00.575Z" itemprop="datePublished"> Published 2018-08-11</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#rdb-定时快照持久化"><span class="toc-number">1.</span> <span class="toc-text">rdb 定时快照持久化</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#AOF（append-only-file）"><span class="toc-number">2.</span> <span class="toc-text">AOF（append only file）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#内存管理机制"><span class="toc-number">3.</span> <span class="toc-text">内存管理机制</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#内存回收机制"><span class="toc-number">4.</span> <span class="toc-text">内存回收机制</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#内存溢出策略"><span class="toc-number">5.</span> <span class="toc-text">内存溢出策略</span></a></li></ol>
+		
+		</div>
+		
+		<p><a href="https://blog.csdn.net/guweiyu_thinker/article/details/78816071" target="_blank" rel="external">https://blog.csdn.net/guweiyu_thinker/article/details/78816071</a></p>
+<h1 id="rdb-定时快照持久化"><a href="#rdb-定时快照持久化" class="headerlink" title="rdb 定时快照持久化"></a>rdb 定时快照持久化</h1><ul>
+<li>将Reids在内存中的数据库记录定时 dump到磁盘上的RDB持久化，</li>
+<li>正常退出会执行一次生成快照，但是kill进程的方式则不会触发退出时生成快照<br>实际操作过程是fork一个子进程，先将数据集写入临时文件，写入成功后，再替换之前的文件，用二进制压缩存储。</li>
+<li>save 900 1              #在900秒(15分钟)之后，如果至少有1个key发生变化，则dump内存快照。</li>
+<li>save 300 10            #在300秒(5分钟)之后，如果至少有10个key发生变化，则dump内存快照。</li>
+<li>save 60 10000        #在60秒(1分钟)之后，如果至少有10000个key发生变化，则dump内存快照。</li>
+</ul>
+<ol>
+<li><p>RDB配置<br>redis.conf （记得启动的时候要指定这个配置文件  windows 下 ./redis-server.exe redis.conf)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"># 设置10秒内如果改动达到3个就生成一个快照</div><div class="line">save 10 3</div><div class="line"></div><div class="line">rdbcompression yes</div><div class="line">rdbchecksum yes</div><div class="line"></div><div class="line"># 设置二进制快照的名字</div><div class="line">dbfilename dumpTest.rdb</div><div class="line"></div><div class="line"># 设置快照文件的路径</div><div class="line">dir ./</div></pre></td></tr></table></figure>
+</li>
+<li><p>优点：</p>
+</li>
+</ol>
+<ul>
+<li>只一个文件备份文件，容易恢复数据和备份</li>
+<li>性能最大化，fork子线程做持久化的操作</li>
+<li>相比于AOF机制，如果数据集很大，RDB的启动效率会更高，因为是二进制文本</li>
+</ul>
+<ol>
+<li>缺点：</li>
+</ol>
+<ul>
+<li>数据不是百分百安全，未持久化的数据可能会丢失</li>
+<li>当内存中的数据特别大的时候，因为每次都是生成一个完整的快照文件，速度会很慢</li>
+</ul>
+<h1 id="AOF（append-only-file）"><a href="#AOF（append-only-file）" class="headerlink" title="AOF（append only file）"></a>AOF（append only file）</h1><p>以日志的形式记录服务器所处理的每一个写、删除操作，查询操作不会记录，以文本的方式记录，可以打开文件看到详细的操作记录。</p>
+<ul>
+<li>appendfsync always      #每次有数据修改发生时都会写入AOF文件。</li>
+<li>appendfsync everysec    #每秒钟同步一次，该策略为AOF的缺省策略。</li>
+<li>appendfsync no          #从不同步。高效但是数据不会被持久化  </li>
+</ul>
+<ol>
+<li><p>具体配置</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">appendonly yes</div><div class="line">appendfilename &quot;appendonly.aof&quot;</div><div class="line">appendfsync always</div><div class="line"></div><div class="line">#配置当 AOF 文件需要比旧 AOF 文件增大多少时才进行 AOF 重写，默认和旧AOF文本大小</div><div class="line">auto-aof-rewrite-percentage 100</div><div class="line"></div><div class="line">#当 AOF 文件需要达到多大体积时才进行 AOF 重写</div><div class="line">auto-aof-rewrite-min-size 64mb</div></pre></td></tr></table></figure>
+</li>
+<li><p>优点：</p>
+</li>
+</ol>
+<ul>
+<li>AOF包含一个格式清晰、易于理解的日志文件用于记录所有的修改操作。事实上，我们也可以通过该文件完成数据的重建，而RDB是二进制文件</li>
+<li>数据集文件过大会自动启用rewrite机制。即Redis以append模式不断的将修改数据写入到老的磁盘文件中，同时Redis还会创 建一个新的文件用于记录此期间有哪些修改命令被执行。因此在进行rewrite切换时可以更好的保证数据安全性</li>
+<li>AOF 文件的格式可读性较强，这也为使用者提供了更灵活的处理方式。例如，如果我们不小心错用了 FLUSHALL 命令，在重写还没进行时，我们可以手工将最后的 FLUSHALL 命令去掉，然后再使用 AOF 来恢复数据</li>
+</ul>
+<ol>
+<li>缺点</li>
+</ol>
+<ul>
+<li>大存储数据的时候重启的时候，加载速度比RDB要慢,但是因为是追加添加日志，不存在生成大快照的卡顿的情况出现</li>
+<li>相对于RDB的方式，相同的数据量AOF占用的空间更大</li>
+</ul>
+<ol>
+<li>重写机制</li>
+</ol>
+<ul>
+<li>aof里存放了所有的redis 操作指令，当aof文件达到一定条件或者手动bgrewriteaof命令都可以触发rewrite</li>
+<li>rewrite之后aof文件会保存keys的最后的状态，清除掉之前冗余的，来缩小这个文件</li>
+<li>重写时机：两个几乎都满足的时候才出发，比如最开始size为1kb，到了2kb不触发，至于到了64mb的时候才触发第一次</li>
+</ul>
+<h1 id="内存管理机制"><a href="#内存管理机制" class="headerlink" title="内存管理机制"></a>内存管理机制</h1><h1 id="内存回收机制"><a href="#内存回收机制" class="headerlink" title="内存回收机制"></a>内存回收机制</h1><p>删除过期键对象，由于内存中保存了大量的键，维护键精准的过期删除机制会导致消耗大量的CPU，对于单线程的Redis来说成本过高，因此，Redis采用惰性删除和定时任务删除机制来实现过期键的内存回收。</p>
+<ol>
+<li><p>惰性删除：惰性删除用于当client端读取到带有超时属性的键时，如果已经超过键设置的过期时间，会执行删除操作并返回空，该策略是出于节省CPU成本考虑，不需要单独维护TTL链表来处理过期键的删除。该方式存在内存泄漏的可能，当过期键一直没有访问将无法得到及时删除，从而导致内存不能及时释放。</p>
+</li>
+<li><p>定时任务删除：Redis内部维护一个定时任务，默认每秒运行10次，定时任务中删除过期键逻辑采用了自适应算法，根据键的过期比例，使用快慢两种速率模式回收键。</p>
+</li>
+</ol>
+<h1 id="内存溢出策略"><a href="#内存溢出策略" class="headerlink" title="内存溢出策略"></a>内存溢出策略</h1><p>当Redis所用内存达到maxmemory上限时会触发相应的溢出控制策略，策略由maxmemory-policy参数控制，可以通过config set maxmemory-policy {policy} 动态设置。<br>LRU就是 least Recent Use，根据最近最少使用的</p>
+<ol>
+<li><p>noeviction：默认策略，不会删除任何数据，拒绝所有写入操作并返回client端OOM错误信息，此时Redis只响应读操作；</p>
+</li>
+<li><p>allkeys-lru：根据LRU算法删除键，不管数据有没有设置超时时间，直到释放足够的内存空间为止；</p>
+</li>
+<li><p>allkeys-random：随机删除所有键，直到释放足够的内存空间为止；</p>
+</li>
+<li><p>volatile-lru:根据LRU算法删除设置了超时属性的键，直到释放足够空间为止，如果没有可删除的键对象，回退到noeviction策略；</p>
+</li>
+<li><p>volatile-random：随机删除过期键，直到释放足够的内存空间为止；</p>
+</li>
+<li><p>volatile-ttl：根据键对象的ttl属性，删除最近将要过期的数据，如果没有，回退到noeviction策略</p>
+</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/缓存/">缓存</a>►<a class="article-category-link" href="/categories/缓存/Redis/">Redis</a>
+</div>
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/11/Redis持久化和内存管理/" data-title="Redis持久化和内存管理 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/08/11/Redis事务和脚本/" title="Redis事务和脚本">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Redis事务和脚本</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/08/07/Zookeeper分布式锁/"  title="Zookeeper分布式锁">
+ <strong>下一篇：</strong><br/> 
+ <span>Zookeeper分布式锁
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/08/11/Redis持久化和内存管理/" data-title="Redis持久化和内存管理" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/11/Redis持久化和内存管理/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#rdb-定时快照持久化"><span class="toc-number">1.</span> <span class="toc-text">rdb 定时快照持久化</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#AOF（append-only-file）"><span class="toc-number">2.</span> <span class="toc-text">AOF（append only file）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#内存管理机制"><span class="toc-number">3.</span> <span class="toc-text">内存管理机制</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#内存回收机制"><span class="toc-number">4.</span> <span class="toc-text">内存回收机制</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#内存溢出策略"><span class="toc-number">5.</span> <span class="toc-text">内存溢出策略</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数据结构/HashMap/" title="HashMap">HashMap<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/IO流/" title="IO流">IO流<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/JVM/" title="JVM">JVM<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/" title="MQ">MQ<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Netty/" title="Netty">Netty<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/" title="Redis">Redis<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/RocketMQ/" title="RocketMQ">RocketMQ<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Shiro/" title="Shiro">Shiro<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/" title="分布式">分布式<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/学习资源/" title="学习资源">学习资源<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/并发编程/" title="并发编程">并发编程<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/算法/" title="算法">算法<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/" title="缓存">缓存<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/设计模式/" title="设计模式">设计模式<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/" title="面试题">面试题<sup>11</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/JVM/" title="JVM">JVM<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/分布式/" title="分布式">分布式<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/面试题/" title="面试题">面试题<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/权限管理/" title="权限管理">权限管理<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/集合类/" title="集合类">集合类<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/缓存/" title="缓存">缓存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/IO流/" title="IO流">IO流<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

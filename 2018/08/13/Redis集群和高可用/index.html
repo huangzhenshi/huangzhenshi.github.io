@@ -1,0 +1,662 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Redis集群和高可用 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="参考文档sentinel集群的配置https://www.cnblogs.com/LiZhiW/p/4851631.html 官网的配置集群的文档说明https://redis.io/topics/cluster-tutorial 中文版的集群配置说明https://www.cnblogs.com/cjsblog/p/9048545.html Cluster和Sentinel的区别 Sentine">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis集群和高可用">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/13/Redis集群和高可用/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="参考文档sentinel集群的配置https://www.cnblogs.com/LiZhiW/p/4851631.html 官网的配置集群的文档说明https://redis.io/topics/cluster-tutorial 中文版的集群配置说明https://www.cnblogs.com/cjsblog/p/9048545.html Cluster和Sentinel的区别 Sentine">
+<meta property="og:updated_time" content="2018-08-17T06:42:24.278Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis集群和高可用">
+<meta name="twitter:description" content="参考文档sentinel集群的配置https://www.cnblogs.com/LiZhiW/p/4851631.html 官网的配置集群的文档说明https://redis.io/topics/cluster-tutorial 中文版的集群配置说明https://www.cnblogs.com/cjsblog/p/9048545.html Cluster和Sentinel的区别 Sentine">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/08/13/Redis集群和高可用/" title="Redis集群和高可用" itemprop="url">Redis集群和高可用</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-08-13T06:20:56.349Z" itemprop="datePublished"> Published 2018-08-13</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考文档"><span class="toc-number">1.</span> <span class="toc-text">参考文档</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Cluster和Sentinel的区别"><span class="toc-number">2.</span> <span class="toc-text">Cluster和Sentinel的区别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#集群的原理"><span class="toc-number">3.</span> <span class="toc-text">集群的原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#集群的配置"><span class="toc-number">4.</span> <span class="toc-text">集群的配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#一致性"><span class="toc-number">5.</span> <span class="toc-text">一致性</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Ubutun下-redis集群的配置"><span class="toc-number">6.</span> <span class="toc-text">Ubutun下 redis集群的配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#集群的扩展"><span class="toc-number">7.</span> <span class="toc-text">集群的扩展</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Sentinel-高可用"><span class="toc-number">8.</span> <span class="toc-text">Sentinel 高可用</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h1><p>sentinel集群的配置<br><a href="https://www.cnblogs.com/LiZhiW/p/4851631.html" target="_blank" rel="external">https://www.cnblogs.com/LiZhiW/p/4851631.html</a></p>
+<p>官网的配置集群的文档说明<br><a href="https://redis.io/topics/cluster-tutorial" target="_blank" rel="external">https://redis.io/topics/cluster-tutorial</a></p>
+<p>中文版的集群配置说明<br><a href="https://www.cnblogs.com/cjsblog/p/9048545.html" target="_blank" rel="external">https://www.cnblogs.com/cjsblog/p/9048545.html</a></p>
+<h1 id="Cluster和Sentinel的区别"><a href="#Cluster和Sentinel的区别" class="headerlink" title="Cluster和Sentinel的区别"></a>Cluster和Sentinel的区别</h1><ul>
+<li>Sentinel出现的比Cluster早，解决的是高可用，Master节点挂了，通过sentinel实现自动把slave节点升级为Master</li>
+<li>Cluster除了有HA的功能，还有分片的功能，而Sentinel没有这个功能</li>
+<li>Cluster的Master节点至少要3个，因为至少半数master可用整个系统才可用</li>
+</ul>
+<h1 id="集群的原理"><a href="#集群的原理" class="headerlink" title="集群的原理"></a>集群的原理</h1><ul>
+<li>任何两个节点之间都是相互连通的。客户端可以与任何一个节点相连接，然后就可以访问集群中的任何一个节点。对其进行存取和其他操作。</li>
+<li>它们之间通过互相的ping-pong判断是否节点可以连接上。如果有一半以上的节点去ping一个节点的时候没有回应，集群就认为这个节点宕机了，然后去连接它的备用节点。如果某个节点和所有从节点全部挂掉，我们集群就进入faill状态</li>
+</ul>
+<h1 id="集群的配置"><a href="#集群的配置" class="headerlink" title="集群的配置"></a>集群的配置</h1><ol>
+<li>端口，集群中每个结点需要配置2个端口，一个用于暴露给客户端连接，另外一个用户集群间通讯</li>
+<li>槽slot，槽的算法（取模）：key的CRC16  %  16384</li>
+<li>集群的模式和solr_Cloud一样，多节点和主从模式，如果某个结点的主备都挂了，就停止对外服务</li>
+</ol>
+<h1 id="一致性"><a href="#一致性" class="headerlink" title="一致性"></a>一致性</h1><ul>
+<li>不保证强一致性：默认主从模式下是异步的执行写操作，A结点写成功后直接返回客户端，再通知各个Slave一起同步，如果A确认了客户端的写操作，然后A挂了，那么A1结点成为Master，但是丢失了新的内容</li>
+<li>通过设置timeout时间为减低不一致的情况，集群节点不可用的最大时间。如果一个master节点不可到达超过了指定时间，则认为它失败了。注意，每一个在指定时间内不能到达大多数master节点的节点将停止接受查询请求</li>
+</ul>
+<h1 id="Ubutun下-redis集群的配置"><a href="#Ubutun下-redis集群的配置" class="headerlink" title="Ubutun下 redis集群的配置"></a>Ubutun下 redis集群的配置</h1><p><a href="https://www.cnblogs.com/cjsblog/p/9048545.html" target="_blank" rel="external">https://www.cnblogs.com/cjsblog/p/9048545.html</a></p>
+<ol>
+<li><p>安装redis（ubutun)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">下载最新的压缩包 redis-4.0.2.tar.gz</div><div class="line"></div><div class="line">tar xzf redis-4.0.2.tar.gz</div><div class="line"></div><div class="line">//移动到 usr/developer路径下面去</div><div class="line">mv redis-4.0.2 /usr/developer/redis-4.0.2</div><div class="line"></div><div class="line">cd /usr/developer/redis-4.0.2</div><div class="line"></div><div class="line">make</div><div class="line"></div><div class="line">//安装到系统当中就可以直接使用redis-server了</div><div class="line">make install</div></pre></td></tr></table></figure>
+</li>
+<li><p>配置集群和复制</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">port 7000</div><div class="line">cluster-enabled yes</div><div class="line">cluster-config-file nodes.conf</div><div class="line">cluster-node-timeout 5000</div><div class="line">appendonly yes</div><div class="line">daemonize yes</div></pre></td></tr></table></figure>
+</li>
+<li><p>安装ruby 2.4</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">sudo apt-add-repository ppa:brightbox/ruby-ng</div><div class="line">sudo apt-get update</div><div class="line">sudo apt-get install ruby2.2</div></pre></td></tr></table></figure>
+</li>
+<li><p>启动各个节点</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">cd /usr/developer/cluster-test/7000; ./redis-server redis.conf</div><div class="line">cd /usr/developer/cluster-test/7001; ./redis-server redis.conf</div><div class="line">cd /usr/developer/cluster-test/7002; ./redis-server redis.conf</div><div class="line">cd /usr/developer/cluster-test/7003; ./redis-server redis.conf</div><div class="line">cd /usr/developer/cluster-test/7004; ./redis-server redis.conf</div><div class="line">cd /usr/developer/cluster-test/7005; ./redis-server redis.conf</div></pre></td></tr></table></figure>
+</li>
+<li><p>启动集群</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">cd /usr/developer/redis-4.0.2/src </div><div class="line">./redis-trib.rb create --replicas 1 127.0.0.1:7000 127.0.0.1:7001 127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="集群的扩展"><a href="#集群的扩展" class="headerlink" title="集群的扩展"></a>集群的扩展</h1><ol>
+<li>新启动一个配置好了的Redis节点</li>
+<li>扩展的方式分为添加Master节点，或者添加Master的slave节点</li>
+<li>+Master时需要rehash，然后从某某节点上分配solt</li>
+</ol>
+<ul>
+<li>查看当前槽的分配情况<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">redis-cli -c -p 7000 cluster nodes</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="Sentinel-高可用"><a href="#Sentinel-高可用" class="headerlink" title="Sentinel 高可用"></a>Sentinel 高可用</h1><p>sentinel集群的配置<br><a href="https://www.cnblogs.com/LiZhiW/p/4851631.html" target="_blank" rel="external">https://www.cnblogs.com/LiZhiW/p/4851631.html</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/缓存/">缓存</a>►<a class="article-category-link" href="/categories/缓存/Redis/">Redis</a>
+</div>
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/13/Redis集群和高可用/" data-title="Redis集群和高可用 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/08/14/分布式锁的3种实现/" title="分布式锁的3种实现">
+  <strong>上一篇：</strong><br/>
+  <span>
+  分布式锁的3种实现</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/08/12/Redis分布式锁/"  title="Redis分布式锁">
+ <strong>下一篇：</strong><br/> 
+ <span>Redis分布式锁
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/08/13/Redis集群和高可用/" data-title="Redis集群和高可用" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/13/Redis集群和高可用/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考文档"><span class="toc-number">1.</span> <span class="toc-text">参考文档</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Cluster和Sentinel的区别"><span class="toc-number">2.</span> <span class="toc-text">Cluster和Sentinel的区别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#集群的原理"><span class="toc-number">3.</span> <span class="toc-text">集群的原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#集群的配置"><span class="toc-number">4.</span> <span class="toc-text">集群的配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#一致性"><span class="toc-number">5.</span> <span class="toc-text">一致性</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Ubutun下-redis集群的配置"><span class="toc-number">6.</span> <span class="toc-text">Ubutun下 redis集群的配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#集群的扩展"><span class="toc-number">7.</span> <span class="toc-text">集群的扩展</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Sentinel-高可用"><span class="toc-number">8.</span> <span class="toc-text">Sentinel 高可用</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数据结构/HashMap/" title="HashMap">HashMap<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/IO流/" title="IO流">IO流<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/JVM/" title="JVM">JVM<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/" title="MQ">MQ<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Netty/" title="Netty">Netty<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/" title="Redis">Redis<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/RocketMQ/" title="RocketMQ">RocketMQ<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Shiro/" title="Shiro">Shiro<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/" title="分布式">分布式<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/学习资源/" title="学习资源">学习资源<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/并发编程/" title="并发编程">并发编程<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/算法/" title="算法">算法<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/" title="缓存">缓存<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/设计模式/" title="设计模式">设计模式<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/" title="面试题">面试题<sup>11</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/JVM/" title="JVM">JVM<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/分布式/" title="分布式">分布式<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/面试题/" title="面试题">面试题<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/权限管理/" title="权限管理">权限管理<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/集合类/" title="集合类">集合类<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/缓存/" title="缓存">缓存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/IO流/" title="IO流">IO流<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

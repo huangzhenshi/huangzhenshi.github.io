@@ -17,7 +17,7 @@
 <meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/08/TCP IP协议/index.html">
 <meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
 <meta property="og:description" content="车神干货简练https://www.zhihu.com/question/51074319 https://www.cnblogs.com/roverliang/p/5176456.html https://zhuanlan.zhihu.com/p/21957820  TCP为了维护连续请求数据的有序性，SYN链接的时候随机本地生成一个 seq=x，后续第二次seq=x+1，第三次seq=x+2，">
-<meta property="og:updated_time" content="2018-03-18T13:39:28.710Z">
+<meta property="og:updated_time" content="2018-08-22T09:01:29.662Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="TCP&#x2F;IP协议">
 <meta name="twitter:description" content="车神干货简练https://www.zhihu.com/question/51074319 https://www.cnblogs.com/roverliang/p/5176456.html https://zhuanlan.zhihu.com/p/21957820  TCP为了维护连续请求数据的有序性，SYN链接的时候随机本地生成一个 seq=x，后续第二次seq=x+1，第三次seq=x+2，">
@@ -48,7 +48,7 @@
 				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
 				<h2 class="blog-motto">Happy Coding</h2>
 			</div>
-			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
 			</a></div>
 			<nav class="animated">
 				<ul>
@@ -62,7 +62,7 @@
  					
 					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
 						<label>Search</label>
-						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
 						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
 					</form>
 					
@@ -85,14 +85,14 @@
 		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
 		
   <p class="article-time">
-    <time datetime="2018-03-08T08:08:20.588Z" itemprop="datePublished"> 发表于 2018-03-08</time>
+    <time datetime="2018-03-08T08:08:20.588Z" itemprop="datePublished"> Published 2018-03-08</time>
     
   </p>
 </header>
 	<div class="article-content">
 		
 		<div id="toc" class="toc-article">
-			<strong class="toc-title">文章目录</strong>
+			<strong class="toc-title">Contents</strong>
 		
 			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#三次握手-四次挥手"><span class="toc-number">1.</span> <span class="toc-text">三次握手 四次挥手</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#TCP三次握手四次挥手中的状态位"><span class="toc-number">1.1.</span> <span class="toc-text">TCP三次握手四次挥手中的状态位</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#OSI计算机网络通信架构"><span class="toc-number">2.</span> <span class="toc-text">OSI计算机网络通信架构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#功能和原理"><span class="toc-number">3.</span> <span class="toc-text">功能和原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TCP与UDP区别总结："><span class="toc-number">4.</span> <span class="toc-text">TCP与UDP区别总结：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TCP与UDP的区别与适用场景"><span class="toc-number">5.</span> <span class="toc-text">TCP与UDP的区别与适用场景</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#长连接、短连接"><span class="toc-number">6.</span> <span class="toc-text">长连接、短连接</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#阻塞控制"><span class="toc-number">7.</span> <span class="toc-text">阻塞控制</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#重传机制"><span class="toc-number">8.</span> <span class="toc-text">重传机制</span></a></li></ol>
 		
@@ -166,9 +166,9 @@
 <li><p>长连接多用于操作频繁（读写），点对点的通讯，而且连接数不能太多情况。一般web请求都是短链接，游戏都是长连接，QQ</p>
 </li>
 </ul>
-<h1 id="阻塞控制"><a href="#阻塞控制" class="headerlink" title="阻塞控制"></a>阻塞控制</h1><p>TCP采用了滑动窗口机制，由server动态调整窗口容量，分批确认，从而实现控流，发送方和接收方各有一个活动窗口缓存，为了准备重传。<br>控流方式：</p>
+<h1 id="阻塞控制"><a href="#阻塞控制" class="headerlink" title="阻塞控制"></a>阻塞控制</h1><p>为了保护Server端的带宽，TCP采用了滑动窗口机制，由server动态调整窗口容量，分批确认，从而实现控流，发送方和接收方各有一个活动窗口缓存，为了准备重传。<br>控流方式：</p>
 <ul>
-<li>慢启动：启动时限制可发送包大小，然后指数增长到阈值，再线性增长，防止一连接就大量包</li>
+<li>慢启动：启动时限制可发送包大小，然后指数增长到阈值，ack确认一个增长一些，再线性增长，防止一连接就大量包</li>
 <li>Nagle算法：发送端缓存满一个ack包时再发送，避免小包</li>
 <li>Cork算法：当滑动窗口值小于某值时，停止发送，一直到接收端调整到该阈值时才允许发送</li>
 </ul>
@@ -228,22 +228,22 @@
 
 
 </div>  
-      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
 
   <div id="toc" class="toc-aside">
-  <strong class="toc-title">文章目录</strong>
+  <strong class="toc-title">Contents</strong>
  
  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#三次握手-四次挥手"><span class="toc-number">1.</span> <span class="toc-text">三次握手 四次挥手</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#TCP三次握手四次挥手中的状态位"><span class="toc-number">1.1.</span> <span class="toc-text">TCP三次握手四次挥手中的状态位</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#OSI计算机网络通信架构"><span class="toc-number">2.</span> <span class="toc-text">OSI计算机网络通信架构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#功能和原理"><span class="toc-number">3.</span> <span class="toc-text">功能和原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TCP与UDP区别总结："><span class="toc-number">4.</span> <span class="toc-text">TCP与UDP区别总结：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TCP与UDP的区别与适用场景"><span class="toc-number">5.</span> <span class="toc-text">TCP与UDP的区别与适用场景</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#长连接、短连接"><span class="toc-number">6.</span> <span class="toc-text">长连接、短连接</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#阻塞控制"><span class="toc-number">7.</span> <span class="toc-text">阻塞控制</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#重传机制"><span class="toc-number">8.</span> <span class="toc-text">重传机制</span></a></li></ol>
  
   </div>
 
 <div id="asidepart">
-<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
 <aside class="clearfix">
 
   
 <div class="github-card">
-<p class="asidetitle">Github 名片</p>
+<p class="asidetitle">Github Card</p>
 <div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
 <script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
 </div>
@@ -252,8 +252,186 @@
 
 
   
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数据结构/HashMap/" title="HashMap">HashMap<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/IO流/" title="IO流">IO流<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/JVM/" title="JVM">JVM<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/" title="MQ">MQ<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Netty/" title="Netty">Netty<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/" title="Redis">Redis<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/RocketMQ/" title="RocketMQ">RocketMQ<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Shiro/" title="Shiro">Shiro<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/" title="分布式">分布式<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/学习资源/" title="学习资源">学习资源<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/并发编程/" title="并发编程">并发编程<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/算法/" title="算法">算法<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/" title="缓存">缓存<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/设计模式/" title="设计模式">设计模式<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/" title="面试题">面试题<sup>11</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
 
   
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/JVM/" title="JVM">JVM<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/分布式/" title="分布式">分布式<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/面试题/" title="面试题">面试题<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/权限管理/" title="权限管理">权限管理<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/集合类/" title="集合类">集合类<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/缓存/" title="缓存">缓存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/IO流/" title="IO流">IO流<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
 
 </aside>
 </div>
@@ -489,7 +667,7 @@ var _hmt = _hmt || [];
 <!-- Totop Begin -->
 
 	<div id="totop">
-	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
 	</div>
 	<script src="/js/totop.js"></script>
 

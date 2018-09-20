@@ -17,7 +17,7 @@
 <meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/06/26/JPA使用心得/index.html">
 <meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
 <meta property="og:description" content="SpringBoot  中集成JPAhttps://blog.csdn.net/forezp/article/details/70545038  引入jpa依赖 配置jpa选项 修改实体类，引入注解 修改接口&amp;lt;dependency&amp;gt;	 &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;	 &amp;lt;artifactId&amp;gt;s">
-<meta property="og:updated_time" content="2018-06-28T06:35:20.608Z">
+<meta property="og:updated_time" content="2018-08-09T09:02:36.749Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JPA使用心得">
 <meta name="twitter:description" content="SpringBoot  中集成JPAhttps://blog.csdn.net/forezp/article/details/70545038  引入jpa依赖 配置jpa选项 修改实体类，引入注解 修改接口&amp;lt;dependency&amp;gt;	 &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;	 &amp;lt;artifactId&amp;gt;s">
@@ -48,7 +48,7 @@
 				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
 				<h2 class="blog-motto">Happy Coding</h2>
 			</div>
-			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
 			</a></div>
 			<nav class="animated">
 				<ul>
@@ -62,7 +62,7 @@
  					
 					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
 						<label>Search</label>
-						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
 						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
 					</form>
 					
@@ -85,16 +85,16 @@
 		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
 		
   <p class="article-time">
-    <time datetime="2018-06-26T09:05:36.941Z" itemprop="datePublished"> 发表于 2018-06-26</time>
+    <time datetime="2018-06-26T09:05:36.941Z" itemprop="datePublished"> Published 2018-06-26</time>
     
   </p>
 </header>
 	<div class="article-content">
 		
 		<div id="toc" class="toc-article">
-			<strong class="toc-title">文章目录</strong>
+			<strong class="toc-title">Contents</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SpringBoot-中集成JPA"><span class="toc-number">1.</span> <span class="toc-text">SpringBoot  中集成JPA</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#注意事项"><span class="toc-number">2.</span> <span class="toc-text">注意事项</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#高级用法示例"><span class="toc-number">3.</span> <span class="toc-text">高级用法示例</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JPA的多表关联"><span class="toc-number">4.</span> <span class="toc-text">JPA的多表关联</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#作用"><span class="toc-number">4.1.</span> <span class="toc-text">作用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#常用注解"><span class="toc-number">4.2.</span> <span class="toc-text">常用注解</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#一对一（反向关联）"><span class="toc-number">5.</span> <span class="toc-text">一对一（反向关联）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#一对多"><span class="toc-number">6.</span> <span class="toc-text">一对多</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#多对多"><span class="toc-number">7.</span> <span class="toc-text">多对多</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SpringBoot-中集成JPA"><span class="toc-number">1.</span> <span class="toc-text">SpringBoot  中集成JPA</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#注意事项"><span class="toc-number">2.</span> <span class="toc-text">注意事项</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#高级用法示例"><span class="toc-number">3.</span> <span class="toc-text">高级用法示例</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JPA的多表关联"><span class="toc-number">4.</span> <span class="toc-text">JPA的多表关联</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#作用"><span class="toc-number">4.1.</span> <span class="toc-text">作用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#常用注解"><span class="toc-number">4.2.</span> <span class="toc-text">常用注解</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#一对一（反向关联）"><span class="toc-number">5.</span> <span class="toc-text">一对一（反向关联）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#一对多"><span class="toc-number">6.</span> <span class="toc-text">一对多</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#多对多"><span class="toc-number">7.</span> <span class="toc-text">多对多</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JPA中nativeQuery的使用"><span class="toc-number">8.</span> <span class="toc-text">JPA中nativeQuery的使用</span></a></li></ol>
 		
 		</div>
 		
@@ -148,7 +148,9 @@
 </li>
 </ul>
 <h1 id="多对多"><a href="#多对多" class="headerlink" title="多对多"></a>多对多</h1><p>通过JoinTable和MangToMany来实现，分别需要构建中间表和关联字段来实现</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Entity</div><div class="line">@Table(name=&quot;fuser&quot;)</div><div class="line">public class User&#123;</div><div class="line">    @Id</div><div class="line">    @GeneratedValue(strategy = GenerationType.IDENTITY)</div><div class="line">    private String id;</div><div class="line">    private String username;</div><div class="line">    </div><div class="line">    @ManyToMany</div><div class="line">    @JoinTable(name = &quot;user_role&quot;, joinColumns = &#123; @JoinColumn(name = &quot;userId&quot;) &#125;, inverseJoinColumns =&#123;@JoinColumn(name = &quot;roleId&quot;) &#125;)</div><div class="line">    private List&lt;Role&gt; roleList;</div><div class="line">&#125;</div></pre></td></tr></table></figure>  
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Entity</div><div class="line">@Table(name=&quot;fuser&quot;)</div><div class="line">public class User&#123;</div><div class="line">    @Id</div><div class="line">    @GeneratedValue(strategy = GenerationType.IDENTITY)</div><div class="line">    private String id;</div><div class="line">    private String username;</div><div class="line">    </div><div class="line">    @ManyToMany</div><div class="line">    @JoinTable(name = &quot;user_role&quot;, joinColumns = &#123; @JoinColumn(name = &quot;userId&quot;) &#125;, inverseJoinColumns =&#123;@JoinColumn(name = &quot;roleId&quot;) &#125;)</div><div class="line">    private List&lt;Role&gt; roleList;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="JPA中nativeQuery的使用"><a href="#JPA中nativeQuery的使用" class="headerlink" title="JPA中nativeQuery的使用"></a>JPA中nativeQuery的使用</h1><p><a href="https://blog.csdn.net/qq_26819733/article/details/79661924" target="_blank" rel="external">https://blog.csdn.net/qq_26819733/article/details/79661924</a><br>比如含有transient字段的时候，需要转换成实体类<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Query(value = &quot;select a.*,b.name as product_name from wx_ib a join user_ib b on a.system_id=b.serial_number where b.user_id=?1&quot;, nativeQuery = true)</div><div class="line">public List&lt;Object&gt; findByUserId(int userId);</div><div class="line"></div><div class="line"></div><div class="line">public List&lt;IBUser&gt; findByUserId(int userId)&#123;</div><div class="line">	List&lt;Object&gt; list=ibDao.findByUserId(userId);</div><div class="line">	List&lt;IBUser&gt; result=new ArrayList();</div><div class="line">	 for (int i = 0; i &lt; list.size(); i++) &#123;</div><div class="line">            Object[] col = (Object[]) list.get(i);</div><div class="line">            IBUser ibuser = new IBUser((String) col[2], (String) col[3]);</div><div class="line">            result.add(ibuser);</div><div class="line">            System.out.println(ibuser.getProductName());</div><div class="line">        &#125;</div><div class="line">	return result;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+  
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
@@ -174,10 +176,10 @@
 <nav class="article-nav clearfix">
  
  <div class="prev" >
- <a href="/2018/07/03/SpringBoot老项目微服务改造/" title="SpringBoot老项目微服务改造">
+ <a href="/2018/07/04/SpringCloud之Eureka/" title="SpringCloud之Eureka">
   <strong>上一篇：</strong><br/>
   <span>
-  SpringBoot老项目微服务改造</span>
+  SpringCloud之Eureka</span>
 </a>
 </div>
 
@@ -199,22 +201,22 @@
 
 
 </div>  
-      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
 
   <div id="toc" class="toc-aside">
-  <strong class="toc-title">文章目录</strong>
+  <strong class="toc-title">Contents</strong>
  
- <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SpringBoot-中集成JPA"><span class="toc-number">1.</span> <span class="toc-text">SpringBoot  中集成JPA</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#注意事项"><span class="toc-number">2.</span> <span class="toc-text">注意事项</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#高级用法示例"><span class="toc-number">3.</span> <span class="toc-text">高级用法示例</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JPA的多表关联"><span class="toc-number">4.</span> <span class="toc-text">JPA的多表关联</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#作用"><span class="toc-number">4.1.</span> <span class="toc-text">作用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#常用注解"><span class="toc-number">4.2.</span> <span class="toc-text">常用注解</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#一对一（反向关联）"><span class="toc-number">5.</span> <span class="toc-text">一对一（反向关联）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#一对多"><span class="toc-number">6.</span> <span class="toc-text">一对多</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#多对多"><span class="toc-number">7.</span> <span class="toc-text">多对多</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SpringBoot-中集成JPA"><span class="toc-number">1.</span> <span class="toc-text">SpringBoot  中集成JPA</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#注意事项"><span class="toc-number">2.</span> <span class="toc-text">注意事项</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#高级用法示例"><span class="toc-number">3.</span> <span class="toc-text">高级用法示例</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JPA的多表关联"><span class="toc-number">4.</span> <span class="toc-text">JPA的多表关联</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#作用"><span class="toc-number">4.1.</span> <span class="toc-text">作用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#常用注解"><span class="toc-number">4.2.</span> <span class="toc-text">常用注解</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#一对一（反向关联）"><span class="toc-number">5.</span> <span class="toc-text">一对一（反向关联）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#一对多"><span class="toc-number">6.</span> <span class="toc-text">一对多</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#多对多"><span class="toc-number">7.</span> <span class="toc-text">多对多</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JPA中nativeQuery的使用"><span class="toc-number">8.</span> <span class="toc-text">JPA中nativeQuery的使用</span></a></li></ol>
  
   </div>
 
 <div id="asidepart">
-<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
 <aside class="clearfix">
 
   
 <div class="github-card">
-<p class="asidetitle">Github 名片</p>
+<p class="asidetitle">Github Card</p>
 <div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
 <script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
 </div>
@@ -223,8 +225,186 @@
 
 
   
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数据结构/HashMap/" title="HashMap">HashMap<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/IO流/" title="IO流">IO流<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/JVM/" title="JVM">JVM<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/" title="MQ">MQ<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Netty/" title="Netty">Netty<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/" title="Redis">Redis<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/RocketMQ/" title="RocketMQ">RocketMQ<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Shiro/" title="Shiro">Shiro<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/" title="分布式">分布式<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/学习资源/" title="学习资源">学习资源<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/并发编程/" title="并发编程">并发编程<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/算法/" title="算法">算法<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/" title="缓存">缓存<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/设计模式/" title="设计模式">设计模式<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/" title="面试题">面试题<sup>11</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
 
   
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/JVM/" title="JVM">JVM<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/分布式/" title="分布式">分布式<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/面试题/" title="面试题">面试题<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/权限管理/" title="权限管理">权限管理<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/集合类/" title="集合类">集合类<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/缓存/" title="缓存">缓存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/IO流/" title="IO流">IO流<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
 
 </aside>
 </div>
@@ -460,7 +640,7 @@ var _hmt = _hmt || [];
 <!-- Totop Begin -->
 
 	<div id="totop">
-	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
 	</div>
 	<script src="/js/totop.js"></script>
 

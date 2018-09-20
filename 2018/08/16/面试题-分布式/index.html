@@ -1,0 +1,770 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>面试题和答案分布式 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="常见问题列表 分布式锁的实现(Done) 分布式事务的实现（包括2PC、幂等性和重传） 秒杀架构的实现(Done) 分布式定时任务(Done)  实现一个集群模式下系统生成唯一流水号的算法：流水号不能重复、不能生成一次访问一次数据库 利用redis的incr，生成一个唯一编号作为结尾 LSH-机器编号-时间-唯一编号：LSH-Server1-2010808161617-1 利用zk的临时节点，zk">
+<meta property="og:type" content="article">
+<meta property="og:title" content="面试题和答案分布式">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/16/面试题-分布式/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="常见问题列表 分布式锁的实现(Done) 分布式事务的实现（包括2PC、幂等性和重传） 秒杀架构的实现(Done) 分布式定时任务(Done)  实现一个集群模式下系统生成唯一流水号的算法：流水号不能重复、不能生成一次访问一次数据库 利用redis的incr，生成一个唯一编号作为结尾 LSH-机器编号-时间-唯一编号：LSH-Server1-2010808161617-1 利用zk的临时节点，zk">
+<meta property="og:updated_time" content="2018-09-03T09:15:43.023Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="面试题和答案分布式">
+<meta name="twitter:description" content="常见问题列表 分布式锁的实现(Done) 分布式事务的实现（包括2PC、幂等性和重传） 秒杀架构的实现(Done) 分布式定时任务(Done)  实现一个集群模式下系统生成唯一流水号的算法：流水号不能重复、不能生成一次访问一次数据库 利用redis的incr，生成一个唯一编号作为结尾 LSH-机器编号-时间-唯一编号：LSH-Server1-2010808161617-1 利用zk的临时节点，zk">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/08/16/面试题-分布式/" title="面试题和答案分布式" itemprop="url">面试题和答案分布式</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-08-16T03:04:00.836Z" itemprop="datePublished"> Published 2018-08-16</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#常见问题列表"><span class="toc-number">1.</span> <span class="toc-text">常见问题列表</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实现一个集群模式下系统生成唯一流水号的算法：流水号不能重复、不能生成一次访问一次数据库"><span class="toc-number">2.</span> <span class="toc-text">实现一个集群模式下系统生成唯一流水号的算法：流水号不能重复、不能生成一次访问一次数据库</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#分布式锁的实现方式和原理"><span class="toc-number">3.</span> <span class="toc-text">分布式锁的实现方式和原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis-请求竞争"><span class="toc-number">4.</span> <span class="toc-text">Redis 请求竞争</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis-持久化方案和区别"><span class="toc-number">5.</span> <span class="toc-text">Redis 持久化方案和区别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis和Memcached的区别"><span class="toc-number">6.</span> <span class="toc-text">Redis和Memcached的区别</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Memcached的内存管理机制Slab-Allocation"><span class="toc-number">6.1.</span> <span class="toc-text">Memcached的内存管理机制Slab Allocation</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#秒杀架构的实现"><span class="toc-number">7.</span> <span class="toc-text">秒杀架构的实现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#思路"><span class="toc-number">7.1.</span> <span class="toc-text">思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#架构图"><span class="toc-number">7.2.</span> <span class="toc-text">架构图</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#分布式事务的解决方案"><span class="toc-number">8.</span> <span class="toc-text">分布式事务的解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#单应用多数据源的业务场景"><span class="toc-number">8.1.</span> <span class="toc-text">单应用多数据源的业务场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#分布式应用-独立数据源"><span class="toc-number">8.2.</span> <span class="toc-text">分布式应用+独立数据源</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#分布式环境下的定时任务"><span class="toc-number">9.</span> <span class="toc-text">分布式环境下的定时任务</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#分布式软件的集群管理"><span class="toc-number">10.</span> <span class="toc-text">分布式软件的集群管理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#redis集群管理"><span class="toc-number">10.1.</span> <span class="toc-text">redis集群管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#zookeeper集群管理"><span class="toc-number">10.2.</span> <span class="toc-text">zookeeper集群管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#solr-cloud集群管理"><span class="toc-number">10.3.</span> <span class="toc-text">solr_cloud集群管理</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="常见问题列表"><a href="#常见问题列表" class="headerlink" title="常见问题列表"></a>常见问题列表</h1><ul>
+<li>分布式锁的实现(Done)</li>
+<li>分布式事务的实现（包括2PC、幂等性和重传）</li>
+<li>秒杀架构的实现(Done)</li>
+<li>分布式定时任务(Done)</li>
+</ul>
+<h1 id="实现一个集群模式下系统生成唯一流水号的算法：流水号不能重复、不能生成一次访问一次数据库"><a href="#实现一个集群模式下系统生成唯一流水号的算法：流水号不能重复、不能生成一次访问一次数据库" class="headerlink" title="实现一个集群模式下系统生成唯一流水号的算法：流水号不能重复、不能生成一次访问一次数据库"></a>实现一个集群模式下系统生成唯一流水号的算法：流水号不能重复、不能生成一次访问一次数据库</h1><ol>
+<li>利用redis的incr，生成一个唯一编号作为结尾 LSH-机器编号-时间-唯一编号：LSH-Server1-2010808161617-1</li>
+<li>利用zk的临时节点，zkClient.createNode，获取到名字之后，拼上一些流水信息，实现全局唯一</li>
+<li>利用server编号+时间戳+加锁生成的一个自增值（保证这个server上唯一），比如 LSH-Server1-2010808161617-1</li>
+<li>如果可以利用数据库自增的话，那就更好实现了，插入一个数据，利用ID自增的原理，获取到全局唯一的序号，然后同上 </li>
+</ol>
+<h1 id="分布式锁的实现方式和原理"><a href="#分布式锁的实现方式和原理" class="headerlink" title="分布式锁的实现方式和原理"></a>分布式锁的实现方式和原理</h1><ol>
+<li>zookeeper</li>
+</ol>
+<ul>
+<li>临时顺序节点，获取Children名字排序，首节点获取锁，次节点设置监听等待的方式，最为常用。</li>
+<li>zk的永久节点，命名唯一的特性，创建成功的client成功获取锁，释放锁的时候，删除该永久节点。</li>
+</ul>
+<ol>
+<li><p>redis乐观锁（watch锁，开启事务，执行业务操作，锁值自增，提交）、悲观锁（SETNX原子操作，再引入setex破解异常，一般秒杀用悲观锁，因为竞争激烈）</p>
+</li>
+<li><p>数据库乐观锁（版本号）、Unique外键的形式、独占锁 select for update等形式</p>
+</li>
+</ol>
+<h1 id="Redis-请求竞争"><a href="#Redis-请求竞争" class="headerlink" title="Redis 请求竞争"></a>Redis 请求竞争</h1><p>多个客户端同时对某个key的value进行操作，比如秒杀商品。</p>
+<ol>
+<li>乐观锁策略(在竞争不激烈的时候，性能好)</li>
+</ol>
+<ul>
+<li>watch方法，带事务的修改数据,类似于volaile，如果price发生改动，则事务失效<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">watch price</div><div class="line">get price $price</div><div class="line">$price = $price + 10</div><div class="line">multi</div><div class="line">set price $price</div><div class="line">exec</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<ol>
+<li>悲观锁+expire的实现策略</li>
+</ol>
+<h1 id="Redis-持久化方案和区别"><a href="#Redis-持久化方案和区别" class="headerlink" title="Redis 持久化方案和区别"></a>Redis 持久化方案和区别</h1><ol>
+<li>RDB的优点：</li>
+</ol>
+<ul>
+<li>只一个文件备份文件，容易恢复数据和备份</li>
+<li>性能最大化，fork子线程做持久化的操作</li>
+<li>相比于AOF机制，如果数据集很大，RDB的启动效率会更高，因为是二进制文件</li>
+<li>相同大小的存储内容，RDB是二进制文件，存储的空间更小，节省磁盘空间</li>
+</ul>
+<ol>
+<li>RDB的缺点：</li>
+</ol>
+<ul>
+<li>数据不是百分百安全，未持久化的数据可能会丢失</li>
+<li>当内存中的数据特别大的时候，因为每次都是生成一个完整的快照文件，速度会很慢</li>
+</ul>
+<ol>
+<li>AOF的优点：</li>
+</ol>
+<ul>
+<li>可读性强，AOF包含一个格式清晰、易于理解的日志文件用于记录所有的修改操作。事实上，我们也可以通过该文件完成数据的重建，而RDB是二进制文件</li>
+<li>数据集文件过大会自动启用rewrite机制。即Redis以append模式不断的将修改数据写入到老的磁盘文件中，同时Redis还会创建一个新的文件用于记录此期间有哪些修改命令被执行。因此在进行rewrite切换时可以更好的保证数据安全性</li>
+<li>AOF 文件的格式可读性较强，提供了更灵活的处理方式。例如，如果我们不小心错用了 FLUSHALL 命令，在重写还没进行时，我们可以手工将最后的 FLUSHALL 命令去掉，然后再使用 AOF 来恢复数据</li>
+</ul>
+<ol>
+<li>AOF的缺点</li>
+</ol>
+<ul>
+<li>大存储数据的时候重启的时候，加载速度比RDB要慢,但是因为是追加添加日志，不存在生成大快照的卡顿的情况出现</li>
+<li>相对于RDB的方式，相同的数据量AOF占用的空间更大</li>
+</ul>
+<h1 id="Redis和Memcached的区别"><a href="#Redis和Memcached的区别" class="headerlink" title="Redis和Memcached的区别"></a>Redis和Memcached的区别</h1><p><a href="http://blog.jobbole.com/101496/" target="_blank" rel="external">http://blog.jobbole.com/101496/</a></p>
+<ul>
+<li>redis功能更强大：支持5种存储的数据类型、数据排序、持久化</li>
+<li>Redis支持内存数据持久化AOF和RDB，而且重启的时候自动加载持久化数据，但是Memcached数据仅存在内存中</li>
+<li>Redis在内存不够或者使用达到阈值时会把不常用的value交换到磁盘中，而Memcached只在内存中</li>
+<li>redis是单线程IO复用（读写排序等操作），事件驱动的，而memcached是多线程、非阻塞IO，主线程监听、worker线程工作的模式</li>
+<li>内存管理的原理不同：memcached用Slab Allocation机制，高效无碎片，但是浪费内存空间，而redis用的是内存分配器有多种，相对而言碎片更多</li>
+<li>集群管理上：Memcached不支持分布式，需要通过Hash分布式算法来实现Memcached的分布式存储；而Redis-Cluster支持分布式集群和主备的模型，可扩展性更好</li>
+<li>一致性方面，redis通过事务和watch实现，memcached支持CAS操作</li>
+</ul>
+<h2 id="Memcached的内存管理机制Slab-Allocation"><a href="#Memcached的内存管理机制Slab-Allocation" class="headerlink" title="Memcached的内存管理机制Slab Allocation"></a>Memcached的内存管理机制Slab Allocation</h2><ul>
+<li>Page内存页默认1M，由若干个Slab class组成，每个slab由若干个大小一样的chunk组成，不同chunks按照ratio默认1.25增长。</li>
+<li>写一个值的时候，会根据 key + value的大小，分配到大小最适合的slab中的空闲chunk里面，这样避免了内存碎片，但是会导致内容利用率不高的情况，比如100kb的item存入到128kb的chunk里面</li>
+<li>当一条数据库过期或者丢弃时，该记录所占用的Chunk就可以回收，重新添加到空闲列表中</li>
+<li>最大的优点就是效率高，无内存碎片，最大的缺点就是浪费了空间</li>
+</ul>
+<h1 id="秒杀架构的实现"><a href="#秒杀架构的实现" class="headerlink" title="秒杀架构的实现"></a>秒杀架构的实现</h1><p>参考资料：<br><a href="https://www.jianshu.com/p/16300bf2660d" target="_blank" rel="external">https://www.jianshu.com/p/16300bf2660d</a></p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ol>
+<li>页面做控制（页面jsp加载的时候，获取到后台的活动开始时间）</li>
+</ol>
+<ul>
+<li>按钮做控制：活动开始前提交按钮置灰防止提前抢单</li>
+<li>按钮做控制：开始时提交成功后置灰按钮，防止重复提交</li>
+</ul>
+<ol>
+<li>防止恶意的抢单</li>
+</ol>
+<ul>
+<li>控制层对请求的时间做校验，防止通过url或者程序恶意抢单，没开始就抢单了，超出了js控制</li>
+<li>redis做IP限流</li>
+<li>redis做用户名限流</li>
+</ul>
+<ol>
+<li><p>缓存库存（Redis）<br>不管活动开始了，还是活动没开始，查询库存的时候，都是从redis获取库存</p>
+</li>
+<li><p>分布式悲观锁（参考redis悲观锁的代码）</p>
+</li>
+</ol>
+<ul>
+<li>悲观锁（因为肯定争抢严重）</li>
+<li>Expire时间（抢到锁后，立刻设置过期时间，防止某个线程的异常停摆，导致整个业务的停摆）</li>
+<li>定时循环和快速反馈（for缓存有超时设置，每次超时后，重新读取一次库存，还有货再进行第二轮的for循环争夺，实现快速反馈，避免没有货了还在持续抢锁）</li>
+</ul>
+<ol>
+<li>异步处理订单</li>
+</ol>
+<ul>
+<li>redis抢锁成功后，记录抢到锁的用户信息后，就可以直接释放锁，并反馈用户，通过异步的方式来处理订单，提升秒杀的效率</li>
+<li>为了避免异步的数据不同步，需要抢到锁的时候，在redis里面缓存用户信息列表，缓存结束后，触发抢单成功用户信息持久化，并且定时的比对一致性</li>
+</ul>
+<ol>
+<li><p>消息队列削峰限流(RocketMQ自带的Consumer自带线程池和限流措施)，集群。一般都是微服务，订单中心、库存中心、积分中心、用户的商品中心</p>
+</li>
+<li><p>数据库的并发修改（库存总数的扣减）</p>
+</li>
+</ol>
+<ul>
+<li>库存数据先加锁读取再修改的方式（select * for update 再 update 库存）避免集群模式下的修改无效的情况</li>
+<li>扣减的时候再check一下，防止异常的消费，例如库存不能为负</li>
+</ul>
+<h2 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h2><p>Nginx在前端–&gt; 对应多台集群的机子前端控制层（嵌套上Redis） –&gt;MQ –&gt;服务端处理订单 –&gt; RPC更新各个微服务的库存中心、订单中心、积分中心等等完成订单</p>
+<h1 id="分布式事务的解决方案"><a href="#分布式事务的解决方案" class="headerlink" title="分布式事务的解决方案"></a>分布式事务的解决方案</h1><h2 id="单应用多数据源的业务场景"><a href="#单应用多数据源的业务场景" class="headerlink" title="单应用多数据源的业务场景"></a>单应用多数据源的业务场景</h2><ol>
+<li>可以通过java的方式解决，设置不自动提交，然后开启事务，挨个提交，做好tryCatch，如果出现异常就回滚，可能要写补偿接口。如果A提交成功，B提交失败，那么需要调用A的补偿接口。</li>
+<li>JTA协议，atomikos 实现分布式事务，主要是DataSource要使用AtomikosDataSourceBean，管理器就可以实现。资源管理器绑定在一个公用的事务管理器上面，然后砽事务管理器 开启事务，执行事务，提交事务。</li>
+</ol>
+<h2 id="分布式应用-独立数据源"><a href="#分布式应用-独立数据源" class="headerlink" title="分布式应用+独立数据源"></a>分布式应用+独立数据源</h2><p><a href="https://blog.csdn.net/z69183787/article/details/80235844" target="_blank" rel="external">https://blog.csdn.net/z69183787/article/details/80235844</a></p>
+<ol>
+<li>2PC：prepare阶段，check资源可用且业务能通畅，然后对要操作的数据加锁；如果全部锁定成功，就一起执行commit操作，如果有失败的则先重试（重试的时候要保证幂等性，可用通过添加ticketID的方法实现），重试一定次数失败，就调用补偿接口，回滚已经提交的资源。</li>
+<li>TCC：事务补偿。try阶段，通过业务的方式，仅仅锁定需要的资源，而不是整个资源，比如A账户的 存款，冻结要扣减的50元，而不是A账户的整个账户。然后类似于2PC实现</li>
+<li>消息事务，rocketmq支持</li>
+<li>消费者和提供者多数据源公用一张Event表；定时重传+eventid幂等性+消费者集群 redis分布式锁；实现最终一致性，但是要求可以使用公共的一张表。</li>
+</ol>
+<h1 id="分布式环境下的定时任务"><a href="#分布式环境下的定时任务" class="headerlink" title="分布式环境下的定时任务"></a>分布式环境下的定时任务</h1><p>创建定时任务锁表（lock_corn ： id、lock_name、status)，不同的业务争夺不同的行锁，互相不影响。<br>业务逻辑：tryLock()  doBusiness() uplock() 在一个事务里面，避免了业务异常导致的加锁成功但解锁失败的情况。<br>设置的doJob()的隔离性为允许提交读，因为默认mysql的mvcc事务处理机制，事务id自增的特性，避免了重复读取重复消费的问题。<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Transactional(isolation=Isolation.READ_COMMITTED)</div><div class="line">doJob(String lockName)&#123;</div><div class="line">	tryLock(lockName); </div><div class="line">	sleep(500);//等待事务完全提交到mysql上</div><div class="line">	doBusiness();</div><div class="line">	uplock(lockName) ;</div><div class="line">&#125;</div><div class="line">tryLock(String lockName) 阻塞等待锁,可以复用的，不需要返回值: update set Status=“LOCKED” where lockName=&quot;wx_push&quot;</div><div class="line">doBusiness(): checkTask(), excuteTask();</div><div class="line">unlock(String lockName): update set Status=“OPEN” where lockName=&quot;wx_push&quot;</div></pre></td></tr></table></figure></p>
+<h1 id="分布式软件的集群管理"><a href="#分布式软件的集群管理" class="headerlink" title="分布式软件的集群管理"></a>分布式软件的集群管理</h1><h2 id="redis集群管理"><a href="#redis集群管理" class="headerlink" title="redis集群管理"></a>redis集群管理</h2><p>Redis Cluster的主从复制：异步，不保证一致性，主节点写入成功后直接反馈给用户，再通过日志同步给slave，如果反馈给客户端成功而slave未同步时，Master挂掉了，那么从节点晋升为主节点会丢失信息</p>
+<h2 id="zookeeper集群管理"><a href="#zookeeper集群管理" class="headerlink" title="zookeeper集群管理"></a>zookeeper集群管理</h2><p>特性：</p>
+<ol>
+<li>ZooKeeper通过复制来实现高可用性，只要集合体中半数以上的机器处于可用状态，它就能够提供服务</li>
+<li>每个节点都有一份完整的数据</li>
+<li>通过机器id和事务id来选主</li>
+</ol>
+<p>一致性原理:</p>
+<ol>
+<li>各个Server单独相应各自Client的读操作</li>
+<li>写操作，必须交给Leader，发起投票，超过一半节点写成功的时候，才回传客户端成功，可以确保一致性。</li>
+</ol>
+<h2 id="solr-cloud集群管理"><a href="#solr-cloud集群管理" class="headerlink" title="solr_cloud集群管理"></a>solr_cloud集群管理</h2><p><a href="https://blog.csdn.net/u011026968/article/details/50336709" target="_blank" rel="external">https://blog.csdn.net/u011026968/article/details/50336709</a></p>
+<ol>
+<li>读操作: 所有的节点都对外提供服务，不分master、slave，而是随机取所有shard里面的任意一个repilca，收集信息，汇总后返回客户</li>
+<li>写操作：需要转发到leader，如果不是这个shard处理，由该leader转到相应的leader处理，leader处理成功后会转发给replica更新</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/面试题/">面试题</a>
+</div>
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/16/面试题-分布式/" data-title="面试题和答案分布式 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/08/16/面试题-Java/" title="面试题和答案Java">
+  <strong>上一篇：</strong><br/>
+  <span>
+  面试题和答案Java</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/08/15/面试题-Spring/"  title="面试题和答案Spring">
+ <strong>下一篇：</strong><br/> 
+ <span>面试题和答案Spring
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/08/16/面试题-分布式/" data-title="面试题和答案分布式" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/16/面试题-分布式/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#常见问题列表"><span class="toc-number">1.</span> <span class="toc-text">常见问题列表</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实现一个集群模式下系统生成唯一流水号的算法：流水号不能重复、不能生成一次访问一次数据库"><span class="toc-number">2.</span> <span class="toc-text">实现一个集群模式下系统生成唯一流水号的算法：流水号不能重复、不能生成一次访问一次数据库</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#分布式锁的实现方式和原理"><span class="toc-number">3.</span> <span class="toc-text">分布式锁的实现方式和原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis-请求竞争"><span class="toc-number">4.</span> <span class="toc-text">Redis 请求竞争</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis-持久化方案和区别"><span class="toc-number">5.</span> <span class="toc-text">Redis 持久化方案和区别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis和Memcached的区别"><span class="toc-number">6.</span> <span class="toc-text">Redis和Memcached的区别</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Memcached的内存管理机制Slab-Allocation"><span class="toc-number">6.1.</span> <span class="toc-text">Memcached的内存管理机制Slab Allocation</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#秒杀架构的实现"><span class="toc-number">7.</span> <span class="toc-text">秒杀架构的实现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#思路"><span class="toc-number">7.1.</span> <span class="toc-text">思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#架构图"><span class="toc-number">7.2.</span> <span class="toc-text">架构图</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#分布式事务的解决方案"><span class="toc-number">8.</span> <span class="toc-text">分布式事务的解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#单应用多数据源的业务场景"><span class="toc-number">8.1.</span> <span class="toc-text">单应用多数据源的业务场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#分布式应用-独立数据源"><span class="toc-number">8.2.</span> <span class="toc-text">分布式应用+独立数据源</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#分布式环境下的定时任务"><span class="toc-number">9.</span> <span class="toc-text">分布式环境下的定时任务</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#分布式软件的集群管理"><span class="toc-number">10.</span> <span class="toc-text">分布式软件的集群管理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#redis集群管理"><span class="toc-number">10.1.</span> <span class="toc-text">redis集群管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#zookeeper集群管理"><span class="toc-number">10.2.</span> <span class="toc-text">zookeeper集群管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#solr-cloud集群管理"><span class="toc-number">10.3.</span> <span class="toc-text">solr_cloud集群管理</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数据结构/HashMap/" title="HashMap">HashMap<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/IO流/" title="IO流">IO流<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/JVM/" title="JVM">JVM<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/" title="MQ">MQ<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Netty/" title="Netty">Netty<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/" title="Redis">Redis<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/RocketMQ/" title="RocketMQ">RocketMQ<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Shiro/" title="Shiro">Shiro<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/" title="分布式">分布式<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/学习资源/" title="学习资源">学习资源<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/并发编程/" title="并发编程">并发编程<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/算法/" title="算法">算法<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/" title="缓存">缓存<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/设计模式/" title="设计模式">设计模式<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/" title="面试题">面试题<sup>11</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/JVM/" title="JVM">JVM<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/分布式/" title="分布式">分布式<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/面试题/" title="面试题">面试题<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/权限管理/" title="权限管理">权限管理<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/集合类/" title="集合类">集合类<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/缓存/" title="缓存">缓存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/IO流/" title="IO流">IO流<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

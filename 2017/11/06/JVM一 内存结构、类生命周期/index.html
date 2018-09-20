@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>JVM一 内存结构、类生命周期 | Tornado_Huang&#39;s BLOG</title>
+    <title>JVM 内存结构、类生命周期 | Tornado_Huang&#39;s BLOG</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="Huang zhenshi">
@@ -13,7 +13,7 @@
     
     <meta name="description" content="参考大神的blog：http://www.cnblogs.com/ityouknow/p/5610232.html  java的内存结构（一）大佬都讲的巨详细了，深度干货啊，没啥要补充的了http://www.cnblogs.com/ityouknow/p/5610232.html 重点注意： 名词的区别：新生代、老年代、永久代 （都是代表不同的内存空间） 命名也可以叫：堆区、栈区、方法区构成JA">
 <meta property="og:type" content="article">
-<meta property="og:title" content="JVM一 内存结构、类生命周期">
+<meta property="og:title" content="JVM 内存结构、类生命周期">
 <meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/11/06/JVM一 内存结构、类生命周期/index.html">
 <meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
 <meta property="og:description" content="参考大神的blog：http://www.cnblogs.com/ityouknow/p/5610232.html  java的内存结构（一）大佬都讲的巨详细了，深度干货啊，没啥要补充的了http://www.cnblogs.com/ityouknow/p/5610232.html 重点注意： 名词的区别：新生代、老年代、永久代 （都是代表不同的内存空间） 命名也可以叫：堆区、栈区、方法区构成JA">
@@ -21,9 +21,9 @@
 <meta property="og:image" content="https://github.com/img/jvm/jvmSizeConfig.png">
 <meta property="og:image" content="https://github.com/img/jvm/lifeCircle.png">
 <meta property="og:image" content="https://github.com/img/jvm/calssloader.png">
-<meta property="og:updated_time" content="2018-05-04T08:20:50.920Z">
+<meta property="og:updated_time" content="2018-09-04T09:28:23.235Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="JVM一 内存结构、类生命周期">
+<meta name="twitter:title" content="JVM 内存结构、类生命周期">
 <meta name="twitter:description" content="参考大神的blog：http://www.cnblogs.com/ityouknow/p/5610232.html  java的内存结构（一）大佬都讲的巨详细了，深度干货啊，没啥要补充的了http://www.cnblogs.com/ityouknow/p/5610232.html 重点注意： 名词的区别：新生代、老年代、永久代 （都是代表不同的内存空间） 命名也可以叫：堆区、栈区、方法区构成JA">
 <meta name="twitter:image" content="https://github.com/img/jvm/jvm1.png">
 
@@ -53,7 +53,7 @@
 				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
 				<h2 class="blog-motto">Happy Coding</h2>
 			</div>
-			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
 			</a></div>
 			<nav class="animated">
 				<ul>
@@ -67,7 +67,7 @@
  					
 					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
 						<label>Search</label>
-						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
 						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
 					</form>
 					
@@ -83,23 +83,23 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2017/11/06/JVM一 内存结构、类生命周期/" title="JVM一 内存结构、类生命周期" itemprop="url">JVM一 内存结构、类生命周期</a>
+      <a href="/2017/11/06/JVM一 内存结构、类生命周期/" title="JVM 内存结构、类生命周期" itemprop="url">JVM 内存结构、类生命周期</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
 		
   <p class="article-time">
-    <time datetime="2017-11-06T09:11:18.655Z" itemprop="datePublished"> 发表于 2017-11-06</time>
+    <time datetime="2017-11-06T09:11:18.655Z" itemprop="datePublished"> Published 2017-11-06</time>
     
   </p>
 </header>
 	<div class="article-content">
 		
 		<div id="toc" class="toc-article">
-			<strong class="toc-title">文章目录</strong>
+			<strong class="toc-title">Contents</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#java的内存结构（一）"><span class="toc-number">1.</span> <span class="toc-text">java的内存结构（一）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#重点注意："><span class="toc-number">1.1.</span> <span class="toc-text">重点注意：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#栈区"><span class="toc-number">1.2.</span> <span class="toc-text">栈区</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方法区（非堆区、永久代"><span class="toc-number">1.3.</span> <span class="toc-text">方法区（非堆区、永久代)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#类的生命周期（二）"><span class="toc-number">2.</span> <span class="toc-text">类的生命周期（二）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#概要"><span class="toc-number">2.1.</span> <span class="toc-text">概要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#额外补充相关的知识"><span class="toc-number">2.2.</span> <span class="toc-text">额外补充相关的知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#static的特点"><span class="toc-number">2.2.1.</span> <span class="toc-text">static的特点</span></a></li></ol></li></ol></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#java的内存结构（一）"><span class="toc-number">1.</span> <span class="toc-text">java的内存结构（一）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#重点注意："><span class="toc-number">1.1.</span> <span class="toc-text">重点注意：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#栈区"><span class="toc-number">1.2.</span> <span class="toc-text">栈区</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方法区（非堆区、永久代"><span class="toc-number">1.3.</span> <span class="toc-text">方法区（非堆区、永久代)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#存储的内容"><span class="toc-number">1.3.1.</span> <span class="toc-text">存储的内容</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#常量池"><span class="toc-number">2.</span> <span class="toc-text">常量池</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#运行时常量池（字符串常量池也属于运行时常量池的一部分）"><span class="toc-number">2.1.</span> <span class="toc-text">运行时常量池（字符串常量池也属于运行时常量池的一部分）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#字符串常量池"><span class="toc-number">2.2.</span> <span class="toc-text">字符串常量池</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#静态常量池和运行时常量池的关系"><span class="toc-number">2.3.</span> <span class="toc-text">静态常量池和运行时常量池的关系</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#类的生命周期（二）"><span class="toc-number">3.</span> <span class="toc-text">类的生命周期（二）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#概要"><span class="toc-number">3.1.</span> <span class="toc-text">概要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#额外补充相关的知识"><span class="toc-number">3.2.</span> <span class="toc-text">额外补充相关的知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#static的特点"><span class="toc-number">3.2.1.</span> <span class="toc-text">static的特点</span></a></li></ol></li></ol></li></ol>
 		
 		</div>
 		
@@ -108,7 +108,7 @@
 <h2 id="重点注意："><a href="#重点注意：" class="headerlink" title="重点注意："></a>重点注意：</h2><ul>
 <li>名词的区别：新生代、老年代、永久代 （都是代表不同的内存空间）</li>
 <li>命名也可以叫：堆区、栈区、方法区构成JAVA内存空间</li>
-<li>栈区由多个线程构成（不共享的），每个线程栈：java栈、本地方法栈和程序员计数器</li>
+<li>栈区由多个线程构成（不共享的），每个线程栈：java栈、本地方法栈和程序计数器</li>
 <li>本地方法区就是 java中的 native方法，有可能是底层用c实现的，比如数组的一些操作</li>
 <li>老年代空间大小=堆空间大小-年轻代大空间大小</li>
 <li>栈中的方法里申明的基本类型的变量和值都保存在栈中，非基本类型的变量引用在栈中，值指向堆中的对象。 类中的成员变量为基本类型的成员变量和值都保存在堆中。</li>
@@ -122,12 +122,44 @@
 <h2 id="方法区（非堆区、永久代"><a href="#方法区（非堆区、永久代" class="headerlink" title="方法区（非堆区、永久代)"></a>方法区（非堆区、永久代)</h2><ul>
 <li>存储类信息、常量、静态变量（静态方法和静态成员变量)、即时编译器编译后的代码等</li>
 <li>多线程共享</li>
-<li>也需要GC回收，主要是常量池的维护和类型的卸载</li>
+<li>也需要GC回收，主要是常量池的维护和类型的卸载（当某个类，没有任何实体对象被引用的时候，就会被卸载）</li>
+<li>JDK1.7把字符串常量池移到堆中去了，intern的逻辑也发生了改变</li>
 <li>JDK1.8把方法区移到本地内存了，同时支持metaspace做设置大小，不设置就自动策略增长</li>
 </ul>
+<h3 id="存储的内容"><a href="#存储的内容" class="headerlink" title="存储的内容"></a>存储的内容</h3><ol>
+<li>类的相关信息</li>
+</ol>
+<ul>
+<li>类信息:类的全限定名、访问修饰符、类类型还是接口类型、直接超类（父类或者接口类）的全限定名</li>
+<li>字段信息：字段名、字段类型、字段的修饰符</li>
+<li>方法信息：方法名、方法返回类型、方法参数的数量和类型(按照顺序)、方法的修饰符</li>
+</ul>
+<ol>
+<li>常量池（字面量和符号引用）</li>
+<li>static修饰的成员变量</li>
+</ol>
+<h1 id="常量池"><a href="#常量池" class="headerlink" title="常量池"></a>常量池</h1><ol>
+<li>静态常量池、运行时常量池（包括字符串常量池），我们通常指的常量池就是运行时常量池(内容差不多，只是形态和先后顺序不同而已）</li>
+<li>常量池中不仅仅存常量，还有符号引用和字面量</li>
+<li>字面量:1.文本字符串 2.八种基本类型的值 3.被声明为final的常量等; </li>
+<li>符号引用：（1.类和方法的全限定名 2.字段的名称和描述符 3.方法的名称和描述符、装载该类的装载器的引用(classLoader)、类型引用(class) ）</li>
+<li>静态常量池是class文件中占据很大空间的一部分，class文件的构成：JDK的版本、字段、方法、接口、常量池</li>
+</ol>
+<h2 id="运行时常量池（字符串常量池也属于运行时常量池的一部分）"><a href="#运行时常量池（字符串常量池也属于运行时常量池的一部分）" class="headerlink" title="运行时常量池（字符串常量池也属于运行时常量池的一部分）"></a>运行时常量池（字符串常量池也属于运行时常量池的一部分）</h2><ol>
+<li>class文件被加载到内存之后（JAVA类的加载），class常量池在内存当中的版本，区别是这里面可以动态的追加常量（比如String test= new String(“hello); test.intern();）</li>
+<li>在解析阶段，会把符号引用替换为直接引用，解析的过程会去查询字符串常量池，也就是我们上面所说的StringTable，以保证运行时常量池所引用的字符串与字符串常量池中是一致的</li>
+</ol>
+<h2 id="字符串常量池"><a href="#字符串常量池" class="headerlink" title="字符串常量池"></a>字符串常量池</h2><ol>
+<li>为了提升性能，节约空间，jvm用一种类似于HashMap的数据结构，构造了一个 StringTable，来存放字符串常量</li>
+<li>JDK 1.6时候字符串常量池位于方法区，链表最大长度1009，而1.7就进入了堆中管理</li>
+</ol>
+<h2 id="静态常量池和运行时常量池的关系"><a href="#静态常量池和运行时常量池的关系" class="headerlink" title="静态常量池和运行时常量池的关系"></a>静态常量池和运行时常量池的关系</h2><ol>
+<li>时间先后顺序不同，java文件被编译成class文件，这时常量信息存在 class物理文件当中，静态常量池。当发生jvm加载的过程中，静态常量池被加载到JVM内存当中，就变成运行时常量池</li>
+<li>相较于Class文件常量池，运行时常量池更具动态性，在运行期间也可以将新的变量放入常量池中，而不是一定要在编译时确定的常量才能放入。最主要的运用便是String类的intern()方法</li>
+</ol>
 <h1 id="类的生命周期（二）"><a href="#类的生命周期（二）" class="headerlink" title="类的生命周期（二）"></a>类的生命周期（二）</h1><p>主要参考大佬的博客了<br><a href="http://www.cnblogs.com/ITtangtang/p/3978102.html" target="_blank" rel="external">http://www.cnblogs.com/ITtangtang/p/3978102.html</a></p>
 <p>一定要参考这个大神的一起看才看的懂，这个帖子里面有例子，适合菜鸟理解<br><a href="http://www.cnblogs.com/chy2055/p/5124520.html" target="_blank" rel="external">http://www.cnblogs.com/chy2055/p/5124520.html</a></p>
-<h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p><img src="/img/jvm/lifeCircle.png" alt="经典的类生命周期"><br>　1. 加载：查找并加载类的二进制数据 </p>
+<h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p><img src="/img/jvm/lifeCircle.png" alt="经典的类生命周期"><br>　1. 加载：查找并加载类的二进制数据（高频面试，classLoader）</p>
 <p>　2. 连接 </p>
 <pre><code>　　　　–验证：确保被加载的类的正确性 
 
@@ -158,6 +190,11 @@
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/JVM/">JVM</a>
+</div>
+
 
 </div>
 
@@ -165,7 +202,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/11/06/JVM一 内存结构、类生命周期/" data-title="JVM一 内存结构、类生命周期 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/11/06/JVM一 内存结构、类生命周期/" data-title="JVM 内存结构、类生命周期 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -199,27 +236,27 @@
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2017/11/06/JVM一 内存结构、类生命周期/" data-title="JVM一 内存结构、类生命周期" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/11/06/JVM一 内存结构、类生命周期/"></div>
+	<div class="ds-thread" data-thread-key="2017/11/06/JVM一 内存结构、类生命周期/" data-title="JVM 内存结构、类生命周期" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2017/11/06/JVM一 内存结构、类生命周期/"></div>
 </section>
 
 
 </div>  
-      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
 
   <div id="toc" class="toc-aside">
-  <strong class="toc-title">文章目录</strong>
+  <strong class="toc-title">Contents</strong>
  
- <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#java的内存结构（一）"><span class="toc-number">1.</span> <span class="toc-text">java的内存结构（一）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#重点注意："><span class="toc-number">1.1.</span> <span class="toc-text">重点注意：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#栈区"><span class="toc-number">1.2.</span> <span class="toc-text">栈区</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方法区（非堆区、永久代"><span class="toc-number">1.3.</span> <span class="toc-text">方法区（非堆区、永久代)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#类的生命周期（二）"><span class="toc-number">2.</span> <span class="toc-text">类的生命周期（二）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#概要"><span class="toc-number">2.1.</span> <span class="toc-text">概要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#额外补充相关的知识"><span class="toc-number">2.2.</span> <span class="toc-text">额外补充相关的知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#static的特点"><span class="toc-number">2.2.1.</span> <span class="toc-text">static的特点</span></a></li></ol></li></ol></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#java的内存结构（一）"><span class="toc-number">1.</span> <span class="toc-text">java的内存结构（一）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#重点注意："><span class="toc-number">1.1.</span> <span class="toc-text">重点注意：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#栈区"><span class="toc-number">1.2.</span> <span class="toc-text">栈区</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方法区（非堆区、永久代"><span class="toc-number">1.3.</span> <span class="toc-text">方法区（非堆区、永久代)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#存储的内容"><span class="toc-number">1.3.1.</span> <span class="toc-text">存储的内容</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#常量池"><span class="toc-number">2.</span> <span class="toc-text">常量池</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#运行时常量池（字符串常量池也属于运行时常量池的一部分）"><span class="toc-number">2.1.</span> <span class="toc-text">运行时常量池（字符串常量池也属于运行时常量池的一部分）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#字符串常量池"><span class="toc-number">2.2.</span> <span class="toc-text">字符串常量池</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#静态常量池和运行时常量池的关系"><span class="toc-number">2.3.</span> <span class="toc-text">静态常量池和运行时常量池的关系</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#类的生命周期（二）"><span class="toc-number">3.</span> <span class="toc-text">类的生命周期（二）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#概要"><span class="toc-number">3.1.</span> <span class="toc-text">概要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#额外补充相关的知识"><span class="toc-number">3.2.</span> <span class="toc-text">额外补充相关的知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#static的特点"><span class="toc-number">3.2.1.</span> <span class="toc-text">static的特点</span></a></li></ol></li></ol></li></ol>
  
   </div>
 
 <div id="asidepart">
-<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
 <aside class="clearfix">
 
   
 <div class="github-card">
-<p class="asidetitle">Github 名片</p>
+<p class="asidetitle">Github Card</p>
 <div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
 <script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
 </div>
@@ -228,8 +265,186 @@
 
 
   
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数据结构/HashMap/" title="HashMap">HashMap<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/IO流/" title="IO流">IO流<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/JVM/" title="JVM">JVM<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/" title="MQ">MQ<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Netty/" title="Netty">Netty<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/" title="Redis">Redis<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/RocketMQ/" title="RocketMQ">RocketMQ<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Shiro/" title="Shiro">Shiro<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/" title="分布式">分布式<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/学习资源/" title="学习资源">学习资源<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/并发编程/" title="并发编程">并发编程<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/算法/" title="算法">算法<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/" title="缓存">缓存<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/设计模式/" title="设计模式">设计模式<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/" title="面试题">面试题<sup>11</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
 
   
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/JVM/" title="JVM">JVM<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/分布式/" title="分布式">分布式<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/面试题/" title="面试题">面试题<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/权限管理/" title="权限管理">权限管理<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/集合类/" title="集合类">集合类<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/缓存/" title="缓存">缓存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/IO流/" title="IO流">IO流<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
 
 </aside>
 </div>
@@ -465,7 +680,7 @@ var _hmt = _hmt || [];
 <!-- Totop Begin -->
 
 	<div id="totop">
-	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
 	</div>
 	<script src="/js/totop.js"></script>
 

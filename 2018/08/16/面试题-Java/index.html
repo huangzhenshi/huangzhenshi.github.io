@@ -1,0 +1,818 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>面试题和答案Java | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="问过的问题JVM：  JVM调优：什么场景会触发FullGC，如何避免呢(Done) OutOfMemory的情况如何解决(Done) 线上频繁FULLGC 如何排查？何时会触发 FULLGC ，永久代如果满了，如何解决(Done) JVM的类加载机制。 和Tomcat容器的类加载机制。如果一个类已经被加载了，但是做过了修改，如何重新加载？(Done)  jvm内存模型堆区+永久代（方法区） +">
+<meta property="og:type" content="article">
+<meta property="og:title" content="面试题和答案Java">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/16/面试题-Java/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="问过的问题JVM：  JVM调优：什么场景会触发FullGC，如何避免呢(Done) OutOfMemory的情况如何解决(Done) 线上频繁FULLGC 如何排查？何时会触发 FULLGC ，永久代如果满了，如何解决(Done) JVM的类加载机制。 和Tomcat容器的类加载机制。如果一个类已经被加载了，但是做过了修改，如何重新加载？(Done)  jvm内存模型堆区+永久代（方法区） +">
+<meta property="og:updated_time" content="2018-09-14T08:46:31.511Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="面试题和答案Java">
+<meta name="twitter:description" content="问过的问题JVM：  JVM调优：什么场景会触发FullGC，如何避免呢(Done) OutOfMemory的情况如何解决(Done) 线上频繁FULLGC 如何排查？何时会触发 FULLGC ，永久代如果满了，如何解决(Done) JVM的类加载机制。 和Tomcat容器的类加载机制。如果一个类已经被加载了，但是做过了修改，如何重新加载？(Done)  jvm内存模型堆区+永久代（方法区） +">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/08/16/面试题-Java/" title="面试题和答案Java" itemprop="url">面试题和答案Java</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-08-16T03:13:12.750Z" itemprop="datePublished"> Published 2018-08-16</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#问过的问题"><span class="toc-number">1.</span> <span class="toc-text">问过的问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#jvm内存模型"><span class="toc-number">2.</span> <span class="toc-text">jvm内存模型</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#java类的生命周期"><span class="toc-number">3.</span> <span class="toc-text">java类的生命周期</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#类的加载器和核心类"><span class="toc-number">4.</span> <span class="toc-text">类的加载器和核心类</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#自定义类加载器"><span class="toc-number">5.</span> <span class="toc-text">自定义类加载器</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#实现自定义class文件加载路径，实现，class文件包路径的限制"><span class="toc-number">5.1.</span> <span class="toc-text">实现自定义class文件加载路径，实现，class文件包路径的限制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现类的每次重新加载，实现热加载"><span class="toc-number">5.2.</span> <span class="toc-text">实现类的每次重新加载，实现热加载</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#tomcat的类加载模型"><span class="toc-number">6.</span> <span class="toc-text">tomcat的类加载模型</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#OOM的排查"><span class="toc-number">7.</span> <span class="toc-text">OOM的排查</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#常用JVM异常排查手段"><span class="toc-number">8.</span> <span class="toc-text">常用JVM异常排查手段</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#FullGC触发的情况"><span class="toc-number">9.</span> <span class="toc-text">FullGC触发的情况</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#事务的4大特性（ACID"><span class="toc-number">10.</span> <span class="toc-text">事务的4大特性（ACID)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TCP与UDP区别总结："><span class="toc-number">11.</span> <span class="toc-text">TCP与UDP区别总结：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TCP的三次握手和四次挥手（双方SYN、FIN、ACK）"><span class="toc-number">12.</span> <span class="toc-text">TCP的三次握手和四次挥手（双方SYN、FIN、ACK）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TCPIP协议封装的消息格式"><span class="toc-number">13.</span> <span class="toc-text">TCPIP协议封装的消息格式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TCP阻塞控制"><span class="toc-number">14.</span> <span class="toc-text">TCP阻塞控制</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TCP重传机制"><span class="toc-number">15.</span> <span class="toc-text">TCP重传机制</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL注入的防止"><span class="toc-number">16.</span> <span class="toc-text">SQL注入的防止</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Collection-和Collections的区别"><span class="toc-number">17.</span> <span class="toc-text">Collection 和Collections的区别</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="问过的问题"><a href="#问过的问题" class="headerlink" title="问过的问题"></a>问过的问题</h1><p>JVM：</p>
+<ul>
+<li>JVM调优：什么场景会触发FullGC，如何避免呢(Done)</li>
+<li>OutOfMemory的情况如何解决(Done)</li>
+<li>线上频繁FULLGC 如何排查？何时会触发 FULLGC ，永久代如果满了，如何解决(Done)</li>
+<li>JVM的类加载机制。 和Tomcat容器的类加载机制。如果一个类已经被加载了，但是做过了修改，如何重新加载？(Done)</li>
+</ul>
+<h1 id="jvm内存模型"><a href="#jvm内存模型" class="headerlink" title="jvm内存模型"></a>jvm内存模型</h1><p>堆区+永久代（方法区） + 栈区（不同线程不同的线程栈）</p>
+<ol>
+<li>堆区的组成：老年代+新生代（Eden区:S0区:S1区=8:1:1)</li>
+<li>栈区的组成：N个线程栈，每个线程栈由 JVM栈、本地方法栈、程序计数器组成</li>
+<li>方法区：存储类信息、静态成员变量、常量池（字面量和符号引用），线程共享区</li>
+</ol>
+<h1 id="java类的生命周期"><a href="#java类的生命周期" class="headerlink" title="java类的生命周期"></a>java类的生命周期</h1><ol>
+<li>编译期：java文件编译成class文件的过程：涉及格式校验、变量类型校验、捕获异常校验、插入式注解处理、简化运算</li>
+<li>运行期：类加载、连接、初始化、创建堆中对象、卸载</li>
+</ol>
+<h1 id="类的加载器和核心类"><a href="#类的加载器和核心类" class="headerlink" title="类的加载器和核心类"></a>类的加载器和核心类</h1><ol>
+<li>核心类加载器</li>
+</ol>
+<ul>
+<li>BootstrapClassLoader 最顶层的加载类,负责加载lib下的rt.jar、resources.jar、charsets.jar和class等</li>
+<li>ExtentionClassLoader 加载目录%JRE_HOME%\lib\ext目录下的jar包和class文件 </li>
+<li>Application ClassLoader 也称为SystemAppClass 加载当前应用的classpath的所有类</li>
+<li>自定义ClassLoader，可以突破class文件包路径的限制，需要重写findClass()缓存查找方法制定寻找路径即可</li>
+</ul>
+<ol>
+<li>加载的特点</li>
+</ol>
+<ul>
+<li>不同包路径下的类由不同的类加载器加载</li>
+<li>jvm懒加载，根据需要去动态加载</li>
+<li>父加载器不是父类，双亲委托：自下而上，先挨个找缓存，到了顶层缓存中还没有，就开始初始化，从各自对应负责的包路径下查找，有就创建，没有给就子加载器加载</li>
+<li>加载之后存在缓存当中</li>
+</ul>
+<ol>
+<li>加载的结果</li>
+</ol>
+<ul>
+<li>将class文件加载在内存中。</li>
+<li>将静态数据结构(数据存在于class文件的结构)转化成方法区中运行时的数据结构(数据存在于JVM时的数据结构)。</li>
+<li>在堆中生成一个代表这个类的java.lang.Class对象，作为数据访问的入口。</li>
+</ul>
+<ol>
+<li>核心方法： loadClass、 findLoadedClass、parent.loadClass、findBootStrapClss、findClass</li>
+</ol>
+<h1 id="自定义类加载器"><a href="#自定义类加载器" class="headerlink" title="自定义类加载器"></a>自定义类加载器</h1><h2 id="实现自定义class文件加载路径，实现，class文件包路径的限制"><a href="#实现自定义class文件加载路径，实现，class文件包路径的限制" class="headerlink" title="实现自定义class文件加载路径，实现，class文件包路径的限制"></a>实现自定义class文件加载路径，实现，class文件包路径的限制</h2><p><a href="https://www.cnblogs.com/gdpuzxs/p/7044963.html" target="_blank" rel="external">https://www.cnblogs.com/gdpuzxs/p/7044963.html</a></p>
+<p>实现逻辑：写一个classloader类（构造函数里面需要传入包真实的路径），重写findClass方法，<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class MyClassLoader extends ClassLoader&#123;</div><div class="line">    public MyClassLoader(String classpath) &#123;</div><div class="line">        this.classpath = classpath;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">	@Override</div><div class="line">    protected Class&lt;?&gt; findClass(String name) throws ClassNotFoundException &#123;</div><div class="line">        try &#123;</div><div class="line">            byte [] classDate=getDate(name);</div><div class="line">            </div><div class="line">            if(classDate==null)&#123;&#125;</div><div class="line">            </div><div class="line">            else&#123;</div><div class="line">                return defineClass(name,classDate,0,classDate.length);</div><div class="line">            &#125;</div><div class="line">            </div><div class="line">        &#125; catch (IOException e) &#123;</div><div class="line">            </div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        return super.findClass(name);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="实现类的每次重新加载，实现热加载"><a href="#实现类的每次重新加载，实现热加载" class="headerlink" title="实现类的每次重新加载，实现热加载"></a>实现类的每次重新加载，实现热加载</h2><ol>
+<li>本来重写 findLoadedClass()即可，直接返回null，实现热加载，但是ClassLoader把该方法设置为final了，不希望去破坏这个规则</li>
+<li>所以直接通过重写过的findClass来实现,相当于在上面的基础上做修改，findClass的路径为当前路径，每次loadClass，直接调用findClass方法即可，虽然只能修改本地的class类</li>
+<li>findClass需要defineClass来最终把字节码文件加载进内存当中，JVM默认相同的类加载器不能加载相同全路径的类，所以每次重新加载的时候需要new一个自定义加载器，否则会报错<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">String currentPath=Class.class.getClass().getResource(&quot;/&quot;).getPath()</div><div class="line"></div><div class="line">   MyClassLoader myClassLoader=new MyClassLoader(currentPath);</div><div class="line">   Class c=myClassLoader.findClass(&quot;com.test.Action.Test&quot;);</div><div class="line">   </div><div class="line">   MyClassLoader myClassLoader2=new MyClassLoader(currentPath);</div><div class="line">   Class c2=myClassLoader2.findClass(&quot;com.test.Action.Test&quot;);</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="tomcat的类加载模型"><a href="#tomcat的类加载模型" class="headerlink" title="tomcat的类加载模型"></a>tomcat的类加载模型</h1><ol>
+<li>核心加载器</li>
+</ol>
+<ul>
+<li>CommonClassLoader（默认父加载器为AppClassLoader）。加载一些tomcat/lib下面的jar包，servlet-api.jar、jsp-api.jar等</li>
+<li>catalinaClassLoader（默认是空，有需要的话需要自己配置）</li>
+<li>sharedClassLoader（默认是空，有需要的话需要自己配置）</li>
+<li>WebAppClassLoader（tomcat下 WebRoot/应用程序/WEB-INF/lib  和 class包下的类</li>
+</ul>
+<ol>
+<li>层级结构</li>
+</ol>
+<ul>
+<li>tomcat下每个应用程序都有一个独立的类加载器，WebAppClassLoader，因为不同应用程序的类不能乱加载，更不能公用啊。</li>
+<li>但是有一些通用的类，比如JUnit、Log4j类，是不同应用程序公用的类，所以有sharedClassLoader出场，可以设置路径来实现这个类加载器，从而实现不同应用程序共同加载一些通用工具类</li>
+<li>再上一层就是CommonClassLoader：下面由shardClassLoader和CatalinaClassLoader，一个是所有应用程序，一个是tomcat容器的扩展类加载器</li>
+<li>再上一层就是AppClassLoader了，就是传统的模式往上走了</li>
+</ul>
+<ol>
+<li>加载逻辑（源码 org.apache.catalina.loader.WebappClassLoader#loadClass)<br>tomcat的类加载机制是违反了双亲委托原则的:先本地缓存查找，再全局缓存查找，再系统加载，再自己加载，最后再父加载器加载</li>
+</ol>
+<ul>
+<li>先在本地缓存中查找是否已经加载过该类（clazz = findLoadedClass0(name)）</li>
+<li>再查询JVM缓存中查找是否已经加载过该类（ clazz = findLoadedClass(name)）</li>
+<li>让系统类加载器(AppClassLoader)尝试加载该类，主要是为了防止一些基础类会被web中的类覆盖（tomcat bin下包)（clazz = system.loadClass(name)）</li>
+<li>web应用的类加载器将自行加载（findClass),这里也违背了双亲  （clazz = findClass(name);）</li>
+<li>最后还是加载不到的话，则委托父类加载器(Common ClassLoader)去加载。（clazz = Class.forName(name, false, parentLoader);）</li>
+</ul>
+<h1 id="OOM的排查"><a href="#OOM的排查" class="headerlink" title="OOM的排查"></a>OOM的排查</h1><p>引发OOM的常见情况：Perm区满了，或者Heap区满了。主要是分析dump的快照，分析对象，定位到代码，如果是正常业务，就扩大机器内存，如果代码问题，优化代码。</p>
+<ol>
+<li>导致OutOfMemoryError异常的常见原因有以下几种：</li>
+</ol>
+<ul>
+<li>内存中加载的数据量过于庞大，如一次从数据库取出过多数据；</li>
+<li>集合类中有对对象的引用，使用完后未清空，使得JVM不能回收；</li>
+<li>代码中存在死循环或循环产生过多重复的对象实体；</li>
+<li>使用的第三方软件中的BUG；</li>
+<li>启动参数内存值设定的过小</li>
+</ul>
+<ol>
+<li>OutOfMemoryError： PermGen space</li>
+</ol>
+<ul>
+<li>问题分析： 加载了太多的类，比如第三方jar包</li>
+<li>解决方案： 增加java虚拟机中的XX:PermSize和XX:MaxPermSize参数的大小</li>
+</ul>
+<ol>
+<li>OutOfMemoryError：  Java heap space</li>
+</ol>
+<ul>
+<li>检查程序，看是否有死循环或不必要地重复创建大量对象。找到原因后，修改程序和算法。</li>
+<li>增加Java虚拟机中Xms（初始堆大小）和Xmx（最大堆大小）参数的大小。如：set JAVA_OPTS= -Xms256m -Xmx1024m</li>
+</ul>
+<ol>
+<li>常见代码引起的OOM的情况</li>
+</ol>
+<ul>
+<li>检查代码中是否有死循环或递归调用。</li>
+<li>检查是否有大循环重复产生新对象实体。</li>
+<li>检查对数据库查询中，是否有一次获得全部数据的查询。一般来说，如果一次取十万条记录到内存，就可能引起内存溢出。这个问题比较隐蔽，在上线前，数据库中数据较少，不容易出问题，上线后，数据库中数据多了，一次查询就有可能引起内存溢出。因此对于数据库查询尽量采用分页的方式查询。</li>
+<li>检查List、MAP等集合对象是否有使用完后，未清除的问题。List、MAP等集合对象会始终存有对对象的引用，使得这些对象不能被GC回收。</li>
+</ul>
+<h1 id="常用JVM异常排查手段"><a href="#常用JVM异常排查手段" class="headerlink" title="常用JVM异常排查手段"></a>常用JVM异常排查手段</h1><ol>
+<li>监控工具的使用，自带的JConsole、visualVM的使用</li>
+</ol>
+<ul>
+<li>图形化显示 堆区内存变化、线程数、CPU使用等情况</li>
+<li>visualVM可以直接生成内存快照、线程快照，也可以直接帮你计算最大的20个Object</li>
+</ul>
+<ol>
+<li>常用命令： </li>
+</ol>
+<ul>
+<li>jmap （-heap 查看堆区的配置信息） </li>
+<li>jstat（gcutil看即时的各个区域的变化情况、capacity查看容量情况）</li>
+</ul>
+<ol>
+<li><p>gc日志分析（启动的时候设置参数，生成gc日志，然后用工具分析gc日志，比如FGC的次数、YGC的次数等信息）</p>
+</li>
+<li><p>快照分析（可以通过工具、命令、或者启动参数配置获取到快照，然后利用工具分析）</p>
+</li>
+</ol>
+<h1 id="FullGC触发的情况"><a href="#FullGC触发的情况" class="headerlink" title="FullGC触发的情况"></a>FullGC触发的情况</h1><ol>
+<li>老年代空间不足：</li>
+</ol>
+<ul>
+<li>真不足，新生代出来的对象进入老年代，而老年代的剩余空间不足</li>
+<li>预判不足，统计得到的Minor GC晋升到旧生代的平均大小大于旧生代的剩余空间</li>
+<li>连续不足，如果是CMS的话，即使内存剩余够。但是内存碎片太多，没有连续的内存装下原本可以装下的对象</li>
+<li>紧急不足，CMS在FullGC的时候，因为是4个阶段清楚，未完成时新垃圾产生，而剩余空间不足，也会再次出发FullGC，而且是以Serial Old单线程的形势执行。</li>
+</ul>
+<p>解决方案：调优时应尽量做到让对象在Minor GC阶段被回收</p>
+<ul>
+<li>调大堆区的大小，默认MaxSize是总内存的1/4，初始值是1/64</li>
+<li>代码里面，尽量不要有太大的对象产生，可以用分批读取，让该对象不直接进入老年代，而是被YGC回收掉</li>
+<li>调大年轻代的大小</li>
+<li>调大存活ratio，默认是15</li>
+</ul>
+<ol>
+<li>Perm区满了:解决方案：调大Perm区的大小，或者代码中不要加载过多的class</li>
+<li>代码调用 System.gc()。可以设置jvm参数，禁止程序调用这个方法。</li>
+</ol>
+<h1 id="事务的4大特性（ACID"><a href="#事务的4大特性（ACID" class="headerlink" title="事务的4大特性（ACID)"></a>事务的4大特性（ACID)</h1><ol>
+<li>原子性：要么全部成功，要么全部失败</li>
+<li>一致性：事务执行前和执行后必须处于一致性状态，用户A和用户B的前加起来一共是5000; 无论AB用户之间是如何相互转换的，事务结束后两个用户的钱加起来还是5000,这就是事务的一致性。</li>
+<li>隔离性：当多个用户并发访问数据库时，数据库为每一个用户开启的事务，不被其他事务的操作所干扰，多个并发事务之间要相互隔离。<br>隔离性差会导致常见的问题：脏读取、不可重复读、幻读</li>
+<li>持久性:一个事务一旦被提交了，那么对数据库中的数据的改变就是永久性的，即便在数据库系统遇到故障的情况下也不会丢失事物的操作。</li>
+</ol>
+<h1 id="TCP与UDP区别总结："><a href="#TCP与UDP区别总结：" class="headerlink" title="TCP与UDP区别总结："></a>TCP与UDP区别总结：</h1><p><a href="http://blog.csdn.net/xiaobangkuaipao/article/details/76793702" target="_blank" rel="external">http://blog.csdn.net/xiaobangkuaipao/article/details/76793702</a></p>
+<ul>
+<li>TCP面向连接（如打电话要先拨号建立连接）确认信号互相通畅;UDP是无连接的，即发送数据之前不需要建立连接</li>
+<li>TCP提供可靠的服务。也就是说，通过TCP连接传送的数据，无差错，不丢失，不重复，且按序到达，发送有个确认的过程;UDP尽最大努力交付，即不保证可靠交付</li>
+<li>Tcp通过校验和，重传控制，序号标识，滑动窗口、确认应答实现可靠传输。如丢包时的重发控制，还可以对次序乱掉的分包进行顺序控制。</li>
+<li>UDP具有较好的实时性，工作效率比TCP高，适用于对高速传输和实时性有较高的通信或广播通信。</li>
+<li>每一条TCP连接只能是点到点的;UDP支持一对一，一对多，多对一和多对多的交互通信</li>
+<li>TCP对系统资源要求较多，UDP对系统资源要求较少</li>
+</ul>
+<h1 id="TCP的三次握手和四次挥手（双方SYN、FIN、ACK）"><a href="#TCP的三次握手和四次挥手（双方SYN、FIN、ACK）" class="headerlink" title="TCP的三次握手和四次挥手（双方SYN、FIN、ACK）"></a>TCP的三次握手和四次挥手（双方SYN、FIN、ACK）</h1><ul>
+<li><p>三次握手：客户端向服务端发起请求，服务端确认收到请求确认是否能接收，客户端确认能接收并反馈给服务端。通信通道建立。 socket.connect()<br>A –&gt; B， seq=x，SYN=1，A请求和服务器B进行连接，并发送请求序列号x<br>B –&gt; A， ACK=1，ack=x+1，SYN=1,seq=y， B收到并同意A的链接x请求，确认码是x+1,；然后服务器B请求和A进行连接，SYN=1.请求码是y<br>A –&gt; B， ACK=1，ack=y+1，seq=x+1；A同意B的编号为y的链接请求，并标志该次的序列号为x+1</p>
+</li>
+<li><p>四次挥手：客户端向服务端发起断开请求，服务端确认收到请求并且把缓存的数据全部返回给客户端，服务端发送同意终止，客户端收到2次请求后确认断开并告知服务器  socket.close()<br>A –&gt; B， seq=x，FIN=1，A请求和服务器B断开连接，并发送请求序列号x<br>B –&gt; A， ACK=1，ack=x+1，seq=u, B同意seq为x的断开请求<br>B –&gt; A， FIN=1，seq=v，ack=x+1，B请求和A断开连接，请求码v，这是针对seq为x的断开连接的最终同意<br>A –&gt; B， ACK=1，ack=v+1，seq=x+1，A确认收到了B的通知，等待2*MSL，断开连接</p>
+</li>
+</ul>
+<h1 id="TCPIP协议封装的消息格式"><a href="#TCPIP协议封装的消息格式" class="headerlink" title="TCPIP协议封装的消息格式"></a>TCPIP协议封装的消息格式</h1><p><a href="https://blog.csdn.net/hongse_zxl/article/details/50036305" target="_blank" rel="external">https://blog.csdn.net/hongse_zxl/article/details/50036305</a></p>
+<ul>
+<li>16位源端口号、16位目标端口号</li>
+<li>32位请求序列号（seq)</li>
+<li>32位确认序列号（ack)</li>
+<li>4位首部大小，6位预留，6位Flag   ，16位窗口大小</li>
+<li>16位校验和、16位紧急指针</li>
+<li>可选项和数据</li>
+</ul>
+<h1 id="TCP阻塞控制"><a href="#TCP阻塞控制" class="headerlink" title="TCP阻塞控制"></a>TCP阻塞控制</h1><p>为了保护Server端的带宽，TCP采用了滑动窗口机制，由server动态调整窗口容量，分批确认，从而实现控流，发送方和接收方各有一个活动窗口缓存，为了准备重传。<br>控流方式：</p>
+<ul>
+<li>慢启动：启动时限制可发送包大小，然后指数增长到阈值，ack确认一个增长一些，再线性增长，防止一连接就大量包</li>
+<li>Nagle算法：发送端缓存满一个ack包时再发送，避免小包</li>
+<li>Cork算法：当滑动窗口值小于某值时，停止发送，一直到接收端调整到该阈值时才允许发送</li>
+</ul>
+<h1 id="TCP重传机制"><a href="#TCP重传机制" class="headerlink" title="TCP重传机制"></a>TCP重传机制</h1><ul>
+<li>超时重传（超过一段时间未收到ack的话，再一定次数范围内不停的重传）</li>
+<li>快速重传 当接收方收到的数据包是不正常的序列号，那么接收方会重复把应该收到的那一条ACK重复发送，这个时候，如果发送方收到连续3条的同一个序列号的ACK，那么就会启动快速重传机制，把这个ACK对应的发送包重新发送一次。</li>
+<li>选择重传（通过报文记录信息补发丢失的包)</li>
+</ul>
+<h1 id="SQL注入的防止"><a href="#SQL注入的防止" class="headerlink" title="SQL注入的防止"></a>SQL注入的防止</h1><ol>
+<li>尽量使用预编译语句，比如PreparedStatement，或者是成熟的持久化框架，JPA、Mybatis</li>
+<li>必须使用原生SQL的话，比如存储过程的参数，或者Mybatis要用 $拼接的时候，需要 正则表达式 校验</li>
+</ol>
+<h1 id="Collection-和Collections的区别"><a href="#Collection-和Collections的区别" class="headerlink" title="Collection 和Collections的区别"></a>Collection 和Collections的区别</h1><ol>
+<li>Collections是工具类，常用的方法，sort(List)， copy(tarList，srcList)，min（List)等操作</li>
+<li>Collection是接口，子类接口有 List、Set、Queue，抽象方法：isEmpty()、clear()、contains()等方法</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/面试题/">面试题</a>
+</div>
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/16/面试题-Java/" data-title="面试题和答案Java | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/08/16/面试题-设计模式/" title="面试题-设计模式">
+  <strong>上一篇：</strong><br/>
+  <span>
+  面试题-设计模式</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/08/16/面试题-分布式/"  title="面试题和答案分布式">
+ <strong>下一篇：</strong><br/> 
+ <span>面试题和答案分布式
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/08/16/面试题-Java/" data-title="面试题和答案Java" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/16/面试题-Java/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#问过的问题"><span class="toc-number">1.</span> <span class="toc-text">问过的问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#jvm内存模型"><span class="toc-number">2.</span> <span class="toc-text">jvm内存模型</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#java类的生命周期"><span class="toc-number">3.</span> <span class="toc-text">java类的生命周期</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#类的加载器和核心类"><span class="toc-number">4.</span> <span class="toc-text">类的加载器和核心类</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#自定义类加载器"><span class="toc-number">5.</span> <span class="toc-text">自定义类加载器</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#实现自定义class文件加载路径，实现，class文件包路径的限制"><span class="toc-number">5.1.</span> <span class="toc-text">实现自定义class文件加载路径，实现，class文件包路径的限制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现类的每次重新加载，实现热加载"><span class="toc-number">5.2.</span> <span class="toc-text">实现类的每次重新加载，实现热加载</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#tomcat的类加载模型"><span class="toc-number">6.</span> <span class="toc-text">tomcat的类加载模型</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#OOM的排查"><span class="toc-number">7.</span> <span class="toc-text">OOM的排查</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#常用JVM异常排查手段"><span class="toc-number">8.</span> <span class="toc-text">常用JVM异常排查手段</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#FullGC触发的情况"><span class="toc-number">9.</span> <span class="toc-text">FullGC触发的情况</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#事务的4大特性（ACID"><span class="toc-number">10.</span> <span class="toc-text">事务的4大特性（ACID)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TCP与UDP区别总结："><span class="toc-number">11.</span> <span class="toc-text">TCP与UDP区别总结：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TCP的三次握手和四次挥手（双方SYN、FIN、ACK）"><span class="toc-number">12.</span> <span class="toc-text">TCP的三次握手和四次挥手（双方SYN、FIN、ACK）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TCPIP协议封装的消息格式"><span class="toc-number">13.</span> <span class="toc-text">TCPIP协议封装的消息格式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TCP阻塞控制"><span class="toc-number">14.</span> <span class="toc-text">TCP阻塞控制</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TCP重传机制"><span class="toc-number">15.</span> <span class="toc-text">TCP重传机制</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL注入的防止"><span class="toc-number">16.</span> <span class="toc-text">SQL注入的防止</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Collection-和Collections的区别"><span class="toc-number">17.</span> <span class="toc-text">Collection 和Collections的区别</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数据结构/HashMap/" title="HashMap">HashMap<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/IO流/" title="IO流">IO流<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/JVM/" title="JVM">JVM<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/" title="MQ">MQ<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Netty/" title="Netty">Netty<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/" title="Redis">Redis<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/RocketMQ/" title="RocketMQ">RocketMQ<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Shiro/" title="Shiro">Shiro<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/" title="分布式">分布式<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/学习资源/" title="学习资源">学习资源<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/并发编程/" title="并发编程">并发编程<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/算法/" title="算法">算法<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/" title="缓存">缓存<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/设计模式/" title="设计模式">设计模式<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/" title="面试题">面试题<sup>11</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/JVM/" title="JVM">JVM<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/分布式/" title="分布式">分布式<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/面试题/" title="面试题">面试题<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/权限管理/" title="权限管理">权限管理<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/集合类/" title="集合类">集合类<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/缓存/" title="缓存">缓存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/IO流/" title="IO流">IO流<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

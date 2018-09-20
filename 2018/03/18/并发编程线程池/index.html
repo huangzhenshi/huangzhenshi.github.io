@@ -11,16 +11,16 @@
     
 
     
-    <meta name="description" content="大牛博客：宏观上分析 线程池http://ifeve.com/java-threadpool/ CSDN系列专栏简易http://blog.csdn.net/column/details/javathreadpool.html 宏观public ThreadPoolExecutor(int corePoolSize,                             int maximumP">
+    <meta name="description" content="参考资料大牛博客：宏观上分析 线程池http://ifeve.com/java-threadpool/ CSDN系列专栏简易http://blog.csdn.net/column/details/javathreadpool.html 死磕java并发系列有4篇线程池相关的http://cmsblogs.com/?p=2122 类的继承关系http://cmsblogs.com/?p=2444">
 <meta property="og:type" content="article">
 <meta property="og:title" content="并发编程线程池">
 <meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/18/并发编程线程池/index.html">
 <meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
-<meta property="og:description" content="大牛博客：宏观上分析 线程池http://ifeve.com/java-threadpool/ CSDN系列专栏简易http://blog.csdn.net/column/details/javathreadpool.html 宏观public ThreadPoolExecutor(int corePoolSize,                             int maximumP">
-<meta property="og:updated_time" content="2018-03-18T13:36:56.077Z">
+<meta property="og:description" content="参考资料大牛博客：宏观上分析 线程池http://ifeve.com/java-threadpool/ CSDN系列专栏简易http://blog.csdn.net/column/details/javathreadpool.html 死磕java并发系列有4篇线程池相关的http://cmsblogs.com/?p=2122 类的继承关系http://cmsblogs.com/?p=2444">
+<meta property="og:updated_time" content="2018-09-14T10:30:52.440Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="并发编程线程池">
-<meta name="twitter:description" content="大牛博客：宏观上分析 线程池http://ifeve.com/java-threadpool/ CSDN系列专栏简易http://blog.csdn.net/column/details/javathreadpool.html 宏观public ThreadPoolExecutor(int corePoolSize,                             int maximumP">
+<meta name="twitter:description" content="参考资料大牛博客：宏观上分析 线程池http://ifeve.com/java-threadpool/ CSDN系列专栏简易http://blog.csdn.net/column/details/javathreadpool.html 死磕java并发系列有4篇线程池相关的http://cmsblogs.com/?p=2122 类的继承关系http://cmsblogs.com/?p=2444">
 
     
     <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
@@ -48,7 +48,7 @@
 				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
 				<h2 class="blog-motto">Happy Coding</h2>
 			</div>
-			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
 			</a></div>
 			<nav class="animated">
 				<ul>
@@ -62,7 +62,7 @@
  					
 					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
 						<label>Search</label>
-						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
 						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
 					</form>
 					
@@ -85,22 +85,41 @@
 		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
 		
   <p class="article-time">
-    <time datetime="2018-03-18T13:37:17.740Z" itemprop="datePublished"> 发表于 2018-03-18</time>
+    <time datetime="2018-03-18T13:37:17.740Z" itemprop="datePublished"> Published 2018-03-18</time>
     
   </p>
 </header>
 	<div class="article-content">
 		
 		<div id="toc" class="toc-article">
-			<strong class="toc-title">文章目录</strong>
+			<strong class="toc-title">Contents</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#宏观"><span class="toc-number">1.</span> <span class="toc-text">宏观</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#runnableTaskQueue"><span class="toc-number">1.1.</span> <span class="toc-text">runnableTaskQueue</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RejectedExecutionHandler-饱和策略"><span class="toc-number">1.2.</span> <span class="toc-text">RejectedExecutionHandler(饱和策略)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#任务启动的顺序规则"><span class="toc-number">2.</span> <span class="toc-text">任务启动的顺序规则</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#线程池的使用-execute-submit"><span class="toc-number">3.</span> <span class="toc-text">线程池的使用 execute submit</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#execute-不会返回线程执行是否成功"><span class="toc-number">3.1.</span> <span class="toc-text">execute 不会返回线程执行是否成功</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#submit-返回一个future对象可以阻塞获取返回值"><span class="toc-number">3.2.</span> <span class="toc-text">submit 返回一个future对象可以阻塞获取返回值</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#线程池的关闭"><span class="toc-number">4.</span> <span class="toc-text">线程池的关闭</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Callable-amp-Future-amp-FutureTask"><span class="toc-number">5.</span> <span class="toc-text">Callable &Future &FutureTask</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Callable接口"><span class="toc-number">5.1.</span> <span class="toc-text">Callable接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Future接口"><span class="toc-number">5.2.</span> <span class="toc-text">Future接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FutureTask类-同时实现了Runnable、Future"><span class="toc-number">5.3.</span> <span class="toc-text">FutureTask类(同时实现了Runnable、Future)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#数据库连接池原理"><span class="toc-number">6.</span> <span class="toc-text">数据库连接池原理</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#类的继承关系"><span class="toc-number">2.</span> <span class="toc-text">类的继承关系</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#线程池的作用"><span class="toc-number">3.</span> <span class="toc-text">线程池的作用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#使用规则"><span class="toc-number">4.</span> <span class="toc-text">使用规则</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#runnableTaskQueue"><span class="toc-number">4.1.</span> <span class="toc-text">runnableTaskQueue</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RejectedExecutionHandler-饱和策略"><span class="toc-number">4.2.</span> <span class="toc-text">RejectedExecutionHandler(饱和策略)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#线程池的使用-execute-submit"><span class="toc-number">5.</span> <span class="toc-text">线程池的使用 execute submit</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#execute-不会返回线程执行是否成功"><span class="toc-number">5.1.</span> <span class="toc-text">execute 不会返回线程执行是否成功</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#submit-返回一个future对象可以阻塞获取返回值"><span class="toc-number">5.2.</span> <span class="toc-text">submit 返回一个future对象可以阻塞获取返回值</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#线程池的关闭"><span class="toc-number">6.</span> <span class="toc-text">线程池的关闭</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Callable-amp-Future-amp-FutureTask"><span class="toc-number">7.</span> <span class="toc-text">Callable &Future &FutureTask</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Callable接口"><span class="toc-number">7.1.</span> <span class="toc-text">Callable接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Future接口"><span class="toc-number">7.2.</span> <span class="toc-text">Future接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FutureTask类-同时实现了Runnable、Future"><span class="toc-number">7.3.</span> <span class="toc-text">FutureTask类(同时实现了Runnable、Future)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#数据库连接池原理"><span class="toc-number">8.</span> <span class="toc-text">数据库连接池原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#使用案例"><span class="toc-number">9.</span> <span class="toc-text">使用案例</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#数据库的连接池管理"><span class="toc-number">10.</span> <span class="toc-text">数据库的连接池管理</span></a></li></ol>
 		
 		</div>
 		
-		<p>大牛博客：宏观上分析 线程池<br><a href="http://ifeve.com/java-threadpool/" target="_blank" rel="external">http://ifeve.com/java-threadpool/</a></p>
+		<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p>大牛博客：宏观上分析 线程池<br><a href="http://ifeve.com/java-threadpool/" target="_blank" rel="external">http://ifeve.com/java-threadpool/</a></p>
 <p>CSDN系列专栏简易<br><a href="http://blog.csdn.net/column/details/javathreadpool.html" target="_blank" rel="external">http://blog.csdn.net/column/details/javathreadpool.html</a></p>
-<h1 id="宏观"><a href="#宏观" class="headerlink" title="宏观"></a>宏观</h1><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public ThreadPoolExecutor(int corePoolSize,</div><div class="line">                             int maximumPoolSize,</div><div class="line">                             long keepAliveTime,</div><div class="line">                             TimeUnit unit,</div><div class="line">                             BlockingQueue&lt;Runnable&gt; workQueue,</div><div class="line">                             ThreadFactory threadFactory,</div><div class="line">                             RejectedExecutionHandler handler)</div></pre></td></tr></table></figure>
+<p>死磕java并发系列有4篇线程池相关的<br><a href="http://cmsblogs.com/?p=2122" target="_blank" rel="external">http://cmsblogs.com/?p=2122</a></p>
+<h1 id="类的继承关系"><a href="#类的继承关系" class="headerlink" title="类的继承关系"></a>类的继承关系</h1><p><a href="http://cmsblogs.com/?p=2444" target="_blank" rel="external">http://cmsblogs.com/?p=2444</a></p>
+<ol>
+<li>Executor作为顶层接口，只提供一个execute()接口方法</li>
+<li>ThreadPoolExecutor继承AbstractExecutorService抽象类–&gt;ExcutorService接口–&gt;Executor顶层接口</li>
+<li>Executors静态工厂类，提供了很多的通用线程池的静态方法</li>
+</ol>
+<h1 id="线程池的作用"><a href="#线程池的作用" class="headerlink" title="线程池的作用"></a>线程池的作用</h1><ol>
+<li>节省资源：复用线程，减少重复创建和销毁线程</li>
+<li>提升响应速度：如果有可以复用的线程，不需要创建新线程，直接执行业务操作，提升速度</li>
+<li>方便管理，提供了线程池的shutdown、shutdownnow、isTerminated、isShutDown等方法</li>
+<li>削峰限流，不让一下子过多的线程把程序搞崩，比如RocketMQ里面的Consumer就会把获取到的消息放入到线程池里来慢慢消费<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public ThreadPoolExecutor(int corePoolSize,</div><div class="line">                             int maximumPoolSize,</div><div class="line">                             long keepAliveTime,</div><div class="line">                             TimeUnit unit,</div><div class="line">                             BlockingQueue&lt;Runnable&gt; workQueue,</div><div class="line">                             ThreadFactory threadFactory,</div><div class="line">                             RejectedExecutionHandler handler)</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="使用规则"><a href="#使用规则" class="headerlink" title="使用规则"></a>使用规则</h1><p>优先级： 基本线程池 &gt; BlockingQueue &gt;最大线程池 &gt;饱和策略</p>
+<ol>
+<li>线程池判断基本线程池是否已满？没满，创建一个工作线程来执行任务，即使有空闲的已经创建的线程也不会复用。满了，则进入下个流程。</li>
+<li>线程池判断工作队列是否已满？没满，则将新提交的任务存储在工作队列里。满了，则进入下个流程</li>
+<li>线程池判断整个线程池是否已满？没满，则创建一个新的工作线程来执行任务，满了，则交给饱和策略来处理这个任务</li>
+</ol>
 <h2 id="runnableTaskQueue"><a href="#runnableTaskQueue" class="headerlink" title="runnableTaskQueue"></a>runnableTaskQueue</h2><p>该阻塞队列里面塞的不是普通的实体类，而是Runnable的实现类，和一般的生产消费模型不一样。线程池完成一个线程后，会尝试从队列里面getTask()。</p>
 <ul>
 <li>ArrayBlockingQueue：是一个基于数组结构的有界阻塞队列，此队列按 FIFO（先进先出）原则对元素进行排序。</li>
@@ -114,11 +133,6 @@
 <li>DiscardPolicy：不处理，丢弃掉，也不会日志什么的</li>
 <li>DiscardOldestPolicy：丢弃队列里最近的一个任务，并执行当前任务。</li>
 <li>自定义Police，需要实现RejectedExecutionHandler</li>
-</ul>
-<h1 id="任务启动的顺序规则"><a href="#任务启动的顺序规则" class="headerlink" title="任务启动的顺序规则"></a>任务启动的顺序规则</h1><ul>
-<li>线程池判断基本线程池是否已满？没满，创建一个工作线程来执行任务。满了，则进入下个流程。</li>
-<li>线程池判断工作队列是否已满？没满，则将新提交的任务存储在工作队列里。满了，则进入下个流程</li>
-<li>线程池判断整个线程池是否已满？没满，则创建一个新的工作线程来执行任务，满了，则交给饱和策略来处理这个任务</li>
 </ul>
 <h1 id="线程池的使用-execute-submit"><a href="#线程池的使用-execute-submit" class="headerlink" title="线程池的使用 execute submit"></a>线程池的使用 execute submit</h1><h2 id="execute-不会返回线程执行是否成功"><a href="#execute-不会返回线程执行是否成功" class="headerlink" title="execute 不会返回线程执行是否成功"></a>execute 不会返回线程执行是否成功</h2><p>threadsPool.execute(new Runnable() {}）；</p>
 <h2 id="submit-返回一个future对象可以阻塞获取返回值"><a href="#submit-返回一个future对象可以阻塞获取返回值" class="headerlink" title="submit 返回一个future对象可以阻塞获取返回值"></a>submit 返回一个future对象可以阻塞获取返回值</h2><p>Future future=threadsPool.submit(new Runnable() {}）；<br>Boolean result= future.get();</p>
@@ -135,25 +149,56 @@
 <li><p>可以作为参数，被线程池调用执行，Future<t> submit(Callable<t> task);</t></t></p>
 </li>
 </ul>
-<h2 id="Future接口"><a href="#Future接口" class="headerlink" title="Future接口"></a>Future接口</h2><ul>
-<li>可以阻塞式获取Callable执行的结果， get()、V get(Long timeout , TimeUnit unit) </li>
-<li>可以尝试取消正在执行的线程，如果执行线程监听到打断的话，boolean cancel(boolean mayInterruptIfRunning);</li>
-<li>可以判断当前线程的执行状态：boolean isCancelled();  boolean isDone();</li>
+<h2 id="Future接口"><a href="#Future接口" class="headerlink" title="Future接口"></a>Future接口</h2><p>作为异步计算的顶层接口，Future对具体的Runnable或者Callable任务提供了三种操作：</p>
+<ul>
+<li>执行任务的取消：cancel()</li>
+<li>查询任务的状态: isDone()、isCancelled()</li>
+<li>获取任务的执行结果（只有Callable任务才有，而且是阻塞）：get()、V get(Long timeout , TimeUnit unit) </li>
 </ul>
 <h2 id="FutureTask类-同时实现了Runnable、Future"><a href="#FutureTask类-同时实现了Runnable、Future" class="headerlink" title="FutureTask类(同时实现了Runnable、Future)"></a>FutureTask类(同时实现了Runnable、Future)</h2><ul>
 <li>既可以作为一个Runnable实现类在线程池中执行，甚至可以直接new Thread(futureTask).start();也可以作为一个future获取其他线程的执行结果和状态，</li>
 <li>done():异步计算完成后调用的回调函数</li>
 </ul>
 <h1 id="数据库连接池原理"><a href="#数据库连接池原理" class="headerlink" title="数据库连接池原理"></a>数据库连接池原理</h1><ul>
-<li><p>解决的问题:频繁的建立、关闭连接，会极大的减低系统的性能，因为对于连接的使用成了系统性能的瓶颈。解决方案：连接复用。</p>
-</li>
-<li><p>大部分连接池可以设置最大连接数，最小连接数，最大闲置时间等参数，连接池根据这些参数，新建和关闭连接</p>
-</li>
+<li>解决的问题:频繁的建立、关闭连接，会极大的减低系统的性能，因为对于连接的使用成了系统性能的瓶颈。解决方案：连接复用。</li>
+<li>大部分连接池可以设置最大连接数，最小连接数，最大闲置时间等参数，连接池根据这些参数，新建和关闭连接</li>
 </ul>
+<h1 id="使用案例"><a href="#使用案例" class="headerlink" title="使用案例"></a>使用案例</h1><p>Executors 类里面实现了一些常用的工具方法，返回适合不同业务场景的线程池实现类。<br>但是要注意FixedThreadPool和SingleThreadPool都是定长的线程池，但是排队队列都是无限长的；CachedThreadPool和ScheduledThreadPool都是可以启动无数个线程来完成功能，都要注意不能OOM了。</p>
+<ol>
+<li><p>FixedThreadPool,固定线程数量的线程池，配合一个无界的LinkedBlockingQueue，重复复用指定数量的coresize的线程</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public static ExecutorService newFixedThreadPool(int nThreads) &#123;</div><div class="line">    return new ThreadPoolExecutor(nThreads, nThreads,</div><div class="line">                                  0L, TimeUnit.MILLISECONDS,</div><div class="line">                                  new LinkedBlockingQueue&lt;Runnable&gt;());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>SingleThreadPool,固定使用一个线程来工作，但是可以无限堆积，因为是单个线程，所以它可以保证认为是按顺序执行的，因为LinkedBlockingQueue是严格的FIFO的</p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public static ExecutorService newSingleThreadExecutor() &#123;</div><div class="line">    return new FinalizableDelegatedExecutorService</div><div class="line">        (new ThreadPoolExecutor(1, 1,</div><div class="line">                                0L, TimeUnit.MILLISECONDS,</div><div class="line">                                new LinkedBlockingQueue&lt;Runnable&gt;()));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ol>
+<li><p>CachedThreadPool，同步线程池,默认非公平的</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public static ExecutorService newCachedThreadPool() &#123;</div><div class="line">    return new ThreadPoolExecutor(0, Integer.MAX_VALUE,</div><div class="line">                                  60L, TimeUnit.SECONDS,</div><div class="line">                                  new SynchronousQueue&lt;Runnable&gt;());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>ScheduledThreadPool,指定核心线程数的定时执行线程池，使用时通过 pool.schedule调用，指定延迟时间，依赖DelayedWorkQueue来实现</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"> public static ScheduledExecutorService newScheduledThreadPool(int corePoolSize) &#123;</div><div class="line">        return new ScheduledThreadPoolExecutor(corePoolSize);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public ScheduledThreadPoolExecutor(int corePoolSize) &#123;</div><div class="line">        super(corePoolSize, Integer.MAX_VALUE, 0, TimeUnit.NANOSECONDS,</div><div class="line">              new DelayedWorkQueue());</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">ScheduledExecutorService pool = Executors.newScheduledThreadPool(5);</div><div class="line"></div><div class="line">        for (int i = 0; i &lt; 5; i++) &#123;</div><div class="line">            Future&lt;Integer&gt; result = pool.schedule(new Callable&lt;Integer&gt;() &#123;</div><div class="line"></div><div class="line">                @Override</div><div class="line">                public Integer call() throws Exception &#123;</div><div class="line">                    int num = new Random().nextInt(100);//生成随机数</div><div class="line">                    System.out.println(Thread.currentThread().getName() + &quot; : &quot; + num);</div><div class="line">                    return num;</div><div class="line">                &#125;</div><div class="line">            &#125;, 3, TimeUnit.SECONDS);</div><div class="line"></div><div class="line"></div><div class="line">            System.out.println(result.get());</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        pool.shutdown();</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="数据库的连接池管理"><a href="#数据库的连接池管理" class="headerlink" title="数据库的连接池管理"></a>数据库的连接池管理</h1><p><a href="https://www.cnblogs.com/happySmily/p/5941813.html" target="_blank" rel="external">https://www.cnblogs.com/happySmily/p/5941813.html</a></p>
+<p>常见的数据库连接池：dbcp、c3p0、druid | weblogic（收费的）<br>常见参数：</p>
+<ol>
+<li>initialSize=10： 程序一启动就自动创建 N个数据库长连接</li>
+<li>timeBetweenEvictionRunsMillis = “30000” ，程序启动后，每隔30scheck一下当前线程数是否合格:A）Idle线程是否超时，超时就回收掉 B)当前可用线程是否大于minIdle，小于就自动创建，如果设置为非正数,则不运行空闲连接回收器线程，默认是-1，不启动单独线程维护minIdle</li>
+<li>maxIdle：当可用线程&gt;minIdle但是小于maxIdle的时候，空闲过期就会被回收</li>
+<li>maxActive：当可用线程超过maxIdle的，小于maxActive的时候，使用完就立刻回收</li>
+<li>maxWait=3000； 这个指的是最大等待时间，如果超过3秒还未分配到连接，就报错</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">maxWait=&quot;3000&quot;    从池中取连接的最大等待时间，单位ms.  </div><div class="line">initialSize=&quot;10&quot;  初始化连接    </div><div class="line">minIdle=&quot;10&quot;   最小空闲连接  </div><div class="line">maxIdle=&quot;60&quot;   最大空闲连接</div><div class="line">maxActive=&quot;80&quot; 最大活动连接  </div><div class="line"></div><div class="line">validationQuery = &quot;SELECT 1&quot;  验证使用的SQL语句  </div><div class="line">testWhileIdle = &quot;true&quot;      指明连接是否被空闲连接回收器(如果有)进行检验.如果检测失败,则连接将被从池中去除.  </div><div class="line">testOnBorrow = &quot;false&quot;   借出连接时不要测试，否则很影响性能  </div><div class="line">timeBetweenEvictionRunsMillis = &quot;30000&quot;  每30秒运行一次空闲连接回收器  </div><div class="line">minEvictableIdleTimeMillis = &quot;1800000&quot;  池中的连接空闲30分钟后被回收  </div><div class="line">numTestsPerEvictionRun=&quot;10&quot; 在每次空闲连接回收器线程(如果有)运行时检查的连接数量  </div><div class="line">      </div><div class="line">removeAbandoned=&quot;true&quot;  连接泄漏回收参数，当可用连接数少于3个时才执行  </div><div class="line">removeAbandonedTimeout=&quot;180&quot;  连接泄漏回收参数，180秒，泄露的连接可以被删除的超时值</div></pre></td></tr></table></figure>
   
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/并发编程/">并发编程</a>
+</div>
 
 
 </div>
@@ -176,7 +221,7 @@
 <nav class="article-nav clearfix">
  
  <div class="prev" >
- <a href="/2018/03/19/socket编程/" title="Socket编程">
+ <a href="/2018/03/19/IO流-socket编程/" title="Socket编程">
   <strong>上一篇：</strong><br/>
   <span>
   Socket编程</span>
@@ -185,9 +230,9 @@
 
 
 <div class="next">
-<a href="/2018/03/18/类加载机制/"  title="类加载机制">
+<a href="/2018/03/18/类生命周期和加载机制/"  title="类生命周期和加载机制">
  <strong>下一篇：</strong><br/> 
- <span>类加载机制
+ <span>类生命周期和加载机制
 </span>
 </a>
 </div>
@@ -201,22 +246,22 @@
 
 
 </div>  
-      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
 
   <div id="toc" class="toc-aside">
-  <strong class="toc-title">文章目录</strong>
+  <strong class="toc-title">Contents</strong>
  
- <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#宏观"><span class="toc-number">1.</span> <span class="toc-text">宏观</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#runnableTaskQueue"><span class="toc-number">1.1.</span> <span class="toc-text">runnableTaskQueue</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RejectedExecutionHandler-饱和策略"><span class="toc-number">1.2.</span> <span class="toc-text">RejectedExecutionHandler(饱和策略)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#任务启动的顺序规则"><span class="toc-number">2.</span> <span class="toc-text">任务启动的顺序规则</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#线程池的使用-execute-submit"><span class="toc-number">3.</span> <span class="toc-text">线程池的使用 execute submit</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#execute-不会返回线程执行是否成功"><span class="toc-number">3.1.</span> <span class="toc-text">execute 不会返回线程执行是否成功</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#submit-返回一个future对象可以阻塞获取返回值"><span class="toc-number">3.2.</span> <span class="toc-text">submit 返回一个future对象可以阻塞获取返回值</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#线程池的关闭"><span class="toc-number">4.</span> <span class="toc-text">线程池的关闭</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Callable-amp-Future-amp-FutureTask"><span class="toc-number">5.</span> <span class="toc-text">Callable &Future &FutureTask</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Callable接口"><span class="toc-number">5.1.</span> <span class="toc-text">Callable接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Future接口"><span class="toc-number">5.2.</span> <span class="toc-text">Future接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FutureTask类-同时实现了Runnable、Future"><span class="toc-number">5.3.</span> <span class="toc-text">FutureTask类(同时实现了Runnable、Future)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#数据库连接池原理"><span class="toc-number">6.</span> <span class="toc-text">数据库连接池原理</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#类的继承关系"><span class="toc-number">2.</span> <span class="toc-text">类的继承关系</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#线程池的作用"><span class="toc-number">3.</span> <span class="toc-text">线程池的作用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#使用规则"><span class="toc-number">4.</span> <span class="toc-text">使用规则</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#runnableTaskQueue"><span class="toc-number">4.1.</span> <span class="toc-text">runnableTaskQueue</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RejectedExecutionHandler-饱和策略"><span class="toc-number">4.2.</span> <span class="toc-text">RejectedExecutionHandler(饱和策略)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#线程池的使用-execute-submit"><span class="toc-number">5.</span> <span class="toc-text">线程池的使用 execute submit</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#execute-不会返回线程执行是否成功"><span class="toc-number">5.1.</span> <span class="toc-text">execute 不会返回线程执行是否成功</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#submit-返回一个future对象可以阻塞获取返回值"><span class="toc-number">5.2.</span> <span class="toc-text">submit 返回一个future对象可以阻塞获取返回值</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#线程池的关闭"><span class="toc-number">6.</span> <span class="toc-text">线程池的关闭</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Callable-amp-Future-amp-FutureTask"><span class="toc-number">7.</span> <span class="toc-text">Callable &Future &FutureTask</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Callable接口"><span class="toc-number">7.1.</span> <span class="toc-text">Callable接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Future接口"><span class="toc-number">7.2.</span> <span class="toc-text">Future接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FutureTask类-同时实现了Runnable、Future"><span class="toc-number">7.3.</span> <span class="toc-text">FutureTask类(同时实现了Runnable、Future)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#数据库连接池原理"><span class="toc-number">8.</span> <span class="toc-text">数据库连接池原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#使用案例"><span class="toc-number">9.</span> <span class="toc-text">使用案例</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#数据库的连接池管理"><span class="toc-number">10.</span> <span class="toc-text">数据库的连接池管理</span></a></li></ol>
  
   </div>
 
 <div id="asidepart">
-<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
 <aside class="clearfix">
 
   
 <div class="github-card">
-<p class="asidetitle">Github 名片</p>
+<p class="asidetitle">Github Card</p>
 <div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
 <script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
 </div>
@@ -225,8 +270,186 @@
 
 
   
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数据结构/HashMap/" title="HashMap">HashMap<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/IO流/" title="IO流">IO流<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/JVM/" title="JVM">JVM<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/" title="MQ">MQ<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Netty/" title="Netty">Netty<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/" title="Redis">Redis<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/RocketMQ/" title="RocketMQ">RocketMQ<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Shiro/" title="Shiro">Shiro<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/" title="分布式">分布式<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/学习资源/" title="学习资源">学习资源<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/并发编程/" title="并发编程">并发编程<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/算法/" title="算法">算法<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/" title="缓存">缓存<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/设计模式/" title="设计模式">设计模式<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/" title="面试题">面试题<sup>11</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
 
   
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/JVM/" title="JVM">JVM<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/分布式/" title="分布式">分布式<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/面试题/" title="面试题">面试题<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/权限管理/" title="权限管理">权限管理<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/集合类/" title="集合类">集合类<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/缓存/" title="缓存">缓存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/IO流/" title="IO流">IO流<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
 
 </aside>
 </div>
@@ -462,7 +685,7 @@ var _hmt = _hmt || [];
 <!-- Totop Begin -->
 
 	<div id="totop">
-	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
 	</div>
 	<script src="/js/totop.js"></script>
 

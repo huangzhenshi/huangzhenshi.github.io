@@ -1,0 +1,677 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Netty | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="参考博客非常好的一个系列，有入门、有源码分析、有实战https://blog.csdn.net/column/details/enjoynetty.html 偏实战https://www.jianshu.com/u/e2d07947c112 Netty特性 相比NIO，更简洁的代码每个Handler处理自己的业务，解耦。封装好了2个线程池来高性能可控的处理并发业务。注册好对应的Handler之后，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Netty">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/09/19/Netty/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="参考博客非常好的一个系列，有入门、有源码分析、有实战https://blog.csdn.net/column/details/enjoynetty.html 偏实战https://www.jianshu.com/u/e2d07947c112 Netty特性 相比NIO，更简洁的代码每个Handler处理自己的业务，解耦。封装好了2个线程池来高性能可控的处理并发业务。注册好对应的Handler之后，">
+<meta property="og:updated_time" content="2018-09-20T07:03:16.936Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Netty">
+<meta name="twitter:description" content="参考博客非常好的一个系列，有入门、有源码分析、有实战https://blog.csdn.net/column/details/enjoynetty.html 偏实战https://www.jianshu.com/u/e2d07947c112 Netty特性 相比NIO，更简洁的代码每个Handler处理自己的业务，解耦。封装好了2个线程池来高性能可控的处理并发业务。注册好对应的Handler之后，">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/09/19/Netty/" title="Netty" itemprop="url">Netty</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-09-19T06:13:20.563Z" itemprop="datePublished"> Published 2018-09-19</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考博客"><span class="toc-number">1.</span> <span class="toc-text">参考博客</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Netty特性"><span class="toc-number">2.</span> <span class="toc-text">Netty特性</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#核心功能"><span class="toc-number">3.</span> <span class="toc-text">核心功能</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#netty-高性能的原因"><span class="toc-number">4.</span> <span class="toc-text">netty 高性能的原因</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Nettty实现聊天室Server"><span class="toc-number">5.</span> <span class="toc-text">Nettty实现聊天室Server</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Netty的客户端"><span class="toc-number">6.</span> <span class="toc-text">Netty的客户端</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#粘包、半包、拆包的解决方案"><span class="toc-number">7.</span> <span class="toc-text">粘包、半包、拆包的解决方案</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#字符串拆包工具类"><span class="toc-number">8.</span> <span class="toc-text">字符串拆包工具类</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Netty对心跳检测的支持-IdleStateHandler"><span class="toc-number">9.</span> <span class="toc-text">Netty对心跳检测的支持 IdleStateHandler</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#实现原理："><span class="toc-number">9.1.</span> <span class="toc-text">实现原理：</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#核心类"><span class="toc-number">10.</span> <span class="toc-text">核心类</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="参考博客"><a href="#参考博客" class="headerlink" title="参考博客"></a>参考博客</h1><p>非常好的一个系列，有入门、有源码分析、有实战<br><a href="https://blog.csdn.net/column/details/enjoynetty.html" target="_blank" rel="external">https://blog.csdn.net/column/details/enjoynetty.html</a></p>
+<p>偏实战<br><a href="https://www.jianshu.com/u/e2d07947c112" target="_blank" rel="external">https://www.jianshu.com/u/e2d07947c112</a></p>
+<h1 id="Netty特性"><a href="#Netty特性" class="headerlink" title="Netty特性"></a>Netty特性</h1><ol>
+<li>相比NIO，更简洁的代码每个Handler处理自己的业务，解耦。封装好了2个线程池来高性能可控的处理并发业务。注册好对应的Handler之后，不需要重复在channel上重复绑定监听。</li>
+<li>封装更多的通用功能，比如字符串拆包，心跳检测功能，字符串的编码和解码</li>
+<li>更高级的ByteBuf</li>
+</ol>
+<h1 id="核心功能"><a href="#核心功能" class="headerlink" title="核心功能"></a>核心功能</h1><ul>
+<li>Server端创建的时候，绑定一个Selector的线程池和一个Worker的线程池</li>
+<li>Selector的线程池负责监听所有的事件，比如Accept，read，write等事件，一旦检测到事件，就提交到对应的Worker线程池去处理</li>
+<li>根据自己的业务特点，在Initializer上绑定对应的Handler，然后处理对应的消息的读写和客户端的连接退出等功能</li>
+</ul>
+<h1 id="netty-高性能的原因"><a href="#netty-高性能的原因" class="headerlink" title="netty 高性能的原因"></a>netty 高性能的原因</h1><ol>
+<li>异步解耦： 监听客户端IO事件由boss线程组来处理，监听到的事件处理由worker线程组来做，异步的调用提升性能。</li>
+<li>多线程优势：boss线程组可支持多个线程来支持不同客户端的IO行为，worker线程组支持多个线程来response客户的IO行为</li>
+</ol>
+<p>传统NIO的服务端的代码：一个服务端只有一个线程，一个Selector，并且是同步串行的执行IO事件操作<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">	Selector selector = Selector.open();</div><div class="line">serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);</div><div class="line">   ServerSelectorProtocol protocol = new ServerSelectorProtocol(BUFF_SIZE); </div><div class="line">   while (true) &#123;</div><div class="line">   	selector.select();</div><div class="line">       Iterator&lt;SelectionKey&gt; keyIter = selector.selectedKeys().iterator();</div><div class="line">       while (keyIter.hasNext()) &#123;</div><div class="line">           SelectionKey key = keyIter.next(); </div><div class="line">           keyIter.remove(); </div><div class="line">           if (key.isAcceptable())&#123;  </div><div class="line">               protocol.handleAccept(key);  </div><div class="line">           &#125;  </div><div class="line">           if (key.isReadable())&#123;  </div><div class="line">               protocol.handleRead(key);  </div><div class="line">           &#125;  </div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure></p>
+<h1 id="Nettty实现聊天室Server"><a href="#Nettty实现聊天室Server" class="headerlink" title="Nettty实现聊天室Server"></a>Nettty实现聊天室Server</h1><p>HelloServer初始化绑定一个HelloServerInitializer集群，里面配置业务的拦截器，然后在拦截器里面处理客户端的交互逻辑</p>
+<ol>
+<li><p>HelloServer： 创建服务器和设置Handler群（设置工作模式，2种模式：监听线程和工作线程公用线程池、监听线程池和工作线程池分开）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class HelloServer &#123;</div><div class="line">    private static final int portNumber = 7878;</div><div class="line">    public static void main(String[] args) throws InterruptedException &#123;</div><div class="line">        EventLoopGroup bossGroup = new NioEventLoopGroup();</div><div class="line">        EventLoopGroup workerGroup = new NioEventLoopGroup();</div><div class="line">        try &#123;</div><div class="line">            ServerBootstrap b = new ServerBootstrap();</div><div class="line">            b.group(bossGroup, workerGroup);</div><div class="line">            b.channel(NioServerSocketChannel.class);</div><div class="line">            b.childHandler(new HelloServerInitializer()); </div><div class="line">            b.bind(portNumber).sync().channel().closeFuture().sync();</div><div class="line">        &#125; finally &#123;</div><div class="line">            bossGroup.shutdownGracefully();</div><div class="line">            workerGroup.shutdownGracefully();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>HelloServerInitializer 设置Handler,这也是主要的开发类，根据业务规则配置拦截器，常用的封装好的拦截器很多</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class HelloServerInitializer extends ChannelInitializer&lt;SocketChannel&gt; &#123;</div><div class="line">	@Override</div><div class="line">	protected void initChannel(SocketChannel ch) throws Exception &#123;</div><div class="line">		ChannelPipeline pipeline = ch.pipeline();</div><div class="line">		// 以(&quot;\n&quot;)为结尾分割的 解码器</div><div class="line">		pipeline.addLast(&quot;framer&quot;, new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));</div><div class="line">		pipeline.addLast(&quot;decoder&quot;, new StringDecoder());</div><div class="line">		pipeline.addLast(&quot;encoder&quot;, new StringEncoder());</div><div class="line">		// 自己的逻辑Handler</div><div class="line">		pipeline.addLast(&quot;handler&quot;, new HelloServerHandler());</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>HelloServerHandler 自定义的拦截器，处理各种客户端的消息读取和往客户端发消息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class HelloServerHandler extends SimpleChannelInboundHandler&lt;String&gt; &#123;</div><div class="line">	@Override</div><div class="line">	protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception &#123;</div><div class="line">		System.out.println(ctx.channel().remoteAddress() + &quot; Say : &quot; + msg);</div><div class="line">		ctx.writeAndFlush(&quot;Received your message !\n&quot;);</div><div class="line">	&#125;</div><div class="line">	@Override</div><div class="line">	public void channelActive(ChannelHandlerContext ctx) throws Exception &#123;</div><div class="line">		System.out.println(&quot;RamoteAddress : &quot; + ctx.channel().remoteAddress() + &quot; active !&quot;);</div><div class="line">		ctx.writeAndFlush( &quot;Welcome to &quot; + InetAddress.getLocalHost().getHostName() + &quot; service!\n&quot;);</div><div class="line">		super.channelActive(ctx);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="Netty的客户端"><a href="#Netty的客户端" class="headerlink" title="Netty的客户端"></a>Netty的客户端</h1><p>初始化，然后绑定HelloClientInitializer，和配置和实现对应的HelloClientHandler<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class HelloClient &#123;</div><div class="line">	 public static String host = &quot;127.0.0.1&quot;;</div><div class="line">	 public static int port = 7878;</div><div class="line">	 public Channel ch=null;</div><div class="line">	 public EventLoopGroup group = new NioEventLoopGroup();;</div><div class="line">	</div><div class="line">	 public void start() throws Exception&#123;</div><div class="line">				Bootstrap b = new Bootstrap();</div><div class="line">				b.group(group).channel(NioSocketChannel.class).handler(new HelloClientInitializer());</div><div class="line">				ch = b.connect(host, port).sync().channel();</div><div class="line">	 &#125;</div><div class="line">	 </div><div class="line">	 public void write(String msg)&#123;</div><div class="line">		 ch.writeAndFlush(msg + &quot;\n&quot;);</div><div class="line">	 &#125;</div><div class="line">	 </div><div class="line">	 public void shutdown()&#123;</div><div class="line">		 group.shutdownGracefully();</div><div class="line">	 &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public class HelloClientInitializer extends ChannelInitializer&lt;SocketChannel&gt; &#123;</div><div class="line">	@Override</div><div class="line">	protected void initChannel(SocketChannel ch) throws Exception &#123;</div><div class="line">		ChannelPipeline pipeline = ch.pipeline();</div><div class="line">		pipeline.addLast(&quot;framer&quot;, new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));</div><div class="line">		pipeline.addLast(&quot;decoder&quot;, new StringDecoder());</div><div class="line">		pipeline.addLast(&quot;encoder&quot;, new StringEncoder());</div><div class="line">		// 客户端的逻辑</div><div class="line">		pipeline.addLast(&quot;handler&quot;, new HelloClientHandler());</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public class HelloClientHandler extends SimpleChannelInboundHandler&lt;String&gt; &#123;</div><div class="line">	@Override</div><div class="line">	protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception &#123;</div><div class="line">		System.out.println(&quot;Server say : &quot; + msg);</div><div class="line">	&#125;</div><div class="line"> </div><div class="line">	@Override</div><div class="line">	public void channelActive(ChannelHandlerContext ctx) throws Exception &#123;</div><div class="line">		System.out.println(&quot;Client active &quot;);</div><div class="line">		super.channelActive(ctx);</div><div class="line">	&#125;</div><div class="line"> </div><div class="line">	@Override</div><div class="line">	public void channelInactive(ChannelHandlerContext ctx) throws Exception &#123;</div><div class="line">		System.out.println(&quot;Client close &quot;);</div><div class="line">		super.channelInactive(ctx);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="粘包、半包、拆包的解决方案"><a href="#粘包、半包、拆包的解决方案" class="headerlink" title="粘包、半包、拆包的解决方案"></a>粘包、半包、拆包的解决方案</h1><ol>
+<li>在报文末尾增加换行符表明一条完整的消息，这样在接收端可以根据这个换行符来判断消息是否完整。</li>
+<li>将消息分为消息头、消息体。可以在消息头中声明消息的长度，根据这个长度来获取报文（比如 808 协议）。</li>
+<li>规定好报文长度，不足的空位补齐，取的时候按照长度截取即可。</li>
+</ol>
+<h1 id="字符串拆包工具类"><a href="#字符串拆包工具类" class="headerlink" title="字符串拆包工具类"></a>字符串拆包工具类</h1><p>使用了拆包工具类以后，即使一次性发送1.5个消息发2次，也可以获取到完整和独立的3条消息，或者一次性发送半个消息分2次，也可以获取到一个完整的消息。</p>
+<ol>
+<li><p>LineBasedFrameDecoder<br>写消息的时候末位添加 \n，如果长度不超过设定的话，就自动识别为一条消息,如果一个消息的长度超过了预设值，也不会丢弃，会存在缓冲区一直到下个分隔符，才为一个完整的消息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">客户端写消息的时候</div><div class="line">ch.writeAndFlush(msg + &quot;\n&quot;);</div><div class="line"></div><div class="line">服务端拦截器配置</div><div class="line">pipeline.addLast(new LineBasedFrameDecoder(1024));</div></pre></td></tr></table></figure>
+</li>
+<li><p>DelimiterBasedFrameDecoder<br>类似于前面的</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">客户端写消息的时候</div><div class="line">ch.writeAndFlush(msg + &quot;\n&quot;);</div><div class="line">服务端拦截器配置</div><div class="line">pipeline.addLast(&quot;framer&quot;, new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="Netty对心跳检测的支持-IdleStateHandler"><a href="#Netty对心跳检测的支持-IdleStateHandler" class="headerlink" title="Netty对心跳检测的支持 IdleStateHandler"></a>Netty对心跳检测的支持 IdleStateHandler</h1><ol>
+<li>作用：关闭掉超时未操作的客户端，或者是持续保持客户端和服务端的通讯正常。</li>
+<li><p>核心构造函数：服务端的读操作，写操作，读写任意操作；例如 5,0,0；如果服务端5s内未接收到客户端的消息，就会触发其它Handler里面的userEventTriggered，然后判断Event的类型进行判断操作。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public IdleStateHandler(long readerIdleTime, long writerIdleTime, long allIdleTime,TimeUnit unit) &#123;</div><div class="line">       this(false, readerIdleTime, writerIdleTime, allIdleTime, unit);</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>使用示例：</p>
+</li>
+</ol>
+<ul>
+<li>ChannelPipe里面绑定IdleStateHandler，并设置好规则</li>
+<li>自定义的HelloServerHandler里面去重写userEventTriggered方法（判断是读Idle还是写Idle）<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class HelloServerInitializer extends ChannelInitializer&lt;SocketChannel&gt; &#123;</div><div class="line">	@Override</div><div class="line">	protected void initChannel(SocketChannel ch) throws Exception &#123;</div><div class="line">		ChannelPipeline pipeline = ch.pipeline();</div><div class="line">		pipeline.addLast(new IdleStateHandler(5, 0, 0, TimeUnit.SECONDS));</div><div class="line">		pipeline.addLast(&quot;decoder&quot;, new StringDecoder());</div><div class="line">		pipeline.addLast(&quot;encoder&quot;, new StringEncoder());</div><div class="line">		pipeline.addLast(&quot;handler&quot;, new HelloServerHandler());</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"> </div><div class="line">public class HelloServerHandler extends SimpleChannelInboundHandler&lt;String&gt; &#123;</div><div class="line">	private int loss_connect_time = 0;</div><div class="line">	@Override</div><div class="line">    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception &#123;</div><div class="line">        if (evt instanceof IdleStateEvent) &#123;</div><div class="line">            IdleStateEvent event = (IdleStateEvent) evt;</div><div class="line">            if (event.state() == IdleState.READER_IDLE) &#123;</div><div class="line">                loss_connect_time++;</div><div class="line">                System.out.println(&quot;5 秒没有接收到客户端的信息了&quot;);</div><div class="line">                ctx.writeAndFlush( &quot;please response ，no msg for 5 second \n&quot;);</div><div class="line">                if (loss_connect_time &gt; 2) &#123;</div><div class="line">                    System.out.println(&quot;关闭这个不活跃的channel&quot;);</div><div class="line">                    ctx.writeAndFlush( &quot;no msg,shut down you \n&quot;);</div><div class="line">                    ctx.channel().close();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125; else &#123;</div><div class="line">            super.userEventTriggered(ctx, evt);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="实现原理："><a href="#实现原理：" class="headerlink" title="实现原理："></a>实现原理：</h2><ol>
+<li><p>客户端active的时候，init方法会触发一个循环监听的任务</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">private void initialize(ChannelHandlerContext ctx) &#123;</div><div class="line">        switch (state) &#123;</div><div class="line">        case 1:</div><div class="line">        case 2:</div><div class="line">            return;</div><div class="line">        &#125;</div><div class="line">        state = 1;</div><div class="line">        initOutputChanged(ctx);</div><div class="line">		//开始初始化时间戳</div><div class="line">        lastReadTime = lastWriteTime = ticksInNanos();</div><div class="line">        if (readerIdleTimeNanos &gt; 0) &#123;</div><div class="line">            readerIdleTimeout = schedule(ctx, new ReaderIdleTimeoutTask(ctx),readerIdleTimeNanos, TimeUnit.NANOSECONDS);</div><div class="line">        &#125;</div><div class="line">        if (writerIdleTimeNanos &gt; 0) &#123;</div><div class="line">            writerIdleTimeout = schedule(ctx, new WriterIdleTimeoutTask(ctx),writerIdleTimeNanos, TimeUnit.NANOSECONDS);</div><div class="line">        &#125;</div><div class="line">        if (allIdleTimeNanos &gt; 0) &#123;</div><div class="line">            allIdleTimeout = schedule(ctx, new AllIdleTimeoutTask(ctx),allIdleTimeNanos, TimeUnit.NANOSECONDS);</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>时间戳随着交互而更新的操作，每当服务端读取客户端的一个消息，完成读取的时候，会重置lastReadTime为当前时间戳。<br>类似于面向切面编程的环绕，IdleStateHandler里面开始收到客户端的消息时，调用channelRead方法，当服务端处理完读操作的时候，会调用channelReadComplete方法，重置当前读取状态和最后读取消息的时间戳</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Override</div><div class="line">public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception &#123;</div><div class="line">    if (readerIdleTimeNanos &gt; 0 || allIdleTimeNanos &gt; 0) &#123;</div><div class="line">        reading = true;</div><div class="line">        firstReaderIdleEvent = firstAllIdleEvent = true;</div><div class="line">    &#125;</div><div class="line">    ctx.fireChannelRead(msg);</div><div class="line">&#125;</div><div class="line"></div><div class="line">@Override</div><div class="line">public void channelReadComplete(ChannelHandlerContext ctx) throws Exception &#123;</div><div class="line">    if ((readerIdleTimeNanos &gt; 0 || allIdleTimeNanos &gt; 0) &amp;&amp; reading) &#123;</div><div class="line">        lastReadTime = ticksInNanos();</div><div class="line">        reading = false;</div><div class="line">    &#125;</div><div class="line">    ctx.fireChannelReadComplete();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="核心类"><a href="#核心类" class="headerlink" title="核心类"></a>核心类</h1><ol>
+<li><p>NioEventLoopGroup（定义了一个NioEventLoopd 的多线程池（其实是数组，不同于传统的线程池），默认数组的长度是CPUCore*2个线程，也可以指定）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">EventExecutor[] children=  new EventExecutor[nThreads];</div><div class="line">child[i]=newChild(executor, args);</div></pre></td></tr></table></figure>
+</li>
+<li><p>NioEventLoop 工作线程，每个NioEventLoop绑定一个Selector，会循环遍历IO事件，并且派发到worker线程池处理<br>每个NioEventLoop都独立拥有:一个任务队列、一个延迟任务队列、一个thread，并且每一个EventLoop都有一个属于自己的Executor执行器、一个selector</p>
+</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Netty/">Netty</a>
+</div>
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/09/19/Netty/" data-title="Netty | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2018/09/17/IO流-总篇和对比/"  title="IO流-总篇和对比">
+ <strong>下一篇：</strong><br/> 
+ <span>IO流-总篇和对比
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/09/19/Netty/" data-title="Netty" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/09/19/Netty/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考博客"><span class="toc-number">1.</span> <span class="toc-text">参考博客</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Netty特性"><span class="toc-number">2.</span> <span class="toc-text">Netty特性</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#核心功能"><span class="toc-number">3.</span> <span class="toc-text">核心功能</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#netty-高性能的原因"><span class="toc-number">4.</span> <span class="toc-text">netty 高性能的原因</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Nettty实现聊天室Server"><span class="toc-number">5.</span> <span class="toc-text">Nettty实现聊天室Server</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Netty的客户端"><span class="toc-number">6.</span> <span class="toc-text">Netty的客户端</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#粘包、半包、拆包的解决方案"><span class="toc-number">7.</span> <span class="toc-text">粘包、半包、拆包的解决方案</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#字符串拆包工具类"><span class="toc-number">8.</span> <span class="toc-text">字符串拆包工具类</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Netty对心跳检测的支持-IdleStateHandler"><span class="toc-number">9.</span> <span class="toc-text">Netty对心跳检测的支持 IdleStateHandler</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#实现原理："><span class="toc-number">9.1.</span> <span class="toc-text">实现原理：</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#核心类"><span class="toc-number">10.</span> <span class="toc-text">核心类</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数据结构/HashMap/" title="HashMap">HashMap<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/IO流/" title="IO流">IO流<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/JVM/" title="JVM">JVM<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/" title="MQ">MQ<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Netty/" title="Netty">Netty<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/" title="Redis">Redis<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/RocketMQ/" title="RocketMQ">RocketMQ<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Shiro/" title="Shiro">Shiro<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/" title="分布式">分布式<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/学习资源/" title="学习资源">学习资源<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/并发编程/" title="并发编程">并发编程<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/算法/" title="算法">算法<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/" title="缓存">缓存<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/设计模式/" title="设计模式">设计模式<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/" title="面试题">面试题<sup>11</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/JVM/" title="JVM">JVM<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/分布式/" title="分布式">分布式<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/面试题/" title="面试题">面试题<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/权限管理/" title="权限管理">权限管理<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/集合类/" title="集合类">集合类<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/缓存/" title="缓存">缓存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/IO流/" title="IO流">IO流<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

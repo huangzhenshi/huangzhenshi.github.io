@@ -44,7 +44,7 @@
 				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
 				<h2 class="blog-motto">Happy Coding</h2>
 			</div>
-			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
 			</a></div>
 			<nav class="animated">
 				<ul>
@@ -58,7 +58,7 @@
  					
 					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
 						<label>Search</label>
-						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
 						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
 					</form>
 					
@@ -73,24 +73,24 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2017/10/28/排序算法总结/" title="排序算法" itemprop="url">
+    <a href="/2018/01/18/mysql查询优化细节/" title="mysql查询优化细节汇总" itemprop="url">
   
-    <h1 itemprop="name">排序算法</h1>
+    <h1 itemprop="name">mysql查询优化细节汇总</h1>
     
      
-           <p itemprop="description" >不同算法之间的比较总则：1）结合实际数据的情况
+           <p itemprop="description" >总则mysql的优化思路
 
-数组的数量不大的情况下，其实比较算法的优劣根本没有意义,相对来说，数量不大的情况下，插入排序比快排 归并排序 堆排序更快
-内存非常充裕的时候，最佳的算法又不同了,归并排序就有意义了；
-如果数组已经是一个接近有序的数组，插入排序就是</p>
+开启long query和log_queries_not_using_indexes的日志，帮助定位问题。 
+查看执行计划是否建立和走了正确的索引，以及索引的优化，联合索引引用的长度
+海量数据的话，就要结合业务考虑表的存储引擎、缓存查询、分区（水平和垂</p>
         
     
-    <time datetime="2017-10-28T08:21:20.000Z" itemprop="datePublished">2017-10-28</time>
+    <time datetime="2018-01-18T03:00:18.435Z" itemprop="datePublished">2018-01-18</time>
   </a>
 </section>
 
 <!-- 多说评论框 start -->
-<div class="ds-thread" data-thread-key="post-排序算法总结" data-title="排序算法" data-url="undefined"></div>
+<div class="ds-thread" data-thread-key="post-mysql查询优化细节" data-title="mysql查询优化细节汇总" data-url="undefined"></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">
@@ -109,26 +109,302 @@ var duoshuoQuery = {short_name:"huangzhenshi"};
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2017/10/28/HashMap数据结构/" title="HashMap数据结构" itemprop="url">
+    <a href="/2018/01/11/mysql集群、读写分离/" title="Mysql读写分离（mysql-proxy的安装和配置)" itemprop="url">
   
-    <h1 itemprop="name">HashMap数据结构</h1>
+    <h1 itemprop="name">Mysql读写分离（mysql-proxy的安装和配置)</h1>
     
      
-           <p itemprop="description" >解决的问题实现常数级别的查找和插入依赖：
+           <p itemprop="description" >应用场景：最适合多读少写的场景，而且是一主（负责写）多从（负责读，通过proxy分摊查询）
 
-好的散列算法使元素分布均匀
-loadfactor不是特别大使结构更像一个数组
-对于计算机来说友好的（开销小）的散列运算方法（因为所有的查找都要先进行散列运算)结构特点
-结合了数组结构（查询快）和链表结构（插入和删除快1）的特点。
-基于拉</p>
+从服务器作为读的优点：可以设置为MYISAM，读取速度快，索引查相对也比Innodb快。还可以做集群分摊读的压力
+主服务器负责写：Innodb支持事务和高并发的写，因为是行锁而不是表锁。</p>
         
     
-    <time datetime="2017-10-28T06:18:10.025Z" itemprop="datePublished">2017-10-28</time>
+    <time datetime="2018-01-11T09:50:50.052Z" itemprop="datePublished">2018-01-11</time>
   </a>
 </section>
 
 <!-- 多说评论框 start -->
-<div class="ds-thread" data-thread-key="post-HashMap数据结构" data-title="HashMap数据结构" data-url="undefined"></div>
+<div class="ds-thread" data-thread-key="post-mysql集群、读写分离" data-title="Mysql读写分离（mysql-proxy的安装和配置)" data-url="undefined"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"huangzhenshi"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2018/01/11/mysql优化_索引、缓存、分区、分表、执行计划/" title="mysql优化_索引、缓存、分区、分表、执行计划" itemprop="url">
+  
+    <h1 itemprop="name">mysql优化_索引、缓存、分区、分表、执行计划</h1>
+    
+     
+           <p itemprop="description" >总结
+索引的创建，和执行计划的查看
+根据情况采取 query_cache 功能
+根据情况采取分区、分表、读写分离集群
+
+索引索引的使用规范
+禁止在频繁变更的表上添加索引
+联合索引应该把区分度更大的字段放前面，效果更好
+Innodb 不建议使用过长的字段作为主键，因为是聚集式索引，</p>
+        
+    
+    <time datetime="2018-01-11T09:00:16.454Z" itemprop="datePublished">2018-01-11</time>
+  </a>
+</section>
+
+<!-- 多说评论框 start -->
+<div class="ds-thread" data-thread-key="post-mysql优化_索引、缓存、分区、分表、执行计划" data-title="mysql优化_索引、缓存、分区、分表、执行计划" data-url="undefined"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"huangzhenshi"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2018/01/09/数据库三大范式/" title="数据库三大范式" itemprop="url">
+  
+    <h1 itemprop="name">数据库三大范式</h1>
+    
+     
+           <p itemprop="description" >三大范式也可以用反范式，用空间换时间。避免大表的关联查询。
+参考BLOG：https://zhuanlan.zhihu.com/p/20028672?refer=niuwa
+
+第一范式：所有的属性均不可被再分割，即数据库表的每一列都是不可分割的原子数据项，而不能是集合，数组，记录</p>
+        
+    
+    <time datetime="2018-01-09T09:38:52.708Z" itemprop="datePublished">2018-01-09</time>
+  </a>
+</section>
+
+<!-- 多说评论框 start -->
+<div class="ds-thread" data-thread-key="post-数据库三大范式" data-title="数据库三大范式" data-url="undefined"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"huangzhenshi"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2018/01/05/mysql事务问题/" title="Mysql事务和锁" itemprop="url">
+  
+    <h1 itemprop="name">Mysql事务和锁</h1>
+    
+     
+           <p itemprop="description" >ACID
+A：原子性，联级操作，要么一起执行，要么一起回滚，不存在执行了操作一，但是操作二失败了，，操作一、二是一个整体
+C：一致性，要么处于修改都成功，要么处于修改都失败，一致性的状态。
+I：隔离性，比如A 和 B同时开启事务，A操作了数据a，B读取a会读取之前的a，而不是刚被</p>
+        
+    
+    <time datetime="2018-01-05T07:47:33.032Z" itemprop="datePublished">2018-01-05</time>
+  </a>
+</section>
+
+<!-- 多说评论框 start -->
+<div class="ds-thread" data-thread-key="post-mysql事务问题" data-title="Mysql事务和锁" data-url="undefined"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"huangzhenshi"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2018/01/04/Mysql大纲_存储引擎/" title="Mysql大纲、存储引擎" itemprop="url">
+  
+    <h1 itemprop="name">Mysql大纲、存储引擎</h1>
+    
+     
+           <p itemprop="description" >待学习这篇博客专栏过完，基本的知识点都覆盖了http://blog.csdn.net/column/details/mysql-in-action.html
+
+数据库的分区、分表、分库、主从复制和读写分离
+4种存储引擎和应用场景（MYISAM\INNODB\MEMORY\MERG</p>
+        
+    
+    <time datetime="2018-01-04T07:08:53.782Z" itemprop="datePublished">2018-01-04</time>
+  </a>
+</section>
+
+<!-- 多说评论框 start -->
+<div class="ds-thread" data-thread-key="post-Mysql大纲_存储引擎" data-title="Mysql大纲、存储引擎" data-url="undefined"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"huangzhenshi"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2017/12/29/MongoDB/" title="MongoDB" itemprop="url">
+  
+    <h1 itemprop="name">MongoDB</h1>
+    
+     
+           <p itemprop="description" >示例源码Spring集成MongoDB，演示CRUD和地理位置查询功能https://github.com/huangzhenshi/mongodb_Spring_Maven
+特点官方介绍:https://docs.spring.io/spring-data/data-mongo</p>
+        
+    
+    <time datetime="2017-12-29T03:56:17.023Z" itemprop="datePublished">2017-12-29</time>
+  </a>
+</section>
+
+<!-- 多说评论框 start -->
+<div class="ds-thread" data-thread-key="post-MongoDB" data-title="MongoDB" data-url="undefined"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"huangzhenshi"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2017/12/26/dubbo/" title="dubbo实战" itemprop="url">
+  
+    <h1 itemprop="name">dubbo实战</h1>
+    
+     
+           <p itemprop="description" >参考博客http://blog.csdn.net/ichsonx/article/details/39008519
+非常详细的一篇关于Dubbo整合zookeeper的blog，操作篇http://blog.csdn.net/accp_fangjian/article/detai</p>
+        
+    
+    <time datetime="2017-12-26T06:26:41.737Z" itemprop="datePublished">2017-12-26</time>
+  </a>
+</section>
+
+<!-- 多说评论框 start -->
+<div class="ds-thread" data-thread-key="post-dubbo" data-title="dubbo实战" data-url="undefined"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"huangzhenshi"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2017/12/22/Zookeeper集群/" title="zookeeper集群" itemprop="url">
+  
+    <h1 itemprop="name">zookeeper集群</h1>
+    
+     
+           <p itemprop="description" >zookeeper集群特性
+Zookeeper：一个leader，多个follower组成的集群
+全局数据一致：每个server保存一份相同的数据副本，client无论连接到哪个server，数据都是一致的
+更新请求顺序进行，来自同一个client的更新请求按其发送顺序依次执行，</p>
+        
+    
+    <time datetime="2017-12-22T08:49:18.192Z" itemprop="datePublished">2017-12-22</time>
+  </a>
+</section>
+
+<!-- 多说评论框 start -->
+<div class="ds-thread" data-thread-key="post-Zookeeper集群" data-title="zookeeper集群" data-url="undefined"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"huangzhenshi"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2017/12/15/消息队列/" title="消息队列" itemprop="url">
+  
+    <h1 itemprop="name">消息队列</h1>
+    
+     
+           <p itemprop="description" >比较详细的bloghttp://www.jianshu.com/p/824066d70da8
+RabbitMQ大佬系列博客，超级多的干货，还出书了https://blog.csdn.net/u013256816/article/details/79838428https://bl</p>
+        
+    
+    <time datetime="2017-12-15T08:56:31.190Z" itemprop="datePublished">2017-12-15</time>
+  </a>
+</section>
+
+<!-- 多说评论框 start -->
+<div class="ds-thread" data-thread-key="post-消息队列" data-title="消息队列" data-url="undefined"></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">
@@ -146,19 +422,19 @@ var duoshuoQuery = {short_name:"huangzhenshi"};
 
 
   <nav id="page-nav" class="clearfix unexpand">
-    <a class="extend prev" rel="prev" href="/page/10/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span>
+    <a class="extend prev" rel="prev" href="/page/10/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" href="/page/12/">Next<span></span></a>
   </nav>
 
 </div>
-      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
 
 <div id="asidepart">
-<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
 <aside class="clearfix">
 
   
 <div class="github-card">
-<p class="asidetitle">Github 名片</p>
+<p class="asidetitle">Github Card</p>
 <div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
 <script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
 </div>
@@ -167,8 +443,186 @@ var duoshuoQuery = {short_name:"huangzhenshi"};
 
 
   
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数据结构/HashMap/" title="HashMap">HashMap<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/IO流/" title="IO流">IO流<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/JVM/" title="JVM">JVM<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/" title="MQ">MQ<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Netty/" title="Netty">Netty<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/" title="Redis">Redis<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/RocketMQ/" title="RocketMQ">RocketMQ<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Shiro/" title="Shiro">Shiro<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/" title="分布式">分布式<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/学习资源/" title="学习资源">学习资源<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/并发编程/" title="并发编程">并发编程<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/算法/" title="算法">算法<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/" title="缓存">缓存<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/设计模式/" title="设计模式">设计模式<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/" title="面试题">面试题<sup>11</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
 
   
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/JVM/" title="JVM">JVM<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/分布式/" title="分布式">分布式<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/面试题/" title="面试题">面试题<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/权限管理/" title="权限管理">权限管理<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/集合类/" title="集合类">集合类<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/缓存/" title="缓存">缓存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/IO流/" title="IO流">IO流<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
 
 </aside>
 </div>
@@ -315,7 +769,7 @@ var _hmt = _hmt || [];
 <!-- Totop Begin -->
 
 	<div id="totop">
-	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
 	</div>
 	<script src="/js/totop.js"></script>
 

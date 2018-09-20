@@ -1,0 +1,638 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Redis分布式锁 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="实现源码：https://github.com/huangzhenshi/DistributeLearning/tree/master/DistributeLearning-master 实现方式乐观锁、悲观锁的方式  乐观锁实现原理：通过watch存货量变量，先做第一轮判断，存货大于0，开启事务，减库存，然后提交事务，如果存货发生变动，就操作失效，循环操作直到成功为止，或者是存量为负public">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis分布式锁">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/12/Redis分布式锁/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="实现源码：https://github.com/huangzhenshi/DistributeLearning/tree/master/DistributeLearning-master 实现方式乐观锁、悲观锁的方式  乐观锁实现原理：通过watch存货量变量，先做第一轮判断，存货大于0，开启事务，减库存，然后提交事务，如果存货发生变动，就操作失效，循环操作直到成功为止，或者是存量为负public">
+<meta property="og:updated_time" content="2018-08-17T06:42:21.751Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis分布式锁">
+<meta name="twitter:description" content="实现源码：https://github.com/huangzhenshi/DistributeLearning/tree/master/DistributeLearning-master 实现方式乐观锁、悲观锁的方式  乐观锁实现原理：通过watch存货量变量，先做第一轮判断，存货大于0，开启事务，减库存，然后提交事务，如果存货发生变动，就操作失效，循环操作直到成功为止，或者是存量为负public">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/08/12/Redis分布式锁/" title="Redis分布式锁" itemprop="url">Redis分布式锁</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-08-12T08:18:19.364Z" itemprop="datePublished"> Published 2018-08-12</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#实现源码："><span class="toc-number">1.</span> <span class="toc-text">实现源码：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实现方式"><span class="toc-number">2.</span> <span class="toc-text">实现方式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#悲观锁的实现"><span class="toc-number">3.</span> <span class="toc-text">悲观锁的实现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#lock"><span class="toc-number">3.1.</span> <span class="toc-text">lock()</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="实现源码："><a href="#实现源码：" class="headerlink" title="实现源码："></a>实现源码：</h1><p><a href="https://github.com/huangzhenshi/DistributeLearning/tree/master/DistributeLearning-master">https://github.com/huangzhenshi/DistributeLearning/tree/master/DistributeLearning-master</a></p>
+<h1 id="实现方式"><a href="#实现方式" class="headerlink" title="实现方式"></a>实现方式</h1><p>乐观锁、悲观锁的方式</p>
+<ol>
+<li>乐观锁实现原理：通过watch存货量变量，先做第一轮判断，存货大于0，开启事务，减库存，然后提交事务，如果存货发生变动，就操作失效，循环操作直到成功为止，或者是存量为负<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public void run() &#123;</div><div class="line">		while (true) &#123;</div><div class="line">			System.out.println(&quot;顾客:&quot; + clientName + &quot;开始抢商品&quot;);</div><div class="line">			jedis = RedisUtil.getInstance().getJedis();</div><div class="line">			try &#123;</div><div class="line">				jedis.watch(key);</div><div class="line">				int prdNum = Integer.parseInt(jedis.get(key));// 当前商品个数</div><div class="line">				if (prdNum &gt; 0) &#123;</div><div class="line">					Transaction transaction = jedis.multi();</div><div class="line">					transaction.set(key, String.valueOf(prdNum - 1));</div><div class="line">					List&lt;Object&gt; result = transaction.exec();</div><div class="line">					if (result == null || result.isEmpty()) &#123;</div><div class="line">						System.out.println(&quot;悲剧了，顾客:&quot; + clientName + &quot;没有抢到商品&quot;);// 可能是watch-key被外部修改，或者是数据操作被驳回</div><div class="line">					&#125; else &#123;</div><div class="line">						jedis.sadd(clientList, clientName);// 抢到商品记录一下</div><div class="line">						System.out.println(&quot;好高兴，顾客:&quot; + clientName + &quot;抢到商品&quot;);</div><div class="line">						System.out.println(&quot;account is: &quot;+ prdNum);</div><div class="line">						break;</div><div class="line">					&#125;</div><div class="line">				&#125; else &#123;</div><div class="line">					System.out.println(&quot;悲剧了，库存为0，顾客:&quot; + clientName + &quot;没有抢到商品&quot;);</div><div class="line">					break;</div><div class="line">				&#125;</div><div class="line">			&#125; catch (Exception e) &#123;</div><div class="line">				e.printStackTrace();</div><div class="line">			&#125; finally &#123;</div><div class="line">				jedis.unwatch();</div><div class="line">				RedisUtil.returnResource(jedis);</div><div class="line">			&#125;</div><div class="line"></div><div class="line">		&#125;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="悲观锁的实现"><a href="#悲观锁的实现" class="headerlink" title="悲观锁的实现"></a>悲观锁的实现</h1><p>通过redis的setnx方法，多个线程对同一个key操作，一次只有一个线程会成功，来实现锁操作，解锁通过jedis.del(lockKey)。另外引入expireTime的参数，来解决异常线程占用锁，使该方法更健壮。</p>
+<ul>
+<li>类似于Zookeeper的实现原理，需要一个辅助类RedisBasedDistributedLock来实现 tryLock和lock、unlock等操作</li>
+<li>但是这里的逻辑是非公平锁的形式去抢锁，每个用户循环操作，先读取存量，如果大于0就有3s的时间去抢锁，抢锁失败然后进入下一个循环，这样设计防止库存为0了，其它未抢到锁的线程还不知道。</li>
+<li>抢锁成功的话，再校验一次存货，仍然大于0，就消费一个库存，添加消费者，最后释放锁，结束循环</li>
+<li>引入了锁超时机制，即使当前线程出现异常，未成功释放锁，也不会让当前业务永远停摆</li>
+<li>抢锁的过程也为在超时时限内循环抢锁，而且是抢2次，第一次通过jedis.setnx(lockKey, stringOfLockExpireTime) == 1来抢，这是主要的获取锁的方式</li>
+<li>如果正常获取不到锁，再通过String oldValue = jedis.getSet(lockKey, stringOfLockExpireTime);来判断当前拥有锁的线程是否超时了，因为是原子操作，如果超时了，只有1个线程可以获取到超时的oldValue</li>
+<li>释放锁的逻辑也很暴力，直接删除： jedis.del(lockKey);</li>
+<li>其实也可以通过 jedis.setnx(lockKey，Expire，lockName)的形式实现自动的超时判断，而不需要额外的代码进行判断，更简洁<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">锁的过期时间是5s，初始化的时候设置了</div><div class="line">public void init() &#123;</div><div class="line">		jedis = RedisUtil.getInstance().getJedis();</div><div class="line">		redisBasedDistributedLock = new RedisBasedDistributedLock(jedis, &quot;lock.lock&quot;, 5 * 1000);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">public void run() &#123;</div><div class="line">		while (true) &#123;</div><div class="line">			if(Integer.valueOf(jedis.get(key))&lt;= 0) &#123;</div><div class="line">				break;</div><div class="line">			&#125;</div><div class="line">			</div><div class="line">			//缓存还有商品，取锁，商品数目减去1</div><div class="line">			System.out.println(&quot;顾客:&quot; + clientName + &quot;开始抢商品&quot;);</div><div class="line">			if (redisBasedDistributedLock.tryLock(3,TimeUnit.SECONDS)) &#123; //等待3秒获取锁，否则返回false</div><div class="line">				int prdNum = Integer.valueOf(jedis.get(key)); //再次取得商品缓存数目</div><div class="line">				if (prdNum &gt; 0) &#123;</div><div class="line">					jedis.decr(key);//商品数减1</div><div class="line">					jedis.sadd(clientList, clientName);// 抢到商品记录一下</div><div class="line">					System.out.println(&quot;好高兴，顾客:&quot; + clientName + &quot;抢到商品&quot;);</div><div class="line">				&#125; else &#123;</div><div class="line">					System.out.println(&quot;悲剧了，库存为0，顾客:&quot; + clientName + &quot;没有抢到商品&quot;);</div><div class="line">				&#125;</div><div class="line">				redisBasedDistributedLock.unlock();</div><div class="line">				break;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		//释放资源</div><div class="line">		redisBasedDistributedLock = null;</div><div class="line">		RedisUtil.returnResource(jedis);</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="lock"><a href="#lock" class="headerlink" title="lock()"></a>lock()</h2><ul>
+<li>设置3s的最长抢锁时间，也是循环抢锁</li>
+<li>引入了锁超时机制，即使当前线程出现异常，未成功释放锁，也不会让当前业务永远停摆</li>
+<li>获取锁成功，会设置locked = true;和setExclusiveOwnerThread(Thread.currentThread());<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">lock(true, time, unit, false);</div><div class="line"></div><div class="line">// 阻塞式获取锁的实现</div><div class="line">	protected boolean lock(boolean useTimeout, long time, TimeUnit unit, boolean interrupt) throws InterruptedException &#123;</div><div class="line">		System.out.println(&quot;test1&quot;);</div><div class="line">		if (interrupt) &#123;</div><div class="line">			checkInterruption();</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		System.out.println(&quot;test2&quot;);</div><div class="line">		long start = System.currentTimeMillis();</div><div class="line">		long timeout = unit.toMillis(time); // if !useTimeout, then it&apos;s useless</div><div class="line"></div><div class="line">		while (useTimeout ? isTimeout(start, timeout) : true) &#123;</div><div class="line">			System.out.println(&quot;test3&quot;);</div><div class="line">			if (interrupt) &#123;</div><div class="line">				checkInterruption();</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			long lockExpireTime = System.currentTimeMillis() + lockExpires + 1;// 锁超时时间</div><div class="line">			String stringOfLockExpireTime = String.valueOf(lockExpireTime);</div><div class="line"></div><div class="line">			System.out.println(&quot;test4&quot;);</div><div class="line">			if (jedis.setnx(lockKey, stringOfLockExpireTime) == 1) &#123; // 获取到锁</div><div class="line">				System.out.println(&quot;test5&quot;);</div><div class="line">				//成功获取到锁, 设置相关标识</div><div class="line">				locked = true;</div><div class="line">				setExclusiveOwnerThread(Thread.currentThread());</div><div class="line">				return true;</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			System.out.println(&quot;test6&quot;);</div><div class="line">			String value = jedis.get(lockKey);</div><div class="line">			if (value != null &amp;&amp; isTimeExpired(value)) &#123; // lock is expired</div><div class="line">				System.out.println(&quot;test7&quot;);</div><div class="line">				// 假设多个线程(非单jvm)同时走到这里</div><div class="line">				String oldValue = jedis.getSet(lockKey, stringOfLockExpireTime); //原子操作</div><div class="line">				// 但是走到这里时每个线程拿到的oldValue肯定不可能一样(因为getset是原子性的)</div><div class="line">				// 加入拿到的oldValue依然是expired的，那么就说明拿到锁了</div><div class="line">				System.out.println(&quot;test8&quot;);</div><div class="line">				if (oldValue != null &amp;&amp; isTimeExpired(oldValue)) &#123;</div><div class="line">					System.out.println(&quot;test9&quot;);</div><div class="line">					//成功获取到锁, 设置相关标识</div><div class="line">					locked = true;</div><div class="line">					setExclusiveOwnerThread(Thread.currentThread());</div><div class="line">					return true;</div><div class="line">				&#125;</div><div class="line">			&#125; else &#123;</div><div class="line">				// TODO lock is not expired, enter next loop retrying</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		System.out.println(&quot;test10&quot;);</div><div class="line">		return false;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>lock的优化方案：不通过去isTimeExpired判断持锁线程是否过期，而是获取到锁的时候，就自动设置过期时间，来降低CPU的消耗<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">protected boolean lock(boolean useTimeout, long time, TimeUnit unit, boolean interrupt) throws InterruptedException &#123;</div><div class="line">	//开始抢锁的时间</div><div class="line">	long start = System.currentTimeMillis();</div><div class="line">	//超时时间，这里是3s</div><div class="line">	long timeout = unit.toMillis(time); // if !useTimeout, then it&apos;s useless</div><div class="line"></div><div class="line">	while (useTimeout ? isTimeout(start, timeout) : true) &#123;</div><div class="line">		if (interrupt) &#123;</div><div class="line">			checkInterruption();</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		//引入了锁超时机制，即使当前线程出现异常，未成功释放锁，也不会让当前业务永远停摆</div><div class="line">		long lockExpireTime = System.currentTimeMillis() + lockExpires + 1;// 锁超时时间</div><div class="line">		String stringOfLockExpireTime = String.valueOf(lockExpireTime);</div><div class="line">		if (jedis.setnx(lockKey, stringOfLockExpireTime) == 1) &#123; // 获取到锁</div><div class="line">			jedis.setex(&quot;lockKey&quot;, EXPIRE_SECOND, stringOfLockExpireTime);</div><div class="line">			//成功获取到锁, 设置相关标识</div><div class="line">			locked = true;</div><div class="line">			setExclusiveOwnerThread(Thread.currentThread());</div><div class="line">			return true;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	return false;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/缓存/">缓存</a>►<a class="article-category-link" href="/categories/缓存/Redis/">Redis</a>►<a class="article-category-link" href="/categories/缓存/Redis/分布式锁/">分布式锁</a>
+</div>
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/12/Redis分布式锁/" data-title="Redis分布式锁 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/08/13/Redis集群和高可用/" title="Redis集群和高可用">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Redis集群和高可用</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/08/11/Redis事务和脚本/"  title="Redis事务和脚本">
+ <strong>下一篇：</strong><br/> 
+ <span>Redis事务和脚本
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/08/12/Redis分布式锁/" data-title="Redis分布式锁" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/08/12/Redis分布式锁/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#实现源码："><span class="toc-number">1.</span> <span class="toc-text">实现源码：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实现方式"><span class="toc-number">2.</span> <span class="toc-text">实现方式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#悲观锁的实现"><span class="toc-number">3.</span> <span class="toc-text">悲观锁的实现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#lock"><span class="toc-number">3.1.</span> <span class="toc-text">lock()</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数据结构/HashMap/" title="HashMap">HashMap<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/IO流/" title="IO流">IO流<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/JVM/" title="JVM">JVM<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/" title="MQ">MQ<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Netty/" title="Netty">Netty<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/" title="Redis">Redis<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/RocketMQ/" title="RocketMQ">RocketMQ<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Shiro/" title="Shiro">Shiro<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/" title="分布式">分布式<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/学习资源/" title="学习资源">学习资源<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/并发编程/" title="并发编程">并发编程<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/算法/" title="算法">算法<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/" title="缓存">缓存<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/设计模式/" title="设计模式">设计模式<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/" title="面试题">面试题<sup>11</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/JVM/" title="JVM">JVM<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/分布式/" title="分布式">分布式<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/面试题/" title="面试题">面试题<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/权限管理/" title="权限管理">权限管理<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/集合类/" title="集合类">集合类<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/缓存/" title="缓存">缓存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/IO流/" title="IO流">IO流<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

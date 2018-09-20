@@ -44,7 +44,7 @@
 				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
 				<h2 class="blog-motto">Happy Coding</h2>
 			</div>
-			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
 			</a></div>
 			<nav class="animated">
 				<ul>
@@ -58,7 +58,7 @@
  					
 					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
 						<label>Search</label>
-						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
 						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
 					</form>
 					
@@ -73,25 +73,24 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2018/03/27/SpringBoot入门/" title="SpringBoot入门" itemprop="url">
+    <a href="/2018/07/04/SpringCloud之Eureka/" title="SpringCloud之Eureka" itemprop="url">
   
-    <h1 itemprop="name">SpringBoot入门</h1>
+    <h1 itemprop="name">SpringCloud之Eureka</h1>
     
      
-           <p itemprop="description" >优点和缺点
-快速构建项目
-支持运行期内嵌容器，如 Tomcat、Jetty
-强大的开发包，支持热启动
-对自定义配置非常友好，可以配置在application.yml，或者Config类。spring boot的整体思想是，有自定义的，自定义优先，否则走自动的默认配置
-适合构建微服</p>
+           <p itemprop="description" >http://www.ityouknow.com/springcloud/2017/05/10/springcloud-eureka.html
+实现功能：
+注册中心（应用程序之间解耦，不需要知道彼此的地址，通过eureka地址和serviceId来识别）
+
+灵活的扩展性（基于注册</p>
         
     
-    <time datetime="2018-03-27T08:51:01.554Z" itemprop="datePublished">2018-03-27</time>
+    <time datetime="2018-07-04T06:43:56.204Z" itemprop="datePublished">2018-07-04</time>
   </a>
 </section>
 
 <!-- 多说评论框 start -->
-<div class="ds-thread" data-thread-key="post-SpringBoot入门" data-title="SpringBoot入门" data-url="undefined"></div>
+<div class="ds-thread" data-thread-key="post-SpringCloud之Eureka" data-title="SpringCloud之Eureka" data-url="undefined"></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">
@@ -110,22 +109,25 @@ var duoshuoQuery = {short_name:"huangzhenshi"};
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2018/03/26/分布式常见问题/" title="分布式常见问题" itemprop="url">
+    <a href="/2018/06/26/JPA使用心得/" title="JPA使用心得" itemprop="url">
   
-    <h1 itemprop="name">分布式常见问题</h1>
+    <h1 itemprop="name">JPA使用心得</h1>
     
      
-           <p itemprop="description" >CAP理论consistency 强一致性
-强一致性：分布式集群中所有节点的写操作具有原子性，一起写成功才反馈成功，可能会导致等待。这样的好处是，任意一个节点做了写操作，那么随后的访问查询，无论查询到哪个节点，得到的结果都是一样的。
-最终一致性：在一段时间后，节点间的数据会最终达</p>
+           <p itemprop="description" >SpringBoot  中集成JPAhttps://blog.csdn.net/forezp/article/details/70545038
+
+引入jpa依赖
+配置jpa选项
+修改实体类，引入注解
+修改接口&amp;lt;dependency&amp;gt;	 &amp;lt;groupId&amp;gt;o</p>
         
     
-    <time datetime="2018-03-26T03:33:04.941Z" itemprop="datePublished">2018-03-26</time>
+    <time datetime="2018-06-26T09:05:36.941Z" itemprop="datePublished">2018-06-26</time>
   </a>
 </section>
 
 <!-- 多说评论框 start -->
-<div class="ds-thread" data-thread-key="post-分布式常见问题" data-title="分布式常见问题" data-url="undefined"></div>
+<div class="ds-thread" data-thread-key="post-JPA使用心得" data-title="JPA使用心得" data-url="undefined"></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">
@@ -144,20 +146,21 @@ var duoshuoQuery = {short_name:"huangzhenshi"};
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2018/03/26/设计模式之Spring/" title="设计模式之Spring" itemprop="url">
+    <a href="/2018/06/25/SpringBoot老项目改造/" title="SpringBoot老项目改造" itemprop="url">
   
-    <h1 itemprop="name">设计模式之Spring</h1>
+    <h1 itemprop="name">SpringBoot老项目改造</h1>
     
      
-           <p itemprop="description" >工厂方法模式，通过配置Bean的类名全路径，BeanFacory接口类，下面有实现的XmlBeanFactory类，设置完配置文件和ID，直接获取。还提供默认单例缓存功能。BeanFactory bf = new XmlBeanFactory(new ClassPathResou</p>
+           <p itemprop="description" >源码：数据库里面有2个用户  huang/123456 admin用户 、 test/123456 vip用户https://github.com/huangzhenshi/psm_SpringBoot
+#以前的一个传统的maven管理的web项目，改造成SpringBoot并且</p>
         
     
-    <time datetime="2018-03-26T02:53:11.508Z" itemprop="datePublished">2018-03-26</time>
+    <time datetime="2018-06-25T04:28:43.691Z" itemprop="datePublished">2018-06-25</time>
   </a>
 </section>
 
 <!-- 多说评论框 start -->
-<div class="ds-thread" data-thread-key="post-设计模式之Spring" data-title="设计模式之Spring" data-url="undefined"></div>
+<div class="ds-thread" data-thread-key="post-SpringBoot老项目改造" data-title="SpringBoot老项目改造" data-url="undefined"></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">
@@ -176,23 +179,23 @@ var duoshuoQuery = {short_name:"huangzhenshi"};
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2018/03/26/JVM实战调优/" title="JVM实战调优" itemprop="url">
+    <a href="/2018/06/22/SpringCloud网关/" title="SpringCloud网关Zuul" itemprop="url">
   
-    <h1 itemprop="name">JVM实战调优</h1>
+    <h1 itemprop="name">SpringCloud网关Zuul</h1>
     
      
-           <p itemprop="description" >JVM调优选择合适的垃圾回收器单线程或者2个CPU的就用serial网站类要求最小STW的 CMS，计算类吞吐量用 Paralie
-设置合适的各个代取的大小和ratio
-默认YGC 15次之后的对象进入老年代，可以修改
-默认堆区最大值是操作系统内存的1/4，可以修改并且设置初始值</p>
+           <p itemprop="description" >功能特点说明
+Zuul解决的是对外提供微服务的问题，比如气象局对外开放气象信息查询接口，这时候Zuul就来实现反向代理等功能。在一个系统内部之间的微服务调用不需要zuul，直接微服务间通过eureka注册，通过Ferign远程调用即可。
+
+Zuul只适合提供接口调用的数据发送，比</p>
         
     
-    <time datetime="2018-03-26T02:53:11.430Z" itemprop="datePublished">2018-03-26</time>
+    <time datetime="2018-06-22T06:52:13.591Z" itemprop="datePublished">2018-06-22</time>
   </a>
 </section>
 
 <!-- 多说评论框 start -->
-<div class="ds-thread" data-thread-key="post-JVM实战调优" data-title="JVM实战调优" data-url="undefined"></div>
+<div class="ds-thread" data-thread-key="post-SpringCloud网关" data-title="SpringCloud网关Zuul" data-url="undefined"></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">
@@ -211,25 +214,21 @@ var duoshuoQuery = {short_name:"huangzhenshi"};
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2018/03/22/2018面试题/" title="2018面试题" itemprop="url">
+    <a href="/2018/06/21/SpringCloud远程调用/" title="SpringCloud远程调用" itemprop="url">
   
-    <h1 itemprop="name">2018面试题</h1>
+    <h1 itemprop="name">SpringCloud远程调用</h1>
     
      
-           <p itemprop="description" >蚂蚁金服在线编程半小时
-手写单例模式
-实现一个集群模式下系统生成唯一流水号的算法：流水号不能重复、不能生成一次访问一次数据库
-从给定的数组中找3个数，让他们的和为0.输出所有可能
-jvm类加载机制 或者任意WEB服务器的类加载机制
-有一个程序能够接受很多网络申请，同时把这些网络请</p>
+           <p itemprop="description" >远程调用的方式1.Eureka+Feign（集成了robbion）http://www.ityouknow.com/springcloud/2017/05/12/eureka-provider-constomer.html
+2.Eureka+restTemplate通过restT</p>
         
     
-    <time datetime="2018-03-22T03:26:29.999Z" itemprop="datePublished">2018-03-22</time>
+    <time datetime="2018-06-21T06:39:29.266Z" itemprop="datePublished">2018-06-21</time>
   </a>
 </section>
 
 <!-- 多说评论框 start -->
-<div class="ds-thread" data-thread-key="post-2018面试题" data-title="2018面试题" data-url="undefined"></div>
+<div class="ds-thread" data-thread-key="post-SpringCloud远程调用" data-title="SpringCloud远程调用" data-url="undefined"></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">
@@ -248,24 +247,22 @@ var duoshuoQuery = {short_name:"huangzhenshi"};
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2018/03/21/设计模式-结构类模式/" title="设计模式-结构类模式" itemprop="url">
+    <a href="/2018/06/21/SpringCloud开篇/" title="SpringCloud开篇" itemprop="url">
   
-    <h1 itemprop="name">设计模式-结构类模式</h1>
+    <h1 itemprop="name">SpringCloud开篇</h1>
     
      
-           <p itemprop="description" >代理模式
-四种不同的代理模式：分别实现了某一个类某一个方法的代理，某一些类(相同接口)某一个方法的代理、某一些类（相同接口)中所有接口方法的代理、所有类中所有非final方法的代理。
-
-https://www.cnblogs.com/cenyu/p/6289209.html
-提供</p>
+           <p itemprop="description" >优势讲解bloghttp://www.cnblogs.com/ityouknow/p/7508306.html
+另外一个源码很详细的bloghttps://www.kancloud.cn/fymod/springcloud/536930
+特点描述Spring Cloud的核心功能</p>
         
     
-    <time datetime="2018-03-21T07:07:58.156Z" itemprop="datePublished">2018-03-21</time>
+    <time datetime="2018-06-21T06:03:52.869Z" itemprop="datePublished">2018-06-21</time>
   </a>
 </section>
 
 <!-- 多说评论框 start -->
-<div class="ds-thread" data-thread-key="post-设计模式-结构类模式" data-title="设计模式-结构类模式" data-url="undefined"></div>
+<div class="ds-thread" data-thread-key="post-SpringCloud开篇" data-title="SpringCloud开篇" data-url="undefined"></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">
@@ -284,25 +281,23 @@ var duoshuoQuery = {short_name:"huangzhenshi"};
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2018/03/21/设计模式 -行为类模式/" title="设计模式 -行为类模式" itemprop="url">
+    <a href="/2018/06/14/Shiro授权管理/" title="Shiro授权管理" itemprop="url">
   
-    <h1 itemprop="name">设计模式 -行为类模式</h1>
+    <h1 itemprop="name">Shiro授权管理</h1>
     
      
-           <p itemprop="description" >命令模式
-5个角色：
-
-
-客户端 Client，负责构建所有对象
-具体命令 ConcreteCommand（处理某一个行为），多种行为多个实例化对象，但是自己并不执行，调用Receiver去执行方法。也是模式的核心所在，既可以实现不同功能的解耦，又可以实现直接调用所不能提供的额外</p>
+           <p itemprop="description" >参考资料shiro标签https://www.cnblogs.com/fancongcong/p/8093258.html
+前端控制逻辑
+通过数据库查询控制menu，登录时查询该用户拥有权限的menu，然后foreach展示出来，这种方法不安全，而且控制不到某个按钮，但是最简单
+</p>
         
     
-    <time datetime="2018-03-21T07:06:18.085Z" itemprop="datePublished">2018-03-21</time>
+    <time datetime="2018-06-14T03:06:00.000Z" itemprop="datePublished">2018-06-14</time>
   </a>
 </section>
 
 <!-- 多说评论框 start -->
-<div class="ds-thread" data-thread-key="post-设计模式 -行为类模式" data-title="设计模式 -行为类模式" data-url="undefined"></div>
+<div class="ds-thread" data-thread-key="post-Shiro授权管理" data-title="Shiro授权管理" data-url="undefined"></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">
@@ -321,21 +316,21 @@ var duoshuoQuery = {short_name:"huangzhenshi"};
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2018/03/21/设计模式-创建型模式/" title="设计模式-创建型模式" itemprop="url">
+    <a href="/2018/06/13/Shiro登录和加密和验证码/" title="Shiro登录和加密和验证码" itemprop="url">
   
-    <h1 itemprop="name">设计模式-创建型模式</h1>
+    <h1 itemprop="name">Shiro登录和加密和验证码</h1>
     
      
-           <p itemprop="description" >参考源码：https://github.com/huangzhenshi/DesignPattern
-单例模式实现在系统中，最多只有1个这个类，比如datasourse这样的类，从而节省系统资源。通过private构造方法避免new对象，并且只提供一个getInstance的方法</p>
+           <p itemprop="description" >https://blog.csdn.net/qq_31080089/article/details/53715910
+参考源码： （设置了密码器、包含用户、角色创建、权限分配、ehcache缓存等模块的Demo）https://github.com/huangzhenshi/sp</p>
         
     
-    <time datetime="2018-03-21T03:17:35.532Z" itemprop="datePublished">2018-03-21</time>
+    <time datetime="2018-06-13T03:14:42.959Z" itemprop="datePublished">2018-06-13</time>
   </a>
 </section>
 
 <!-- 多说评论框 start -->
-<div class="ds-thread" data-thread-key="post-设计模式-创建型模式" data-title="设计模式-创建型模式" data-url="undefined"></div>
+<div class="ds-thread" data-thread-key="post-Shiro登录和加密和验证码" data-title="Shiro登录和加密和验证码" data-url="undefined"></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">
@@ -354,23 +349,20 @@ var duoshuoQuery = {short_name:"huangzhenshi"};
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2018/03/21/设计模式六大原则/" title="设计模式六大原则" itemprop="url">
+    <a href="/2018/06/11/Web项目常用优化配置/" title="Web项目常用优化配置" itemprop="url">
   
-    <h1 itemprop="name">设计模式六大原则</h1>
+    <h1 itemprop="name">Web项目常用优化配置</h1>
     
      
-           <p itemprop="description" >六大原则
-开闭原则：对扩展开放，对修改关闭。比如工厂方法模式，新增类型就新增工厂实现类，这样实现了对扩展开放。
-
-依赖倒转原则：（接口实现）针对接口编程（因为接口没有任何具体实现），依赖于抽象而不依赖于具体。这是开闭原则的基础，因为依赖的是接口，所以才能做到扩展不同的子类都适用，</p>
+           <p itemprop="description" >Spring 引入配置文件web.xmml  &amp;lt;context-param&amp;gt;          &amp;lt;param-name&amp;gt;contextConfigLocation&amp;lt;/param-name&amp;gt;          &amp;lt;param-value&amp;gt</p>
         
     
-    <time datetime="2018-03-21T02:36:03.255Z" itemprop="datePublished">2018-03-21</time>
+    <time datetime="2018-06-11T03:44:36.248Z" itemprop="datePublished">2018-06-11</time>
   </a>
 </section>
 
 <!-- 多说评论框 start -->
-<div class="ds-thread" data-thread-key="post-设计模式六大原则" data-title="设计模式六大原则" data-url="undefined"></div>
+<div class="ds-thread" data-thread-key="post-Web项目常用优化配置" data-title="Web项目常用优化配置" data-url="undefined"></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">
@@ -389,23 +381,21 @@ var duoshuoQuery = {short_name:"huangzhenshi"};
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2018/03/20/NIO_new/" title="NIO" itemprop="url">
+    <a href="/2018/06/06/Shiro总篇配置/" title="Shiro总篇配置" itemprop="url">
   
-    <h1 itemprop="name">NIO</h1>
+    <h1 itemprop="name">Shiro总篇配置</h1>
     
      
-           <p itemprop="description" >Demo 源码：https://github.com/huangzhenshi/IO_NIO_NIO2Dem
-总结
-NIO 分为NIO 和NIO2 ，NIO2是JDK1.7的新特性，NIO1是 1.4的新特性，做了操作简化
-IO 和NIO最大的区别在于阻塞和非阻塞，这在socke</p>
+           <p itemprop="description" >参考blog SpringBoot项目：http://www.cnblogs.com/ityouknow/p/7089177.html
+参考我的源码：（设置了密码器、包含用户、角色创建、权限分配、权限标签的使用、ehcache缓存和清空、验证码等模块的Demo）初始用户  adm</p>
         
     
-    <time datetime="2018-03-20T06:22:02.723Z" itemprop="datePublished">2018-03-20</time>
+    <time datetime="2018-06-06T10:29:25.107Z" itemprop="datePublished">2018-06-06</time>
   </a>
 </section>
 
 <!-- 多说评论框 start -->
-<div class="ds-thread" data-thread-key="post-NIO_new" data-title="NIO" data-url="undefined"></div>
+<div class="ds-thread" data-thread-key="post-Shiro总篇配置" data-title="Shiro总篇配置" data-url="undefined"></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">
@@ -423,19 +413,19 @@ var duoshuoQuery = {short_name:"huangzhenshi"};
 
 
   <nav id="page-nav" class="clearfix unexpand">
-    <a class="extend prev" rel="prev" href="/page/4/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/6/">Next<span></span></a>
+    <a class="extend prev" rel="prev" href="/page/4/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" href="/page/6/">Next<span></span></a>
   </nav>
 
 </div>
-      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
 
 <div id="asidepart">
-<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
 <aside class="clearfix">
 
   
 <div class="github-card">
-<p class="asidetitle">Github 名片</p>
+<p class="asidetitle">Github Card</p>
 <div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
 <script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
 </div>
@@ -444,8 +434,186 @@ var duoshuoQuery = {short_name:"huangzhenshi"};
 
 
   
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数据结构/HashMap/" title="HashMap">HashMap<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/IO流/" title="IO流">IO流<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/JVM/" title="JVM">JVM<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/" title="MQ">MQ<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Netty/" title="Netty">Netty<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/" title="Redis">Redis<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/RocketMQ/" title="RocketMQ">RocketMQ<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Shiro/" title="Shiro">Shiro<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/" title="分布式">分布式<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/学习资源/" title="学习资源">学习资源<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/并发编程/" title="并发编程">并发编程<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/算法/" title="算法">算法<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/" title="缓存">缓存<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/设计模式/" title="设计模式">设计模式<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/" title="面试题">面试题<sup>11</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
 
   
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/JVM/" title="JVM">JVM<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/分布式/" title="分布式">分布式<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/面试题/" title="面试题">面试题<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/权限管理/" title="权限管理">权限管理<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/集合类/" title="集合类">集合类<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/缓存/" title="缓存">缓存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/IO流/" title="IO流">IO流<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
 
 </aside>
 </div>
@@ -592,7 +760,7 @@ var _hmt = _hmt || [];
 <!-- Totop Begin -->
 
 	<div id="totop">
-	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
 	</div>
 	<script src="/js/totop.js"></script>
 

@@ -12,12 +12,13 @@
 
     
     <meta name="description" content="http://www.ityouknow.com/springcloud/2017/05/10/springcloud-eureka.html 实现功能： 注册中心（应用程序之间解耦，不需要知道彼此的地址，通过eureka地址和serviceId来识别）  灵活的扩展性（基于注册中心的功能，可以灵活的新增或者减少集群中的数量，只需要添加和减少serviceId相同的节点即可）  发现功能，心跳功能">
+<meta name="keywords" content="SpringCloud">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SpringCloud之Eureka">
 <meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/07/04/SpringCloud之Eureka/index.html">
 <meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
 <meta property="og:description" content="http://www.ityouknow.com/springcloud/2017/05/10/springcloud-eureka.html 实现功能： 注册中心（应用程序之间解耦，不需要知道彼此的地址，通过eureka地址和serviceId来识别）  灵活的扩展性（基于注册中心的功能，可以灵活的新增或者减少集群中的数量，只需要添加和减少serviceId相同的节点即可）  发现功能，心跳功能">
-<meta property="og:updated_time" content="2018-07-06T02:52:53.585Z">
+<meta property="og:updated_time" content="2018-08-10T01:47:41.157Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringCloud之Eureka">
 <meta name="twitter:description" content="http://www.ityouknow.com/springcloud/2017/05/10/springcloud-eureka.html 实现功能： 注册中心（应用程序之间解耦，不需要知道彼此的地址，通过eureka地址和serviceId来识别）  灵活的扩展性（基于注册中心的功能，可以灵活的新增或者减少集群中的数量，只需要添加和减少serviceId相同的节点即可）  发现功能，心跳功能">
@@ -48,7 +49,7 @@
 				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
 				<h2 class="blog-motto">Happy Coding</h2>
 			</div>
-			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
 			</a></div>
 			<nav class="animated">
 				<ul>
@@ -62,7 +63,7 @@
  					
 					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
 						<label>Search</label>
-						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
 						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
 					</form>
 					
@@ -85,14 +86,14 @@
 		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
 		
   <p class="article-time">
-    <time datetime="2018-07-04T06:43:56.204Z" itemprop="datePublished"> 发表于 2018-07-04</time>
+    <time datetime="2018-07-04T06:43:56.204Z" itemprop="datePublished"> Published 2018-07-04</time>
     
   </p>
 </header>
 	<div class="article-content">
 		
 		<div id="toc" class="toc-article">
-			<strong class="toc-title">文章目录</strong>
+			<strong class="toc-title">Contents</strong>
 		
 			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#实现功能："><span class="toc-number">1.</span> <span class="toc-text">实现功能：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实现功能的逻辑"><span class="toc-number">2.</span> <span class="toc-text">实现功能的逻辑</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#普通SB项目通过eureka注册来实现-admin监控的配置流程"><span class="toc-number">3.</span> <span class="toc-text">普通SB项目通过eureka注册来实现 admin监控的配置流程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#eureka-集群的配置"><span class="toc-number">4.</span> <span class="toc-text">eureka 集群的配置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#eureka常用配置汇总"><span class="toc-number">4.1.</span> <span class="toc-text">eureka常用配置汇总</span></a></li></ol></li></ol>
 		
@@ -145,6 +146,16 @@
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/SpringCloud/">SpringCloud</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/SpringCloud/">SpringCloud</a>
+  </div>
 
 </div>
 
@@ -175,9 +186,9 @@
 
 
 <div class="next">
-<a href="/2018/07/03/SpringBoot老项目微服务改造/"  title="SpringBoot老项目微服务改造">
+<a href="/2018/06/26/JPA使用心得/"  title="JPA使用心得">
  <strong>下一篇：</strong><br/> 
- <span>SpringBoot老项目微服务改造
+ <span>JPA使用心得
 </span>
 </a>
 </div>
@@ -191,22 +202,22 @@
 
 
 </div>  
-      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
 
   <div id="toc" class="toc-aside">
-  <strong class="toc-title">文章目录</strong>
+  <strong class="toc-title">Contents</strong>
  
  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#实现功能："><span class="toc-number">1.</span> <span class="toc-text">实现功能：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实现功能的逻辑"><span class="toc-number">2.</span> <span class="toc-text">实现功能的逻辑</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#普通SB项目通过eureka注册来实现-admin监控的配置流程"><span class="toc-number">3.</span> <span class="toc-text">普通SB项目通过eureka注册来实现 admin监控的配置流程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#eureka-集群的配置"><span class="toc-number">4.</span> <span class="toc-text">eureka 集群的配置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#eureka常用配置汇总"><span class="toc-number">4.1.</span> <span class="toc-text">eureka常用配置汇总</span></a></li></ol></li></ol>
  
   </div>
 
 <div id="asidepart">
-<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
 <aside class="clearfix">
 
   
 <div class="github-card">
-<p class="asidetitle">Github 名片</p>
+<p class="asidetitle">Github Card</p>
 <div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
 <script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
 </div>
@@ -215,8 +226,186 @@
 
 
   
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数据结构/HashMap/" title="HashMap">HashMap<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/IO流/" title="IO流">IO流<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/JVM/" title="JVM">JVM<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/" title="MQ">MQ<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Netty/" title="Netty">Netty<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/" title="Redis">Redis<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/RocketMQ/" title="RocketMQ">RocketMQ<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Shiro/" title="Shiro">Shiro<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/" title="分布式">分布式<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/学习资源/" title="学习资源">学习资源<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/并发编程/" title="并发编程">并发编程<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/算法/" title="算法">算法<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/" title="缓存">缓存<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/设计模式/" title="设计模式">设计模式<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/" title="面试题">面试题<sup>11</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
 
   
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/JVM/" title="JVM">JVM<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/分布式/" title="分布式">分布式<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/面试题/" title="面试题">面试题<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/权限管理/" title="权限管理">权限管理<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/集合类/" title="集合类">集合类<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/缓存/" title="缓存">缓存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/IO流/" title="IO流">IO流<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
 
 </aside>
 </div>
@@ -452,7 +641,7 @@ var _hmt = _hmt || [];
 <!-- Totop Begin -->
 
 	<div id="totop">
-	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
 	</div>
 	<script src="/js/totop.js"></script>
 

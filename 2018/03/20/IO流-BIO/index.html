@@ -1,0 +1,697 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>IO流 | Tornado_Huang&#39;s BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Huang zhenshi">
+    
+
+    
+    <meta name="description" content="Demo 源码：https://github.com/huangzhenshi/IO_NIO_NIO2Dem 博客IO 流相关  IO流主要类的继承关系图https://www.cnblogs.com/biehongli/p/6074713.html  IO流常用类的代码演示https://www.cnblogs.com/xll1025/p/6418766.html   精华 实现文本或者字节的读">
+<meta name="keywords" content="IO流">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IO流">
+<meta property="og:url" content="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/20/IO流-BIO/index.html">
+<meta property="og:site_name" content="Tornado_Huang&#39;s BLOG">
+<meta property="og:description" content="Demo 源码：https://github.com/huangzhenshi/IO_NIO_NIO2Dem 博客IO 流相关  IO流主要类的继承关系图https://www.cnblogs.com/biehongli/p/6074713.html  IO流常用类的代码演示https://www.cnblogs.com/xll1025/p/6418766.html   精华 实现文本或者字节的读">
+<meta property="og:image" content="https://github.com/img/io.jpg">
+<meta property="og:updated_time" content="2018-08-10T01:59:45.245Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="IO流">
+<meta name="twitter:description" content="Demo 源码：https://github.com/huangzhenshi/IO_NIO_NIO2Dem 博客IO 流相关  IO流主要类的继承关系图https://www.cnblogs.com/biehongli/p/6074713.html  IO流常用类的代码演示https://www.cnblogs.com/xll1025/p/6418766.html   精华 实现文本或者字节的读">
+<meta name="twitter:image" content="https://github.com/img/io.jpg">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Tornado_Huang&#39;s BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Tornado_Huang&#39;s BLOG" title="Tornado_Huang&#39;s BLOG"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tornado_Huang&#39;s BLOG">Tornado_Huang&#39;s BLOG</a></h1>
+				<h2 class="blog-motto">Happy Coding</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">分类</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:github.com/huangzhenshi/huangzhenshi.github.io.git">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/03/20/IO流-BIO/" title="IO流" itemprop="url">IO流</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Huang zhenshi" target="_blank" itemprop="author">Huang zhenshi</a>
+		
+  <p class="article-time">
+    <time datetime="2018-03-20T06:13:52.854Z" itemprop="datePublished"> Published 2018-03-20</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#博客"><span class="toc-number">1.</span> <span class="toc-text">博客</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#精华"><span class="toc-number">2.</span> <span class="toc-text">精华</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#字符流"><span class="toc-number">3.</span> <span class="toc-text">字符流</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#注意事项："><span class="toc-number">3.1.</span> <span class="toc-text">注意事项：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#文本流"><span class="toc-number">3.2.</span> <span class="toc-text">文本流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#文本缓冲流"><span class="toc-number">3.3.</span> <span class="toc-text">文本缓冲流</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#字节流"><span class="toc-number">4.</span> <span class="toc-text">字节流</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#File-类"><span class="toc-number">5.</span> <span class="toc-text">File 类</span></a></li></ol>
+		
+		</div>
+		
+		<p>Demo 源码：<br><a href="https://github.com/huangzhenshi/IO_NIO_NIO2Dem">https://github.com/huangzhenshi/IO_NIO_NIO2Dem</a></p>
+<h1 id="博客"><a href="#博客" class="headerlink" title="博客"></a>博客</h1><p>IO 流相关</p>
+<ul>
+<li><p>IO流主要类的继承关系图<br><a href="https://www.cnblogs.com/biehongli/p/6074713.html" target="_blank" rel="external">https://www.cnblogs.com/biehongli/p/6074713.html</a></p>
+</li>
+<li><p>IO流常用类的代码演示<br><a href="https://www.cnblogs.com/xll1025/p/6418766.html" target="_blank" rel="external">https://www.cnblogs.com/xll1025/p/6418766.html</a></p>
+</li>
+</ul>
+<h1 id="精华"><a href="#精华" class="headerlink" title="精华"></a>精华</h1><ul>
+<li>实现文本或者字节的读写操作（区分带缓冲和不带缓冲、字符集设置等)</li>
+<li>四个重要的类<br>InputStream(字节输入流 抽象类)和Reader(字符输入流)通俗的理解都是读（read）的。</li>
+</ul>
+<p>OutputStream(字节输出流 抽象类)和Writer(字符输出流)通俗的理解都是写(writer)的。</p>
+<h1 id="字符流"><a href="#字符流" class="headerlink" title="字符流"></a>字符流</h1><h2 id="注意事项："><a href="#注意事项：" class="headerlink" title="注意事项："></a>注意事项：</h2><ul>
+<li><p>写入文件后必须要用flush()刷新。</p>
+</li>
+<li><p>用完流后记得要关闭流</p>
+</li>
+<li><p>使用流对象要抛出IO异常</p>
+</li>
+</ul>
+<ul>
+<li><p>定义文件路径时，可以用“/”或者“\”。</p>
+</li>
+<li><p>在创建一个文件时，如果目录下有同名文件将被覆盖。</p>
+</li>
+<li><p>在读取文件时，必须保证该文件已存在，否则出异常</p>
+</li>
+<li>中文不会乱码，默认GBK</li>
+</ul>
+<h2 id="文本流"><a href="#文本流" class="headerlink" title="文本流"></a>文本流</h2><ul>
+<li><p>FileWriter 写入字符到文件中</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">	//直接写，有则覆盖</div><div class="line">       FileWriter fw = new FileWriter(&quot;C:\\Users\\502764158\\Desktop\\io\\1.txt&quot;);</div><div class="line">       fw.write(&quot;hello world!&quot;);   </div><div class="line">       fw.flush(); </div><div class="line"></div><div class="line">//文本续写</div><div class="line">FileWriter fw = new FileWriter(&quot;C:\\Users\\502764158\\Desktop\\io\\1.txt&quot;,true);</div></pre></td></tr></table></figure>
+</li>
+<li><p>FileReader 读取一个字节或者一个字节数组 </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">FileReader fr = new FileReader(&quot;C:\\Users\\502764158\\Desktop\\io\\1.txt&quot;);  </div><div class="line">           int ch = 0;  </div><div class="line">           while ((ch=fr.read())!=-1) &#123;  </div><div class="line">               sop((char)ch);  </div><div class="line">           &#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>读写复制</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">FileWriter fw = new FileWriter(destination);</div><div class="line">FileReader fr = new FileReader(source);</div><div class="line">char []  buf = new char[1024]; </div><div class="line">int num = 0;	</div><div class="line">while((num = fr.read(buf))!=-1) &#123;</div><div class="line">	fw.write(new String(buf,0,num));</div><div class="line">&#125;</div><div class="line">fr.close();</div><div class="line">fw.close();</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="文本缓冲流"><a href="#文本缓冲流" class="headerlink" title="文本缓冲流"></a>文本缓冲流</h2><p>套用缓冲流后，调用readLine()–&gt;读取一行，  bfw.newLine() –&gt; 换行</p>
+<h1 id="字节流"><a href="#字节流" class="headerlink" title="字节流"></a>字节流</h1><p><img src="/img/io.jpg" alt="字节流类集成图"></p>
+<ol>
+<li><p>字节流和字符流的基本操作是相同的，但是要想操作媒体流就需要用到字节流。</p>
+</li>
+<li><p>字节流因为操作的是字节，所以可以用来操作媒体文件。（媒体文件也是以字节存储的）</p>
+</li>
+<li><p>读写字节流：InputStream   输入流（读）和OutputStream  输出流（写）</p>
+</li>
+<li><p>字节流操作可以不用刷新流操作。</p>
+</li>
+<li><p>InputStream特有方法：</p>
+<pre><code>int available();//返回文件中的字节个数
+</code></pre></li>
+</ol>
+<p>注：可以利用此方法来指定读取方式中传入数组的长度，从而省去循环判断。但是如果文件较大，而虚拟机启动分配的默认内存一般为64M。当文件过大时，此数组长度所占内存空间就会溢出。所以，此方法慎用，当文件不大时，可以使用。</p>
+<ol>
+<li>字节流缓冲流注意事项：</li>
+</ol>
+<ul>
+<li><p>read()：会将字节byte()提升为int型值</p>
+</li>
+<li><p>write()：会将int类型转换为byte()类型，保留最后的8位。</p>
+</li>
+<li><p>字节缓冲流要指定缓冲的size，不指定的话，默认就是8192</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">private static int defaultBufferSize = 8192;</div><div class="line">   public BufferedInputStream(InputStream in) &#123;</div><div class="line">       this(in, defaultBufferSize);</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="File-类"><a href="#File-类" class="headerlink" title="File 类"></a>File 类</h1><p>参考 ：<br><a href="https://www.cnblogs.com/biehongli/p/6074713.html" target="_blank" rel="external">https://www.cnblogs.com/biehongli/p/6074713.html</a><br>重要的方法：</p>
+<ul>
+<li>isFile()</li>
+<li>isDirectory()</li>
+<li>exits()</li>
+<li>file.list()</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/IO流/">IO流</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/IO流/">IO流</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/20/IO流-BIO/" data-title="IO流 | Tornado_Huang&#39;s BLOG" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/03/20/IO流-NIO/" title="NIO">
+  <strong>上一篇：</strong><br/>
+  <span>
+  NIO</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/03/20/IO流-AIO/"  title="AIO">
+ <strong>下一篇：</strong><br/> 
+ <span>AIO
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/03/20/IO流-BIO/" data-title="IO流" data-url="https://github.com/huangzhenshi/huangzhenshi.github.io.git/2018/03/20/IO流-BIO/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#博客"><span class="toc-number">1.</span> <span class="toc-text">博客</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#精华"><span class="toc-number">2.</span> <span class="toc-text">精华</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#字符流"><span class="toc-number">3.</span> <span class="toc-text">字符流</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#注意事项："><span class="toc-number">3.1.</span> <span class="toc-text">注意事项：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#文本流"><span class="toc-number">3.2.</span> <span class="toc-text">文本流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#文本缓冲流"><span class="toc-number">3.3.</span> <span class="toc-text">文本缓冲流</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#字节流"><span class="toc-number">4.</span> <span class="toc-text">字节流</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#File-类"><span class="toc-number">5.</span> <span class="toc-text">File 类</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="huangzhenshi" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数据结构/HashMap/" title="HashMap">HashMap<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/IO流/" title="IO流">IO流<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/JVM/" title="JVM">JVM<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/" title="MQ">MQ<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Netty/" title="Netty">Netty<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/" title="Redis">Redis<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/MQ/RocketMQ/" title="RocketMQ">RocketMQ<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Shiro/" title="Shiro">Shiro<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/分布式/" title="分布式">分布式<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/Redis/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/zookeeper/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/分布式锁/" title="分布式锁">分布式锁<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/学习资源/" title="学习资源">学习资源<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/并发编程/" title="并发编程">并发编程<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/算法/" title="算法">算法<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/缓存/" title="缓存">缓存<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/设计模式/" title="设计模式">设计模式<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/面试题/" title="面试题">面试题<sup>11</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/JVM/" title="JVM">JVM<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/分布式/" title="分布式">分布式<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring原理/" title="Spring原理">Spring原理<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringBoot/" title="SpringBoot">SpringBoot<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Mysql/" title="Mysql">Mysql<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/面试题/" title="面试题">面试题<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/zookeeper/" title="zookeeper">zookeeper<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SpringCloud/" title="SpringCloud">SpringCloud<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/权限管理/" title="权限管理">权限管理<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/集合类/" title="集合类">集合类<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/缓存/" title="缓存">缓存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java原理/" title="Java原理">Java原理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/IO流/" title="IO流">IO流<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> FOOD CODING MUSIC IS ALL MY LIFE <br/>
+			</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/huangzhenshi" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Huang zhenshi">Huang zhenshi</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"huangzhenshi"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
